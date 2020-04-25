@@ -49,12 +49,13 @@ void saxpy_slow(float A, thrust::device_vector<float>& X, thrust::device_vector<
 int main(int argc, char** argv)
 {
     float a = 2;
+    int iterations = 100;
 
     std::vector<int> sizes;
-    std::vector<Measurement<std::chrono::microseconds>> hostToDeviceMeasurements;
-    std::vector<Measurement<std::chrono::microseconds>> saxpySlowMeasurements;
-    std::vector<Measurement<std::chrono::microseconds>> saxpyFastMeasurements;
-    std::vector<Measurement<std::chrono::microseconds>> deviceToHostMeasurements;
+    std::vector<MeasurementSeries<std::chrono::microseconds>> hostToDevice;
+    std::vector<MeasurementSeries<std::chrono::microseconds>> saxpySlow;
+    std::vector<MeasurementSeries<std::chrono::microseconds>> saxpyFast;
+    std::vector<MeasurementSeries<std::chrono::microseconds>> deviceToHost;
 
     for (int size = 1; size < 10e6; size *= 10)
     {
@@ -66,48 +67,60 @@ int main(int argc, char** argv)
         thrust::sequence(Y_h.begin(), Y_h.end());
 
         // copy to device
-        Measurement<std::chrono::microseconds> hostToDeviceMeasurement;
-        cudaDeviceSynchronize();
-        hostToDeviceMeasurement.start();
-        thrust::device_vector<float> X_d(X_h);
-        thrust::device_vector<float> Y_d(Y_h);
-        cudaDeviceSynchronize();
-        hostToDeviceMeasurement.stop();
-        hostToDeviceMeasurements.push_back(hostToDeviceMeasurement);
+        MeasurementSeries<std::chrono::microseconds> hostToDeviceMeasurementSeries;
+        for (int i = 0; i < iterations; ++i)
+        {
+            cudaDeviceSynchronize();
+            hostToDeviceMeasurementSeries.start();
+            thrust::device_vector<float> X_d(X_h);
+            thrust::device_vector<float> Y_d(Y_h);
+            cudaDeviceSynchronize();
+            hostToDeviceMeasurementSeries.stop();
+        }
+        hostToDevice.push_back(hostToDeviceMeasurementSeries);
 
         // saxpy_slow
-        Measurement<std::chrono::microseconds> saxpySlowMeasurement;
-        cudaDeviceSynchronize();
-        saxpySlowMeasurement.start();
-        saxpy_slow(a, X_d, Y_d);
-        cudaDeviceSynchronize();
-        saxpySlowMeasurement.stop();
-        saxpySlowMeasurements.push_back(saxpySlowMeasurement);
+        Measurement<std::chrono::microseconds> saxpySlowMeasurementSeries;
+        for (int i = 0; i < iterations; ++i)
+        {
+            cudaDeviceSynchronize();
+            saxpySlowMeasurementSeries.start();
+            saxpy_slow(a, X_d, Y_d);
+            cudaDeviceSynchronize();
+            saxpySlowMeasurementSeries.stop();
+        }
+        saxpySlow.push_back(saxpySlowMeasurementSeries);
 
         // saxpy_fast
-        Measurement<std::chrono::microseconds> saxpyFastMeasurement;
-        cudaDeviceSynchronize();
-        saxpyFastMeasurement.start();
-        saxpy_fast(a, X_d, Y_d);
-        cudaDeviceSynchronize();
-        saxpyFastMeasurement.stop();
-        saxpyFastMeasurements.push_back(saxpyFastMeasurement);
+        Measurement<std::chrono::microseconds> saxpyFastMeasurementSeries;
+        for (int i = 0; i < iterations; ++i)
+        {
+            cudaDeviceSynchronize();
+            saxpyFastMeasurementSeries.start();
+            saxpy_fast(a, X_d, Y_d);
+            cudaDeviceSynchronize();
+            saxpyFastMeasurementSeries.stop();
+        }
+        saxpyFast.push_back(saxpyFastMeasurementSeries);
 
         // copy to host
-        Measurement<std::chrono::microseconds> deviceToHostMeasurement;
-        cudaDeviceSynchronize();
-        deviceToHostMeasurement.start();
-        X_h = X_d;
-        Y_h = Y_d;
-        cudaDeviceSynchronize();
-        deviceToHostMeasurement.stop();
-        deviceToHostMeasurements.push_back(deviceToHostMeasurement);
+        Measurement<std::chrono::microseconds> deviceToHostMeasurementSeries;
+        for (int i = 0; i < iterations; ++i)
+        {
+            cudaDeviceSynchronize();
+            deviceToHostMeasurementSeries.start();
+            X_h = X_d;
+            Y_h = Y_d;
+            cudaDeviceSynchronize();
+            deviceToHostMeasurementSeries.stop();
+        }
+        deviceToHost.push_back(deviceToHostMeasurementSeries);
     }
 
     CSVWriter csvwriter("saxpy2.csv");
     std::vector<std::string> headerNames {"size", "hostToDevice", "saxpySlow", "saxpyFast", "deviceToHost"};
     csvwriter.setHeaderNames(std::move(headerNames));
-    csvwriter.write(sizes, hostToDeviceMeasurements, saxpySlowMeasurements, saxpyFastMeasurements, deviceToHostMeasurements);
+    csvwriter.write(sizes, hostToDevice, saxpySlow, saxpyFast, deviceToHost);
 
     return 0;
 }

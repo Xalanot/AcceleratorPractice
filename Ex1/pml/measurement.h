@@ -14,7 +14,7 @@ public:
         endTime = std::chrono::high_resolution_clock::now();       
     };
     
-    double getTimeInMilliseconds() const
+    double getTime() const
     {
         auto duration = std::chrono::duration_cast<T>(endTime - startTime);
         return duration.count();
@@ -31,6 +31,47 @@ private:
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const Measurement<T>& measurement)
 {
-    os << measurement.getTimeInMilliseconds();
+    os << measurement.getTime();
+    return os;
+}
+
+template<typename T>
+class MeasurementSeries
+{
+public:
+    void start()
+    {
+        currentMeasurement.start();
+    }
+
+    void end()
+    {
+        currentMeasurement.end();
+        measurements.push_back(currentMeasurement)
+    }
+
+    double getMeanTime()
+    {
+        double totalTime = 0;
+        for (auto const& measurement: measurements)
+        {
+            totalTime += measurement.getTime();
+        }
+
+        return totalTime / measurements.size();
+    }
+
+    template<typename U>
+    friend std::ostream& operator<<(std::ostream& os, const MeasurementSeries<U>& measurementSeries);
+
+private:
+    std::vector<Measurement<T>> measurements;
+    Measurement<T> currentMeasurement;
+}
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const MeasurementSeries<T>& measurementSeries)
+{
+    os << measurementSeries.getMeanTime();
     return os;
 }
