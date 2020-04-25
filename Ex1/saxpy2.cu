@@ -107,7 +107,7 @@ int main(int argc, char** argv)
     CSVWriter csvwriter("saxpy2.csv");
     std::vector<std::string> headerNames {"size", "hostToDevice", "saxpySlow", "saxpyFast", "deviceToHost"};
     csvwriter.setHeaderNames(std::move(headerNames));
-    csvwriter.write(sizes, hostToDeviceMeasurement, saxpySlowMeasurements, saxpyFastMeasurements, deviceToHostMeasurements);
+    csvwriter.write(sizes, hostToDeviceMeasurements, saxpySlowMeasurements, saxpyFastMeasurements, deviceToHostMeasurements);
 
     return 0;
 }
