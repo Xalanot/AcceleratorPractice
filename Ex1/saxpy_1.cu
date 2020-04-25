@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
     thrust::host_vector<float> X_h(N, 1);
     thrust::host_vector<float> Y_h(N);
-    thrust::sequence(Y.begin(), Y.end());
+    thrust::sequence(Y_h.begin(), Y_h.end());
 
     thrust::device_vector<float> X_d(X_h);
     thrust::device_vector<float> Y_d(Y_d);
