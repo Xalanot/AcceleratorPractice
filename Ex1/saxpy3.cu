@@ -101,11 +101,10 @@ int main(int argc, char** argv)
         for (int i = 0; i < iterations; ++i)
         {
             cudaDeviceSynchronize();
-            saxpyIf_FastMeasurement.start();
+            saxpyIf_FastMeasurementSeries.start();
             saxpyIf_fast(a, X_d, Y_d);
             cudaDeviceSynchronize();
-            saxpyIf_FastMeasurement.stop();
-            saxpyIf_FastMeasurements.push_back(saxpyIf_FastMeasurement);
+            saxpyIf_FastMeasurementSeries.stop();
         }
         saxpyIf_Fast.push_back(saxpyIf_FastMeasurementSeries);
 
