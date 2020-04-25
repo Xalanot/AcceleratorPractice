@@ -44,9 +44,9 @@ public:
         currentMeasurement.start();
     }
 
-    void end()
+    void stop()
     {
-        currentMeasurement.end();
+        currentMeasurement.stop();
         measurements.push_back(currentMeasurement)
     }
 
