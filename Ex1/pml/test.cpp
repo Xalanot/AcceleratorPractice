@@ -22,13 +22,13 @@ int main()
         measurement.start();
         std::this_thread::sleep_for(std::chrono::seconds(ele));
         measurement.stop();
-        times.push_back(std::move(measurement));
+        times.push_back((measurement));
 
         Measurement<std::chrono::seconds> measurement2;
         measurement2.start();
         std::this_thread::sleep_for(std::chrono::seconds(2*ele));
         measurement2.stop();
-        times2.push_back(std::move(measurement2));
+        times2.push_back((measurement2));
     }
 
     csvwriter.write(sizes, times, times2);

@@ -51,10 +51,9 @@ int main(int argc, char** argv)
     float a = 2;
 
     std::vector<int> sizes;
-    std::vector<Measurement<std::chrono::milliseconds>> hostToDeviceMeasurements;
-    std::vector<Measurement<std::chrono::milliseconds>> saxpySlowMeasurements;
-    std::vector<Measurement<std::chrono::milliseconds>> saxpyFastMeasurements;
-    std::vector<Measurement<std::chrono::milliseconds>> deviceToHostMeasurements;
+    std::vector<Measurement<std::chrono::seconds>> saxpyFastMeasurements;
+    std::vector<Measurement<std::chrono::seconds>> saxpyFast3Measurements;
+    std::vector<Measurement<std::chrono::seconds>> saxpyIF_FastMeasurements;
 
     for (int size = 1; size < 10e9; size *= 10)
     {
@@ -66,26 +65,11 @@ int main(int argc, char** argv)
         thrust::sequence(Y_h.begin(), Y_h.end());
 
         // copy to device
-        Measurement<std::chrono::milliseconds> hostToDeviceMeasurement;
-        cudaDeviceSynchronize();
-        hostToDeviceMeasurement.start();
         thrust::device_vector<float> X_d(X_h);
         thrust::device_vector<float> Y_d(Y_h);
-        cudaDeviceSynchronize();
-        hostToDeviceMeasurement.stop();
-        hostToDeviceMeasurements.push_back(hostToDeviceMeasurement);
-
-        // saxpy_slow
-        Measurement<std::chrono::milliseconds> saxpySlowMeasurement;
-        cudaDeviceSynchronize();
-        saxpySlowMeasurement.start();
-        saxpy_slow(a, X_d, Y_d);
-        cudaDeviceSynchronize();
-        saxpySlowMeasurement.stop();
-        saxpySlowMeasurements.push_back(saxpySlowMeasurement);
 
         // saxpy_fast
-        Measurement<std::chrono::milliseconds> saxpyFastMeasurement;
+        Measurement<std::chrono::seconds> saxpyFastMeasurement;
         cudaDeviceSynchronize();
         saxpyFastMeasurement.start();
         saxpy_fast(a, X_d, Y_d);
@@ -93,15 +77,12 @@ int main(int argc, char** argv)
         saxpyFastMeasurement.stop();
         saxpyFastMeasurements.push_back(saxpyFastMeasurement);
 
+        // saxpy_fast3
+        Measurement<std::chrono::seconds> saxpyFast3Measurement;
+
         // copy to host
-        Measurement<std::chrono::milliseconds> deviceToHostMeasurement;
-        cudaDeviceSynchronize();
-        deviceToHostMeasurement.start();
         X_h = X_d;
         Y_h = Y_d;
-        cudaDeviceSynchronize();
-        deviceToHostMeasurement.stop();
-        deviceToHostMeasurements.push_back(deviceToHostMeasurement);
     }
 
     CSVWriter csvwriter("saxpy2.csv");
