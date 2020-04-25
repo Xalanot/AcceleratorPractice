@@ -47,7 +47,7 @@ public:
     void stop()
     {
         currentMeasurement.stop();
-        measurements.push_back(currentMeasurement)
+        measurements.push_back(currentMeasurement);
     }
 
     double getMeanTime()
