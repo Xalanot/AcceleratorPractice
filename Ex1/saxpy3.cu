@@ -29,7 +29,6 @@ struct saxpy_functor
 
 struct is_mod10 : public thrust::unary_function<float, bool> {
 	__host__ __device__ bool operator()(const float& x) const {
-        std::cout << x << std::endl;
 		return (int) x % 10 == 0;
 	}
 };
