@@ -4,7 +4,7 @@
 
 int main()
 {
-    csvwriter = CSVWriter("test.csv");
+    CSVWriter csvwriter("test.csv");
     
     std::vector<std::string> headerNames{"sizes", "time"};
     csvwriter.setHeaderNames(headerNames);
