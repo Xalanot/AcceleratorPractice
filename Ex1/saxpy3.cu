@@ -38,7 +38,7 @@ void saxpy_fast(float A, thrust::device_vector<float>& X, thrust::device_vector<
     thrust::transform(X.begin(), X.end(), Y.begin(), Y.begin(), saxpy_functor(A));
 }
 
-void saxpy_fast(float A, thrust::device_vector<float>& X, thrust::device_vector<float>& Y, thrust::device_vector<float>& Z)
+void saxpy_fast3(float A, thrust::device_vector<float>& X, thrust::device_vector<float>& Y, thrust::device_vector<float>& Z)
 {
     thrust::transform(X.begin(), X.end(), Y.begin(), Z.begin(), saxpy_functor(A));
 }
