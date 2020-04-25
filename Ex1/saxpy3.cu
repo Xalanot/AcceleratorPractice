@@ -27,6 +27,13 @@ struct saxpy_functor
     }
 };
 
+struct is_mod10 : public thrust::unary_function<float, bool> {
+	__host__ __device__ bool operator()(const float& x) const {
+        std::cout << x << std::endl;
+		return (int) x % 10 == 0;
+	}
+};
+
 void saxpy_fast(float A, thrust::device_vector<float>& X, thrust::device_vector<float>& Y)
 {
     thrust::transform(X.begin(), X.end(), Y.begin(), Y.begin(), saxpy_functor(A));
@@ -37,16 +44,21 @@ void saxpy_fast(float A, thrust::device_vector<float>& X, thrust::device_vector<
     thrust::transform(X.begin(), X.end(), Y.begin(), Z.begin(), saxpy_functor(A));
 }
 
+void saxpyIf_fast(float A, thrust::device_vector<float>& X, thrust::device_vector<float>& Y)
+{    
+    thrust::transform_if(X.begin(), X.end(), Y.begin(), Y.begin(), Y.begin(), saxpy_functor(A), is_mod10());
+}
+
 int main(int argc, char** argv)
 {
     float a = 2;
 
     std::vector<int> sizes;
-    std::vector<Measurement<std::chrono::seconds>> saxpyFastMeasurements;
-    std::vector<Measurement<std::chrono::seconds>> saxpyFast3Measurements;
-    std::vector<Measurement<std::chrono::seconds>> saxpyIF_FastMeasurements;
+    std::vector<Measurement<std::chrono::microseconds>> saxpyFastMeasurements;
+    std::vector<Measurement<std::chrono::microseconds>> saxpyFast3Measurements;
+    std::vector<Measurement<std::chrono::microseconds>> saxpyIf_FastMeasurements;
 
-    for (int size = 1; size < 10e9; size *= 10)
+    for (int size = 1; size < 10e6; size *= 10)
     {
         sizes.push_back(size);
 
@@ -60,7 +72,7 @@ int main(int argc, char** argv)
         thrust::device_vector<float> Y_d(Y_h);
 
         // saxpy_fast
-        Measurement<std::chrono::seconds> saxpyFastMeasurement;
+        Measurement<std::chrono::microseconds> saxpyFastMeasurement;
         cudaDeviceSynchronize();
         saxpyFastMeasurement.start();
         saxpy_fast(a, X_d, Y_d);
@@ -69,7 +81,7 @@ int main(int argc, char** argv)
         saxpyFastMeasurements.push_back(saxpyFastMeasurement);
 
         // saxpy_fast3
-        Measurement<std::chrono::seconds> saxpyFast3Measurement;
+        Measurement<std::chrono::microseconds> saxpyFast3Measurement;
         thrust::device_vector<float> Z_d(size);
         cudaDeviceSynchronize();
         saxpyFast3Measurement.start();
@@ -78,16 +90,24 @@ int main(int argc, char** argv)
         saxpyFast3Measurement.stop();
         saxpyFast3Measurements.push_back(saxpyFast3Measurement);
 
+        // saxpyIF_fast
+        Measurement<std::chrono::microseconds> saxpyIf_FastMeasurement;
+        cudaDeviceSynchronize();
+        saxpyIf_FastMeasurement.start();
+        saxpyIf_fast(a, X_d, Y_d);
+        cudaDeviceSynchronize();
+        saxpyIf_FastMeasurement.stop();
+        saxpyIf_FastMeasurements.push_back(saxpyIf_FastMeasurement);
 
         // copy to host
         X_h = X_d;
         Y_h = Y_d;
     }
 
-    CSVWriter csvwriter("saxpy2.csv");
-    std::vector<std::string> headerNames {"size", "hostToDevice", "saxpySlow", "saxpyFast", "deviceToHost"};
+    CSVWriter csvwriter("saxpy3.csv");
+    std::vector<std::string> headerNames {"size", "saxpyFast", "saxpyFast3", "saxpyIf_Fast"};
     csvwriter.setHeaderNames(std::move(headerNames));
-    csvwriter.write(sizes, hostToDeviceMeasurements, saxpySlowMeasurements, saxpyFastMeasurements, deviceToHostMeasurements);
+    csvwriter.write(sizes, hostToDeviceMeasurements, saxpyFastMeasurements, saxpyFast3Measurements, saxpyIf_FastMeasurements);
 
     return 0;
 }
