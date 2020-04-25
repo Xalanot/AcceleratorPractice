@@ -5,4 +5,4 @@
 #
 #SBATCH -w mp-capture02
 
-srun ./saxpy1 10
+srun ./saxpy2
