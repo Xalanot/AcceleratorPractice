@@ -32,18 +32,9 @@ void saxpy_fast(float A, thrust::device_vector<float>& X, thrust::device_vector<
     thrust::transform(X.begin(), X.end(), Y.begin(), Y.begin(), saxpy_functor(A));
 }
 
-void saxpy_slow(float A, thrust::device_vector<float>& X, thrust::device_vector<float>& Y)
+void saxpy_fast(float A, thrust::device_vector<float>& X, thrust::device_vector<float>& Y, thrust::device_vector<float>& Z)
 {
-  thrust::device_vector<float> temp(X.size());
-   
-  // temp <- A
-  thrust::fill(temp.begin(), temp.end(), A);
-    
-  // temp <- A * X
-  thrust::transform(X.begin(), X.end(), temp.begin(), temp.begin(), thrust::multiplies<float>());
-
-  // Y <- A * X + Y
-  thrust::transform(temp.begin(), temp.end(), Y.begin(), Y.begin(), thrust::plus<float>());
+    thrust::transform(X.begin(), X.end(), Y.begin(), Z.begin(), saxpy_functor(A));
 }
 
 int main(int argc, char** argv)
@@ -79,6 +70,14 @@ int main(int argc, char** argv)
 
         // saxpy_fast3
         Measurement<std::chrono::seconds> saxpyFast3Measurement;
+        thrust::device_vector<float> Z_d(size);
+        cudaDeviceSynchronize();
+        saxpyFast3Measurement.start();
+        saxpy_fast3(a, X_d, Y_d, Z_d);
+        cudaDeviceSynchronize();
+        saxpyFast3Measurement.stop();
+        saxpyFast3Measurements.push_back(saxpyFast3Measurement);
+
 
         // copy to host
         X_h = X_d;

@@ -51,12 +51,12 @@ int main(int argc, char** argv)
     float a = 2;
 
     std::vector<int> sizes;
-    std::vector<Measurement<std::chrono::milliseconds>> hostToDeviceMeasurements;
-    std::vector<Measurement<std::chrono::milliseconds>> saxpySlowMeasurements;
-    std::vector<Measurement<std::chrono::milliseconds>> saxpyFastMeasurements;
-    std::vector<Measurement<std::chrono::milliseconds>> deviceToHostMeasurements;
+    std::vector<Measurement<std::chrono::microseconds>> hostToDeviceMeasurements;
+    std::vector<Measurement<std::chrono::microseconds>> saxpySlowMeasurements;
+    std::vector<Measurement<std::chrono::microseconds>> saxpyFastMeasurements;
+    std::vector<Measurement<std::chrono::microseconds>> deviceToHostMeasurements;
 
-    for (int size = 1; size < 10e7; size *= 10)
+    for (int size = 1; size < 10e6; size *= 10)
     {
         sizes.push_back(size);
 
@@ -66,7 +66,7 @@ int main(int argc, char** argv)
         thrust::sequence(Y_h.begin(), Y_h.end());
 
         // copy to device
-        Measurement<std::chrono::milliseconds> hostToDeviceMeasurement;
+        Measurement<std::chrono::microseconds> hostToDeviceMeasurement;
         cudaDeviceSynchronize();
         hostToDeviceMeasurement.start();
         thrust::device_vector<float> X_d(X_h);
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
         hostToDeviceMeasurements.push_back(hostToDeviceMeasurement);
 
         // saxpy_slow
-        Measurement<std::chrono::milliseconds> saxpySlowMeasurement;
+        Measurement<std::chrono::microseconds> saxpySlowMeasurement;
         cudaDeviceSynchronize();
         saxpySlowMeasurement.start();
         saxpy_slow(a, X_d, Y_d);
@@ -85,7 +85,7 @@ int main(int argc, char** argv)
         saxpySlowMeasurements.push_back(saxpySlowMeasurement);
 
         // saxpy_fast
-        Measurement<std::chrono::milliseconds> saxpyFastMeasurement;
+        Measurement<std::chrono::microseconds> saxpyFastMeasurement;
         cudaDeviceSynchronize();
         saxpyFastMeasurement.start();
         saxpy_fast(a, X_d, Y_d);
@@ -94,7 +94,7 @@ int main(int argc, char** argv)
         saxpyFastMeasurements.push_back(saxpyFastMeasurement);
 
         // copy to host
-        Measurement<std::chrono::milliseconds> deviceToHostMeasurement;
+        Measurement<std::chrono::microseconds> deviceToHostMeasurement;
         cudaDeviceSynchronize();
         deviceToHostMeasurement.start();
         X_h = X_d;
