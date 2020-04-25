@@ -17,7 +17,7 @@ int main()
 
     for (auto const& ele : sizes)
     {
-        Measurement measurement;
+        Measurement<std::chrono::seconds> measurement;
         measurement.start();
         std::this_thread::sleep_for(std::chrono::seconds(ele));
         measurement.stop();
