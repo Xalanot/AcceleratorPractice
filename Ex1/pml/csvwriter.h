@@ -21,17 +21,12 @@ public:
     void write(First const& first, Args const&... args)
     {
         openFile();
-        if (!checkSizes(first, args...))
-        {
-            file << "Contents differ in sizes" << std::endl;
-            return;
-        }
-
         printHeader();
         
         for (size_t i = 0; i < first.size(); ++i)
         {
             printCSVLine(file, seperator, first[i], args[i]...);
+            file << std::endl;
         }
 
         closeFile();
