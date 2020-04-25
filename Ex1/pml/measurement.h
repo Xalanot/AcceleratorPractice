@@ -67,7 +67,7 @@ public:
 private:
     std::vector<Measurement<T>> measurements;
     Measurement<T> currentMeasurement;
-}
+};
 
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const MeasurementSeries<T>& measurementSeries)
