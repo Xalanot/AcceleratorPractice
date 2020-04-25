@@ -55,7 +55,7 @@ int main(int argc, char** argv)
     thrust::sequence(Y_h.begin(), Y_h.end());
 
     thrust::device_vector<float> X_d(X_h);
-    thrust::device_vector<float> Y_d(Y_d);
+    thrust::device_vector<float> Y_d(Y_h);
 
     saxpy_fast(3, X_d, Y_d);
 
