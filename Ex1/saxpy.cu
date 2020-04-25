@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
     thrust::host_vector<float> X(N, 1);
     thrust::host_vector<float> Y(N);
-    thrust::sequence<Y.begin(), Y.end());
+    thrust::sequence(Y.begin(), Y.end());
 
     saxpy_fast(3, X, Y);
 
