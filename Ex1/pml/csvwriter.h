@@ -57,7 +57,7 @@ private:
         file << std::endl;
     }
 
-    ofstream file;
+    std::ofstream file;
     std::string filename;
     std::string seperator;
     std::vector<std::string> headerNames;
