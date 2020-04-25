@@ -12,7 +12,7 @@ int main()
     std::vector<int> sizes = {10, 20};
     std::vector<float> times = {2.4, 8.9};
 
-    csvwriter.writer(sizes, times);
+    csvwriter.write(sizes, times);
 
     return 0;
 }
