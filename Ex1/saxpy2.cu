@@ -82,7 +82,7 @@ int main(int argc, char** argv)
         hostToDevice.push_back(hostToDeviceMeasurementSeries);
 
         // saxpy_slow
-        Measurement<std::chrono::microseconds> saxpySlowMeasurementSeries;
+        MeasurementSeries<std::chrono::microseconds> saxpySlowMeasurementSeries;
         for (int i = 0; i < iterations; ++i)
         {
             cudaDeviceSynchronize();
@@ -94,7 +94,7 @@ int main(int argc, char** argv)
         saxpySlow.push_back(saxpySlowMeasurementSeries);
 
         // saxpy_fast
-        Measurement<std::chrono::microseconds> saxpyFastMeasurementSeries;
+        MeasurementSeries<std::chrono::microseconds> saxpyFastMeasurementSeries;
         for (int i = 0; i < iterations; ++i)
         {
             cudaDeviceSynchronize();
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
         saxpyFast.push_back(saxpyFastMeasurementSeries);
 
         // copy to host
-        Measurement<std::chrono::microseconds> deviceToHostMeasurementSeries;
+        MeasurementSeries<std::chrono::microseconds> deviceToHostMeasurementSeries;
         for (int i = 0; i < iterations; ++i)
         {
             cudaDeviceSynchronize();
