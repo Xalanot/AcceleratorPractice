@@ -9,7 +9,7 @@ bool checkSizes(Args const&... args)
 template<typename First, typename... Args>
 void printCSVLine(std::ofstream& file, std::string const& seperator, First const& first, Args const&... args)
 {
-    auto print_with_seperator = [](ofstream& file, const std::string& seperator, const auto& arg) -> const auto& {
+    auto print_with_seperator = [](std::ofstream& file, const std::string& seperator, const auto& arg) -> const auto& {
         file << seperator;
         return arg;
     };
