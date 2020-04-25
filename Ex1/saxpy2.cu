@@ -56,7 +56,7 @@ int main(int argc, char** argv)
     std::vector<Measurement<std::chrono::milliseconds>> saxpyFastMeasurements;
     std::vector<Measurement<std::chrono::milliseconds>> deviceToHostMeasurements;
 
-    for (int size = 1; size < 10e9; size *= 10)
+    for (int size = 1; size < 10e7; size *= 10)
     {
         sizes.push_back(size);
 
