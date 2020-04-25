@@ -14,6 +14,6 @@ void printCSVLine(std::ofstream& file, std::string const& seperator, First const
         return arg;
     };
     
-    std::cout << first;
+    file << first;
     (file << ... << print_with_seperator(file, seperator, args)) << std::endl;
 }
