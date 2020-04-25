@@ -50,7 +50,7 @@ public:
         measurements.push_back(currentMeasurement);
     }
 
-    double getMeanTime()
+    double getMeanTime() const
     {
         double totalTime = 0;
         for (auto const& measurement: measurements)
