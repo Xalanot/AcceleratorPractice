@@ -68,12 +68,14 @@ int main(int argc, char** argv)
 
         // copy to device
         MeasurementSeries<std::chrono::microseconds> hostToDeviceMeasurementSeries;
+        thrust::device_vector<float> X_d;
+        thrust::device_vector<float> Y_d;
         for (int i = 0; i < iterations; ++i)
         {
             cudaDeviceSynchronize();
             hostToDeviceMeasurementSeries.start();
-            thrust::device_vector<float> X_d(X_h);
-            thrust::device_vector<float> Y_d(Y_h);
+            X_d = X_h;
+            Y_d = Y_h;
             cudaDeviceSynchronize();
             hostToDeviceMeasurementSeries.stop();
         }
