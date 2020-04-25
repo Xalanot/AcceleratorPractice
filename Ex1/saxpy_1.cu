@@ -50,11 +50,14 @@ int main(int argc, char** argv)
 
     int N = atoi(argv[1]);
 
-    thrust::host_vector<float> X(N, 1);
-    thrust::host_vector<float> Y(N);
+    thrust::host_vector<float> X_h(N, 1);
+    thrust::host_vector<float> Y_h(N);
     thrust::sequence(Y.begin(), Y.end());
 
-    saxpy_fast(3, X, Y);
+    thrust::device_vector<float> X_d(X_h);
+    thrust::device_vector<float> Y_d(Y_d);
+
+    saxpy_fast(3, X_d, Y_d);
 
     return 0;
 }
