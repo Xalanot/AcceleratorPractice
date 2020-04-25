@@ -39,7 +39,7 @@ public:
 private:
     void openFile()
     {
-        file.open(filename, ios::out | ios::trunc);
+        file.open(filename, std::ios::out | std::ios::trunc);
     }
 
     void closeFile()
