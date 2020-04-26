@@ -45,3 +45,16 @@ void fillRandomValueVector(thrust::device_vector<T>& valueVec, int maxValue)
         valueVec[i] = rng_value(rng_i);
     }
 }
+
+bool checkResults(thrust::device_vector<int> const& indexVector1, 
+                  thrust::device_vector<float> const& valueVector1,
+                  thrust::device_vector<int> const& indexVector2,
+                  thrust::device_vector<float> const& valueVector2)
+{
+    if (indexVector1 == indexVector2 && valueVector1 == valueVector2)
+    {
+        return true;
+    }
+
+    return false;
+}
