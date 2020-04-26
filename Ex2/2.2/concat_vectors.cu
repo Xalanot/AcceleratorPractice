@@ -36,16 +36,5 @@ int main()
 
     int size = concatVec.size();
 
-    std::cout << "device size: " << size << std::endl;
-
-    thrust::host_vector<int> vec_h = concatVec;
-
-    for (auto const& ele : vec_h)
-    {
-        std::cout << ele << std::endl;
-    }
-
-    std::cout << "size: " << vec_h.size() << std::endl;
-
     return 0;
 }

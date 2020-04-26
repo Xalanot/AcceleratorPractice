@@ -3,8 +3,10 @@
 #include <thrust/merge.h>
 #include <thrust/reduce.h>
 #include <thrust/inner_product.h>
+
 #include <cassert>
 #include <iostream>
+#include <vector>
 
 template <typename IndexVector,
           typename ValueVector>
@@ -74,6 +76,51 @@ void sum_sparse_vectors(const IndexVector1& A_index,
                           thrust::plus<ValueType>());
 }
 
+template<typename T>
+thrust::device_vector<T> concatInSingleVector(std::vector<thrust::device_vector<T>> const& vectors)
+{
+    // calculate final size
+    size_t size = 0;
+    for (auto const& vec : vectors)
+    {
+        size += vec.size();
+    }
+
+    thrust::device_vector<T> returnVec(size);
+
+    size_t offset = 0;
+    for (auto const& vec: vectors)
+    {
+        thrust::copy(vec.begin(), vec.end(), returnVec.begin() + offset);
+        offset += vec.size();
+    }
+
+    return returnVec;
+}
+
+template<typnemae IndexVectors,
+         typename ValueVectors,
+         typename IndexVector,
+         typename ValueVector>
+int sum_multiple_sparse_vectors(IndexVectors const& indexVectors,
+                                 ValueVectors const& valueVectors,
+                                 IndexVector const& C_index,
+                                 ValueVector const& C_value)
+{
+    // first we want add all index and value vectors in a single vector
+    IndexVector tmp_index = concatInSingleVector(indexVectors);
+    ValueVector tmp_value = concatInSingleVector(valueVectors);
+
+    // sort by keys
+    thrust::sort_by_key(thrust::device, tmp_index.begin(), tmp_index.begin(), tmp_value.begin());
+
+    // copy unique
+    indexVector unique_keys;
+    thrust::unique_copy(tmp_index.begin(), tmp_index.end(), unique_keys.begin(), thrust::equal_to<int>());
+
+    return unique_copy.size();
+}
+
 int main(void)
 {
     // initialize sparse vector A with 4 elements
@@ -97,9 +144,19 @@ int main(void)
     // compute sparse vector C = A + B
     thrust::device_vector<int>   C_index;
     thrust::device_vector<float> C_value;
+
+    std::vector vectors_index {A_index, B_index};
+    std::vector vectors_value {A_value, B_value};
+    thrust::device_vector<int>   C_index2;
+    thrust::device_vector<float> C_value2;
     
     sum_sparse_vectors(A_index, A_value, B_index, B_value, C_index, C_value);
 
+    auto size = sum_multiple_sparse_vectors(vectors_index, vectors_value, C_index2, C_value2);
+    if (size == C_index.size())
+    {
+        std::cout << "same size" << std::endl;
+    }
     std::cout << "Computing C = A + B for sparse vectors A and B" << std::endl;
     std::cout << "A "; print_sparse_vector(A_index, A_value);
     std::cout << "B "; print_sparse_vector(B_index, B_value);
