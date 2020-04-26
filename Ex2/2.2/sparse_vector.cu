@@ -87,7 +87,7 @@ void sum_sparse_vectors(IndexVectors const& indexVectors,
 {
     sum_sparse_vectors(indexVectors[0], valueVectors[0], indexVectors[1], valueVectors[1], C_index, C_value);
 
-    for (size_t i = 2; i < indexVectors.size())
+    for (size_t i = 2; i < indexVectors.size(); ++i)
     {
         sum_sparse_vectors(indexVectors[i], valueVectors[i], C_index, C_value, C_index, C_value);
     }
