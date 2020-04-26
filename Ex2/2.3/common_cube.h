@@ -31,4 +31,6 @@ thrust::device_vector<vec3> createCube(int xOffset, int yOffset, int zOffset)
     cube[21] = vec3(0 + xOffset, 1 + yOffset, 1 + zOffset);
     cube[22] = vec3(1 + xOffset, 0 + yOffset, 1 + zOffset);
     cube[23] = vec3(1 + xOffset, 1 + yOffset, 1 + zOffset);
+
+    return cube;
 }
