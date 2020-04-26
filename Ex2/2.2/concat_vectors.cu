@@ -4,7 +4,7 @@
 #include <iostream>
 
 template<typename T>
-size_z concatInSingleVector(thrust::device_vector<thrust::device_vector<T>> const& vectors)
+size_t concatInSingleVector(thrust::device_vector<thrust::device_vector<T>> const& vectors)
 {
     // calculate final size
     size_t size = 0;
