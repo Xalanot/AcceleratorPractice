@@ -146,7 +146,7 @@ int main(void)
     thrust::device_vector<float> C_value;
 
     std::vector<thrust::device_vector<int>> vectors_index {A_index, B_index};
-    std::vector<thrust::device_vector<int>> vectors_value {A_value, B_value};
+    std::vector<thrust::device_vector<float>> vectors_value {A_value, B_value};
     thrust::device_vector<int>   C_index2;
     thrust::device_vector<float> C_value2;
     
