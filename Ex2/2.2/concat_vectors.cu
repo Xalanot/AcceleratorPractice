@@ -28,13 +28,13 @@ thrust::device_vector<T> concatInSingleVector(thrust::device_vector<T> const& ve
 
 int main()
 {
-    thrust::device_vector vec_d {1, 2, 3};
-    thrust::device_vector vec_d2 {4, 5, 6};
-    thrust::device_vector vectors = {vec_d, vec_d2};
+    thrust::device_vector<int> vec_d {1, 2, 3};
+    thrust::device_vector<int> vec_d2 {4, 5, 6};
+    thrust::device_vector<thrust::device_vector<int>> vectors = {vec_d, vec_d2};
 
     auto concatVec = concatInSingleVector(vectors);
 
-    thrust::host_vector vec_h = concatVec;
+    thrust::host_vector<int> vec_h = concatVec;
 
     for (auto const& ele : vec_h)
     {
