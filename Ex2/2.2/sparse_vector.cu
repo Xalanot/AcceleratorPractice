@@ -31,8 +31,8 @@ int main(void)
         std::vector<thrust::device_vector<int>> indexVectors(number_vectors);
         for (size_t i = 0; i < indexVectors.size(); ++i)
         {
-            thrust::device_vector<int> tmpIndex(10);
-            fillRandomIndexVector(tmpIndex, 20);
+            thrust::device_vector<int> tmpIndex(10000);
+            fillRandomIndexVector(tmpIndex, 100000);
             indexVectors[i] = tmpIndex;
         }
 
@@ -40,7 +40,7 @@ int main(void)
         std::vector<thrust::device_vector<float>> valueVectors(number_vectors);
         for (size_t i = 0; i < valueVectors.size(); ++i)
         {
-            thrust::device_vector<float> tmpValue(10);
+            thrust::device_vector<float> tmpValue(10000);
             fillRandomValueVector(tmpValue, 10);
             valueVectors[i] = tmpValue;
         }
