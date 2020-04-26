@@ -35,6 +35,10 @@ int main()
 
     auto concatVec = concatInSingleVector<int>(vectors);
 
+    int size = concatVec.size();
+
+    std::cout << "device size: " << size << std::endl;
+
     thrust::host_vector<int> vec_h = concatVec;
 
     for (auto const& ele : vec_h)
