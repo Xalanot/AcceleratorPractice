@@ -98,7 +98,7 @@ thrust::device_vector<T> concatInSingleVector(std::vector<thrust::device_vector<
     return returnVec;
 }
 
-template<typnemae IndexVectors,
+template<typename IndexVectors,
          typename ValueVectors,
          typename IndexVector,
          typename ValueVector>
