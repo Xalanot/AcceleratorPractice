@@ -98,6 +98,25 @@ thrust::device_vector<T> concatInSingleVector(std::vector<thrust::device_vector<
     return returnVec;
 }
 
+template<typename IndexVector>
+size_t countUniqueElements(IndexVector const& vector)
+{
+    int currentIndex = -1;
+    size_t = count;
+    for (int i = 0; i < vector.size(); ++i)
+    {
+        int index = vector[i];
+        if (index > currentIndex)
+        {
+            count++;
+            currentIndex = index;
+        }
+    }
+
+    return count;
+}
+
+
 template<typename IndexVectors,
          typename ValueVectors,
          typename IndexVector,
@@ -114,11 +133,11 @@ int sum_multiple_sparse_vectors(IndexVectors const& indexVectors,
     // sort by keys
     thrust::sort_by_key(thrust::device, tmp_index.begin(), tmp_index.begin(), tmp_value.begin());
 
-    // copy unique
-    IndexVector unique_keys;
-    thrust::unique_copy(tmp_index.begin(), tmp_index.end(), unique_keys.begin(), thrust::equal_to<int>());
+    // get unique index size
+    size_t unique_index_size = countUniqueElements(indexVectors);
 
-    return unique_keys.size();
+    return unique_index_size;
+    
 }
 
 int main(void)
