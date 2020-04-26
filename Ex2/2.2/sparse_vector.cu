@@ -121,7 +121,7 @@ template<typename IndexVectors,
          typename ValueVectors,
          typename IndexVector,
          typename ValueVector>
-auto sum_multiple_sparse_vectors(IndexVectors const& indexVectors,
+void sum_multiple_sparse_vectors(IndexVectors const& indexVectors,
                                  ValueVectors const& valueVectors,
                                  IndexVector const& C_index,
                                  ValueVector const& C_value)
@@ -136,7 +136,17 @@ auto sum_multiple_sparse_vectors(IndexVectors const& indexVectors,
     // get unique index size
     size_t unique_index_size = countUniqueElements(tmp_index);
 
-    return unique_index_size;
+    // allocate space for output
+    C_index.resize(unique_index_size);
+    C_value.resize(unique_index_size);
+
+    // sum values with the same index
+    thrust::reduce_by_key(tmp_index.begin(), tmp_index.end(),
+                          tmp_value.begin(),
+                          C_index.begin(),
+                          C_value.begin(),
+                          thrust::equal_to<IndexType>(),
+                          thrust::plus<ValueType>());
 }
 
 int main(void)
@@ -169,14 +179,12 @@ int main(void)
     thrust::device_vector<float> C_value2;
     
     sum_sparse_vectors(A_index, A_value, B_index, B_value, C_index, C_value);
-
-    auto size = sum_multiple_sparse_vectors(vectors_index, vectors_value, C_index2, C_value2);
-    std::cout << "c size: " << C_index.size() << std::endl;
-    std::cout << "size: " << size << std::endl;
+    sum_multiple_sparse_vectors(vectors_index, vectors_value, C_index2, C_value2);
 
     std::cout << "Computing C = A + B for sparse vectors A and B" << std::endl;
     std::cout << "A "; print_sparse_vector(A_index, A_value);
     std::cout << "B "; print_sparse_vector(B_index, B_value);
     std::cout << "C "; print_sparse_vector(C_index, C_value);
+    std::cout << "C2 "; print_sparse_vector(C_index2, C_value2);
 }
 
