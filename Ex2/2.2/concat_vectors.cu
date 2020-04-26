@@ -33,7 +33,8 @@ int main()
 {
     thrust::device_vector<int> vec_d(3, 1);
     thrust::device_vector<int> vec_d2(4, 2);
-    thrust::device_vector<thrust::device_vector<int>> vectors = {vec_d, vec_d2};
+    thrust::device_vector<thrust::device_vector<int>> vectors;
+    vectors.push_back(vec_d, vec_d2);
 
     auto concatVec = concatInSingleVector(vectors);
 
