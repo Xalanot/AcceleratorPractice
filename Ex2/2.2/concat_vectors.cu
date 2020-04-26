@@ -4,7 +4,7 @@
 #include <iostream>
 
 template<typename T>
-thrust::device_vector<T> concatInSingleVector(thrust::device_vector<thrust::device_vector<T>> const& vectors)
+size_z concatInSingleVector(thrust::device_vector<thrust::device_vector<T>> const& vectors)
 {
     // calculate final size
     size_t size = 0;
@@ -13,6 +13,9 @@ thrust::device_vector<T> concatInSingleVector(thrust::device_vector<thrust::devi
         size += vectors[i].size();
     }
 
+    return size;
+
+    /*
     thrust::device_vector<T> returnVec;
     returnVec.reserve(size);
 
@@ -23,7 +26,7 @@ thrust::device_vector<T> concatInSingleVector(thrust::device_vector<thrust::devi
         offset += vectors[i].size();
     }
 
-    return returnVec;
+    return returnVec;*/
 }
 
 int main()
@@ -34,12 +37,14 @@ int main()
 
     auto concatVec = concatInSingleVector(vectors);
 
-    thrust::host_vector<int> vec_h = concatVec;
+    std::cout << concatVec << std::endl;
+
+    /*thrust::host_vector<int> vec_h = concatVec;
 
     for (auto const& ele : vec_h)
     {
         std::cout << ele << std::endl;
     }
 
-    return 0;
+    return 0;*/
 }
