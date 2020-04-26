@@ -34,7 +34,7 @@ int main()
 {
     thrust::device_vector<int> vec_d(3, 1);
     thrust::device_vector<int> vec_d2(4, 2);
-    std::vector<<thrust::device_vector<int>> vectors{vec_d, vec_d2};
+    std::vector<thrust::device_vector<int>> vectors{vec_d, vec_d2};
     /*vectors[0] = vec_d;
     vectors[1] = vec_d2;
 
