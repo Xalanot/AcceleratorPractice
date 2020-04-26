@@ -126,6 +126,9 @@ void sum_multiple_sparse_vectors(IndexVectors const& indexVectors,
                                  IndexVector const& C_index,
                                  ValueVector const& C_value)
 {
+    typedef typename IndexVector::value_type  IndexType;
+    typedef typename ValueVector::value_type  ValueType;
+
     // first we want add all index and value vectors in a single vector
     IndexVector tmp_index = concatInSingleVector(indexVectors);
     ValueVector tmp_value = concatInSingleVector(valueVectors);
