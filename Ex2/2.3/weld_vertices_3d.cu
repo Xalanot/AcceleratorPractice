@@ -90,6 +90,10 @@ int main(void)
     }
     for(size_t i = 0; i < indices.size(); i++)
     {
+        if (i % 4 == 0)
+        {
+            std::cout << "new quad" << std::endl;
+        }
         std::cout << " indices[" << i << "] = " << indices[i] << std::endl;
     }
 
