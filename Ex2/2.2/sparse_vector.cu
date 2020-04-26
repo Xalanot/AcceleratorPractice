@@ -73,7 +73,7 @@ int main(void)
         }
         newTimes.push_back(measurementNew);
         
-        if (checkResults(result_index_old, result_value_old, result_index_new, result_value_new))
+        if (!checkResults(result_index_old, result_value_old, result_index_new, result_value_new))
         {
             std::cout << "result is wrong" << std::endl;
         }
