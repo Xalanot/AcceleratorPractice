@@ -25,7 +25,7 @@ void fillRandomIndexVector(thrust::device_vector<int>& indexVec, int maxIndex)
     thrust::minstd_rand rng_i;
     thrust::uniform_int_distribution<int> rng_index(0, maxIndex);
 
-    std::set<int> indexSet();
+    std::set<int> indexSet;
     while (indexSet.size() != indexVec.size())
     {
         int tmpIndex = rng_index(rng_i);
