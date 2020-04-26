@@ -2,6 +2,7 @@
 #include <thrust/host_vector.h>
 
 #include <iostream>
+#include <vector>
 
 /*template<typename T>
 size_t concatInSingleVector(thrust::device_vector<thrust::device_vector<T>> const& vectors)
@@ -33,7 +34,7 @@ int main()
 {
     thrust::device_vector<int> vec_d(3, 1);
     thrust::device_vector<int> vec_d2(4, 2);
-    thrust::device_vector<thrust::device_vector<int>> vectors(2);
+    std::vector<<thrust::device_vector<int>> vectors{vec_d, vec_d2};
     /*vectors[0] = vec_d;
     vectors[1] = vec_d2;
 
