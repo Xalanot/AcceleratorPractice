@@ -170,7 +170,7 @@ int main(void)
     
     sum_sparse_vectors(A_index, A_value, B_index, B_value, C_index, C_value);
 
-    auto vec = sum_multiple_sparse_vectors(vectors_index, vectors_value, C_index2, C_value2);
+    auto size = sum_multiple_sparse_vectors(vectors_index, vectors_value, C_index2, C_value2);
     std::cout << "c size: " << C_index.size() << std::endl;
     std::cout << "size: " << size << std::endl;
 
