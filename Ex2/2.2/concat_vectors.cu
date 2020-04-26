@@ -39,9 +39,9 @@ int main()
 
     thrust::host_vector<int> vec_h = concatVec;
 
-    for (auto const& ele : vec_h)
+    for (size_t i = 0; i < vec_h.size(); ++i)
     {
-        std::cout << ele << std::endl;
+        std::cout << vec_h[i] << std::endl;
     }
 
     return 0;
