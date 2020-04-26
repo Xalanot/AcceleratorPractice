@@ -51,10 +51,18 @@ bool checkResults(thrust::device_vector<int> const& indexVector1,
                   thrust::device_vector<int> const& indexVector2,
                   thrust::device_vector<float> const& valueVector2)
 {
-    if (indexVector1 == indexVector2 && valueVector1 == valueVector2)
+    if (indexVector1 != indexVector2)
     {
-        return true;
+        return false;
     }
 
-    return false;
+    for (size_t i = 0; i < valueVector1.size(); ++i)
+    {
+        if ( (valueVector1[i] - valueVector2[i]) > 1e-3)
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
