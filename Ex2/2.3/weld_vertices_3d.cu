@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#include "common_cube.h"
+
 /*
  * This example "welds" triangle vertices together by taking as
  * input "triangle soup" and eliminating redundant vertex positions
@@ -39,32 +41,7 @@ typedef thrust::tuple<float,float,float> vec3;
 int main(void)
 {
     // allocate memory for input mesh representation
-    thrust::device_vector<vec3> input(24);
-
-    input[0] = vec3(0,0,0);  // First Quad Left
-    input[1] = vec3(0,0,1);
-    input[2] = vec3(0,1,0);
-    input[3] = vec3(0,1,1);  
-    input[4] = vec3(0,0,0); // Second Quad Front
-    input[5] = vec3(0,0,1);
-    input[6] = vec3(1,0,0);  
-    input[7] = vec3(1,0,1);
-    input[8] = vec3(1,0,0); // Third Quad Right
-    input[9] = vec3(1,0,1);
-    input[10] = vec3(1,1,0);
-    input[11] = vec3(1,1,1);
-    input[12] = vec3(0,1,0); // Forth Quad Back
-    input[13] = vec3(0,1,1);
-    input[14] = vec3(1,1,0);
-    input[15] = vec3(1,1,1);
-    input[16] = vec3(0,0,0); // Fith Quad Bottom
-    input[17] = vec3(0,1,0);
-    input[18] = vec3(1,0,0);
-    input[19] = vec3(1,1,0);
-    input[20] = vec3(0,0,1); // Sixth Quad Top
-    input[21] = vec3(0,1,1);
-    input[22] = vec3(1,0,1);
-    input[23] = vec3(1,1,1);
+    thrust::device_vector<vec3> input = createCube(-1, 0, 0);
 
     // allocate space for output mesh representation
     thrust::device_vector<vec3> vertices = input;
