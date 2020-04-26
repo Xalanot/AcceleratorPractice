@@ -42,5 +42,7 @@ int main()
         std::cout << ele << std::endl;
     }
 
+    std::cout << "size: " << vec_h.size() << std::endl;
+
     return 0;
 }
