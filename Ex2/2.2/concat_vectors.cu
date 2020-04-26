@@ -35,13 +35,11 @@ int main()
 
     auto concatVec = concatInSingleVector<int>(vectors);
 
-    std::cout << concatVec << std::endl;
-
     thrust::host_vector<int> vec_h = concatVec;
 
-    for (size_t i = 0; i < vec_h.size(); ++i)
+    for (auto const& ele : vec_h)
     {
-        std::cout << vec_h[i] << std::endl;
+        std::cout << ele << std::endl;
     }
 
     return 0;
