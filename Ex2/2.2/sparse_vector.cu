@@ -123,8 +123,8 @@ template<typename IndexVectors,
          typename ValueVector>
 void sum_multiple_sparse_vectors(IndexVectors const& indexVectors,
                                  ValueVectors const& valueVectors,
-                                 IndexVector const& C_index,
-                                 ValueVector const& C_value)
+                                 IndexVector& C_index,
+                                 ValueVector& C_value)
 {
     typedef typename IndexVector::value_type  IndexType;
     typedef typename ValueVector::value_type  ValueType;
