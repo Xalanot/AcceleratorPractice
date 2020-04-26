@@ -8,19 +8,19 @@ thrust::device_vector<T> concatInSingleVector(thrust::device_vector<T> const& ve
 {
     // calculate final size
     size_t size = 0;
-    for (auto const& vec : vectors)
+    for (size_t i = 0; i < vectors.size(), ++i)
     {
-        size += vec.size();
+        size += vectors[i].size();
     }
 
     thrust::device_vector<T> returnVec;
     returnVec.reserve(size);
 
     size_t offset = 0;
-    for (auto const& vec: vectors)
+    for (size_t i = 0; i < vectors.size(), ++i)
     {
-        thrust::copy(vec.begin(), vec.end(), returnVec.begin() + offset);
-        offset += vec.size();
+        thrust::copy(vectors[i].begin(), vectors[i].end(), returnVec.begin() + offset);
+        offset += vectors[i].size();
     }
 
     return returnVec;
