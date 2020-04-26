@@ -5,7 +5,7 @@
 #include <vector>
 
 template<typename T>
-size_t concatInSingleVector(std::vector<thrust::device_vector<T>> const& vectors)
+thrust::device_vector<T> concatInSingleVector(std::vector<thrust::device_vector<T>> const& vectors)
 {
     // calculate final size
     size_t size = 0;
@@ -13,9 +13,8 @@ size_t concatInSingleVector(std::vector<thrust::device_vector<T>> const& vectors
     {
         size += vec.size();
     }
-    return size;
-    /*thrust::device_vector<T> returnVec;
-    returnVec.reserve(size);
+
+    thrust::device_vector<T> returnVec(size);
 
     size_t offset = 0;
     for (auto const& vec: vectors)
@@ -24,7 +23,7 @@ size_t concatInSingleVector(std::vector<thrust::device_vector<T>> const& vectors
         offset += vec.size();
     }
 
-    return returnVec;*/
+    return returnVec;
 }
 
 int main()
@@ -34,8 +33,8 @@ int main()
     std::vector<thrust::device_vector<int>> vectors{vec_d, vec_d2};
 
     auto concatVec = concatInSingleVector<int>(vectors);
-    std::cout << concatVec << std::endl;
-    /*int size = concatVec.size();
+
+    int size = concatVec.size();
 
     std::cout << "device size: " << size << std::endl;
 
