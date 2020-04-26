@@ -76,6 +76,24 @@ void sum_sparse_vectors(const IndexVector1& A_index,
                           thrust::plus<ValueType>());
 }
 
+template <typename IndexVectors,
+          typename ValueVectors,
+          typename IndexVector,
+          typename ValueVector>
+void sum_sparse_vectors(IndexVectors const& indexVectors,
+                        ValueVectors const& valueVectors,
+                        IndexVector& C_index,
+                        ValueVector& C_value)
+{
+    sum_sparse_vectors(indexVectors[0], valueVectors[0], indexVectors[1], valueVectors[1], C_index, C_value);
+
+    for (size_t i = 2; i < indexVectors.size())
+    {
+        sum_sparse_vectors(indexVectors[i], valueVectors[i], C_index, C_value, C_index, C_value);
+    }
+
+}
+
 template<typename T>
 thrust::device_vector<T> concatInSingleVector(std::vector<thrust::device_vector<T>> const& vectors)
 {
@@ -172,16 +190,25 @@ int main(void)
     B_index[4] = 7;  B_value[4] = 90;
     B_index[5] = 8;  B_value[5] = 10;
 
+    // initalize sparse vector D with 5 elements
+    thrust::device_vector<int>   D_index(5);
+    thrust::device_vector<float> D_value(5);
+    D_index[0] = 1;  D_value[0] = 50;
+    D_index[1] = 2;  D_value[1] = 30;
+    D_index[2] = 5;  D_value[2] = 80;
+    D_index[3] = 6;  D_value[3] = 30;
+    D_index[4] = 7;  D_value[4] = 90;
+
     // compute sparse vector C = A + B
     thrust::device_vector<int>   C_index;
     thrust::device_vector<float> C_value;
 
-    std::vector<thrust::device_vector<int>> vectors_index {A_index, B_index};
-    std::vector<thrust::device_vector<float>> vectors_value {A_value, B_value};
+    std::vector<thrust::device_vector<int>> vectors_index {A_index, B_index, D_index};
+    std::vector<thrust::device_vector<float>> vectors_value {A_value, B_value, D_value};
     thrust::device_vector<int>   C_index2;
     thrust::device_vector<float> C_value2;
     
-    sum_sparse_vectors(A_index, A_value, B_index, B_value, C_index, C_value);
+    sum_sparse_vectors(vectors_index, vectors_value, C_index, C_value);
     sum_multiple_sparse_vectors(vectors_index, vectors_value, C_index2, C_value2);
 
     std::cout << "Computing C = A + B for sparse vectors A and B" << std::endl;
