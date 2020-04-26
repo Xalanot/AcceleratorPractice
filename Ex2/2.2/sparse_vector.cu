@@ -79,7 +79,7 @@ int main(void)
         }
     }
 
-    CSVWriter csvwriter("sparse.csv")
+    CSVWriter csvwriter("sparse.csv");
     std::vector<std::string> headerNames {"vector count", "old method", "new method"};
     csvwriter.setHeaderNames(std::move(headerNames));
 
