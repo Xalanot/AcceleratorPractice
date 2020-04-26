@@ -3,7 +3,7 @@
 // define a 2d float vector
 typedef thrust::tuple<float,float,float> vec3;
 
-thrust::device_vector<vec3> generateCube(int xOffset, int yOffset, int zOffset)
+thrust::device_vector<vec3> createCube(int xOffset, int yOffset, int zOffset)
 {
     thrust::device_vector<vec3> cube(24);
 
