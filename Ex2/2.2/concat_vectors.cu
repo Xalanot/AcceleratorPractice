@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-template<typename T>
+/*template<typename T>
 size_t concatInSingleVector(thrust::device_vector<thrust::device_vector<T>> const& vectors)
 {
     // calculate final size
@@ -26,8 +26,8 @@ size_t concatInSingleVector(thrust::device_vector<thrust::device_vector<T>> cons
         offset += vectors[i].size();
     }
 
-    return returnVec;*/
-}
+    return returnVec;
+}*/
 
 int main()
 {
@@ -37,11 +37,11 @@ int main()
     vectors.push_back(vec_d);
     vectors.push_back(vec_d2);
 
-    auto concatVec = concatInSingleVector(vectors);
+    /*auto concatVec = concatInSingleVector<int>(vectors);
 
     std::cout << concatVec << std::endl;
 
-    /*thrust::host_vector<int> vec_h = concatVec;
+    thrust::host_vector<int> vec_h = concatVec;
 
     for (auto const& ele : vec_h)
     {
