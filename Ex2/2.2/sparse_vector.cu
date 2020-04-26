@@ -136,7 +136,7 @@ auto sum_multiple_sparse_vectors(IndexVectors const& indexVectors,
     // get unique index size
     size_t unique_index_size = countUniqueElements(tmp_index);
 
-    return tmp_index;
+    return unique_index_size;
 }
 
 int main(void)
@@ -171,12 +171,8 @@ int main(void)
     sum_sparse_vectors(A_index, A_value, B_index, B_value, C_index, C_value);
 
     auto vec = sum_multiple_sparse_vectors(vectors_index, vectors_value, C_index2, C_value2);
-    //std::cout << "c size: " << C_index.size() << std::endl;
-    //std::cout << "size: " << size << std::endl;
-    for (int i = 0; i < vec.size(); ++i)
-    {
-        std::cout << vec[i] << std::endl;
-    }
+    std::cout << "c size: " << C_index.size() << std::endl;
+    std::cout << "size: " << size << std::endl;
 
     std::cout << "Computing C = A + B for sparse vectors A and B" << std::endl;
     std::cout << "A "; print_sparse_vector(A_index, A_value);
