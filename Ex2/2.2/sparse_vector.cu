@@ -115,10 +115,10 @@ int sum_multiple_sparse_vectors(IndexVectors const& indexVectors,
     thrust::sort_by_key(thrust::device, tmp_index.begin(), tmp_index.begin(), tmp_value.begin());
 
     // copy unique
-    indexVector unique_keys;
+    IndexVector unique_keys;
     thrust::unique_copy(tmp_index.begin(), tmp_index.end(), unique_keys.begin(), thrust::equal_to<int>());
 
-    return unique_copy.size();
+    return unique_keys.size();
 }
 
 int main(void)
