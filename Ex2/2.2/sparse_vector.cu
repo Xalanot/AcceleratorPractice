@@ -44,7 +44,7 @@ int main(void)
         thrust::device_vector<float> result_value_new;
         sum_multiple_sparse_vectors(indexVectors, valueVectors, result_index_new, result_value_new);
         
-        if (checkResult(result_index_old, result_value_old, result_index_new, result_value_new))
+        if (checkResults(result_index_old, result_value_old, result_index_new, result_value_new))
         {
             std::cout << "result is right" << std::endl;
         }
