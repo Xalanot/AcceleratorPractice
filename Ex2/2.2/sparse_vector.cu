@@ -50,7 +50,11 @@ int main(void)
         }
         else 
         {
-            std:: cout << "wrong" << std::endl;
+            std::cout << "wrong" << std::endl;
+            std::cout << "old" << std::endl;
+            print_sparse_vector(result_index_old, result_value_old);
+            std::cout << "new" << std::endl;
+            print_sparse_vector(result_index_new, result_value_new);
         }
     }
 
