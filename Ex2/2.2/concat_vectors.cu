@@ -33,11 +33,11 @@ int main()
 {
     thrust::device_vector<int> vec_d(3, 1);
     thrust::device_vector<int> vec_d2(4, 2);
-    thrust::device_vector<thrust::device_vector<int>> vectors(2);
+    /*thrust::device_vector<thrust::device_vector<int>> vectors(2);
     vectors[0] = vec_d;
     vectors[1] = vec_d2;
 
-    /*auto concatVec = concatInSingleVector<int>(vectors);
+    auto concatVec = concatInSingleVector<int>(vectors);
 
     std::cout << concatVec << std::endl;
 
