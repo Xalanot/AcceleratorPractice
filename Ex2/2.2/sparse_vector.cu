@@ -102,7 +102,7 @@ template<typename IndexVector>
 size_t countUniqueElements(IndexVector const& vector)
 {
     int currentIndex = -1;
-    size_t = count;
+    size_t count = 0;
     for (int i = 0; i < vector.size(); ++i)
     {
         int index = vector[i];
