@@ -8,7 +8,7 @@ thrust::device_vector<T> concatInSingleVector(thrust::device_vector<T> const& ve
 {
     // calculate final size
     size_t size = 0;
-    for (size_t i = 0; i < vectors.size(), ++i)
+    for (size_t i = 0; i < vectors.size(); ++i)
     {
         size += vectors[i].size();
     }
@@ -17,7 +17,7 @@ thrust::device_vector<T> concatInSingleVector(thrust::device_vector<T> const& ve
     returnVec.reserve(size);
 
     size_t offset = 0;
-    for (size_t i = 0; i < vectors.size(), ++i)
+    for (size_t i = 0; i < vectors.size(); ++i)
     {
         thrust::copy(vectors[i].begin(), vectors[i].end(), returnVec.begin() + offset);
         offset += vectors[i].size();
