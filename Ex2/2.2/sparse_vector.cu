@@ -131,7 +131,7 @@ auto sum_multiple_sparse_vectors(IndexVectors const& indexVectors,
     ValueVector tmp_value = concatInSingleVector(valueVectors);
 
     // sort by keys
-    thrust::sort_by_key(thrust::device, tmp_index.begin(), tmp_index.begin(), tmp_value.begin());
+    thrust::sort_by_key(thrust::device, tmp_index.begin(), tmp_index.end(), tmp_value.begin());
 
     // get unique index size
     size_t unique_index_size = countUniqueElements(tmp_index);
