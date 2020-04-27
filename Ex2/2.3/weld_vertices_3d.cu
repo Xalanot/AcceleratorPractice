@@ -35,13 +35,16 @@
  *   (0)--(2)--(4)
  */
 
-// define a 2d float vector
+// define a 3d float vector
 typedef thrust::tuple<float,float,float> vec3;
+
+// defince a face vector
+typedef std::tuple<unsigned int, unsigned int, unsigned int, unsigned int> faceVec;
 
 int main(void)
 {
     // allocate memory for input mesh representation
-    thrust::device_vector<vec3> input = createCube(-1, 0, 0);
+    thrust::device_vector<vec3> input = createCube(0, 0, 0);
 
     // allocate space for output mesh representation
     thrust::device_vector<vec3> vertices = input;
@@ -65,6 +68,7 @@ int main(void)
         vec3 v = vertices[i];
         std::cout << " vertices[" << i << "] = (" << thrust::get<0>(v) << "," << thrust::get<1>(v) << "," << thrust::get<2>(v) << ")" << std::endl;
     }
+
     for(size_t i = 0; i < indices.size(); i++)
     {
         if (i % 4 == 0)
@@ -72,6 +76,20 @@ int main(void)
             std::cout << "new quad" << std::endl;
         }
         std::cout << " indices[" << i << "] = " << indices[i] << std::endl;
+    }
+
+    thrust::device_vector<faceVec> faces(indices.size() / 4);
+    for (size_t i = 0; i < indices.size(); i+= 4)
+    {
+        faceVec face(indices[i], indices[i+1], indices[i+2], indices[i+3]);
+        faces[i / 4] = face;
+    }
+
+    std::cout << "faces" << std::endl;
+    for (size_t i = 0; i < faces.size(); ++i)
+    {
+        faceVec face = faces[i];
+        std::cout << " faces[" << i << "] = (" << thrust::get<0>(face) << "," << thrust::get<1>(face) << "," << thrust::get<2>(face) << "," << thrust::get<3>(face) << ")" << std::endl;
     }
 
     return 0;
