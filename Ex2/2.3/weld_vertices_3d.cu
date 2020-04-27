@@ -39,7 +39,7 @@
 typedef thrust::tuple<float,float,float> vec3;
 
 // defince a face vector
-typedef std::tuple<unsigned int, unsigned int, unsigned int, unsigned int> faceVec;
+typedef thrust::tuple<unsigned int, unsigned int, unsigned int, unsigned int> faceVec;
 
 int main(void)
 {
