@@ -75,10 +75,11 @@ int main(void)
     A[3] = 8;  B[3] = 1;  C[3] = 4; 
     A[4] = 2;  B[4] = 8;  C[4] = 3; 
 
+    auto first = thrust::make_zip_iterator(thrust::make_tuple(A.begin(), B.begin(), C.begin(), D1.begin()));
+    auto last = thrust::make_zip_iterator(thrust::make_tuple(A.end(),   B.end(),   C.end(),   D1.end()));
+
     // apply the transformation
-    thrust::for_each(thrust::make_zip_iterator(thrust::make_tuple(A.begin(), B.begin(), C.begin(), D1.begin())),
-                     thrust::make_zip_iterator(thrust::make_tuple(A.end(),   B.end(),   C.end(),   D1.end())),
-                     arbitrary_functor1());
+    thrust::transform(first, last, first, arbitrary_functor1());
 
     // print the output
     std::cout << "Tuple functor" << std::endl;
