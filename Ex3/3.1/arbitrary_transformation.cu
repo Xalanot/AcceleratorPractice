@@ -5,10 +5,6 @@
 
 #include <thrust/detail/config.h>
 
-#if THRUST_CPP_DIALECT >= 2011 && !defined(THRUST_LEGACY_GCC)
-#include <thrust/zip_function.h>
-#endif // >= C++11
-
 // This example shows how to implement an arbitrary transformation of
 // the form output[i] = F(first[i], second[i], third[i], ... ).
 // In this example, we use a function with 3 inputs and 1 output.
@@ -88,18 +84,5 @@ int main(void)
     std::cout << "Tuple functor" << std::endl;
     for(int i = 0; i < 5; i++)
         std::cout << A[i] << " + " << B[i] << " * " << C[i] << " = " << D1[i] << std::endl;
-
-    // apply the transformation using zip_function
-#if THRUST_CPP_DIALECT >= 2011 && !defined(THRUST_LEGACY_GCC)
-    thrust::device_vector<float> D2(5);
-    thrust::for_each(thrust::make_zip_iterator(thrust::make_tuple(A.begin(), B.begin(), C.begin(), D2.begin())),
-                     thrust::make_zip_iterator(thrust::make_tuple(A.end(),   B.end(),   C.end(),   D2.end())),
-                     thrust::make_zip_function(arbitrary_functor2()));
-
-    // print the output
-    std::cout << "N-ary functor" << std::endl;
-    for(int i = 0; i < 5; i++)
-        std::cout << A[i] << " + " << B[i] << " * " << C[i] << " = " << D2[i] << std::endl;
-#endif // >= C++11
 }
 
