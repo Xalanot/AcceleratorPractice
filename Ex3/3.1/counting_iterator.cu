@@ -5,7 +5,7 @@
 #include <iterator>
 #include <iostream>
 
-struct sine : public thrust::unary_function<float,float>
+struct zero : public thrust::unary_function<float,float>
 {
   __host__ __device__
   float operator()(int x) 
@@ -49,7 +49,7 @@ int main(void)
     IndexIterator indices_end = thrust::copy_if(first, last,
                                                 stencil.begin(),
                                                 indices.begin(),
-                                                thrust::negate<int>());
+                                                zero());
     // indices now contains [1,2,5,7]
 
     // print result
