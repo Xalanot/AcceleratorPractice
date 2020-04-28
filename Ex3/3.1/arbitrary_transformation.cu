@@ -44,7 +44,7 @@ struct arbitrary_functor1
     void operator()(Tuple t)
     {
         // D[i] = A[i] + B[i] * C[i];
-        thrust::get<3>(t) = thrust::get<0>(t) + thrust::get<1>(t) * thrust::get<2>(t);
+        return thrust::get<0>(t) + thrust::get<1>(t) * thrust::get<2>(t);
     }
 };
 
