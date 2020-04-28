@@ -41,7 +41,7 @@ struct arbitrary_functor1
 {
     template <typename Tuple>
     __host__ __device__
-    void operator()(Tuple t)
+    auto operator()(Tuple t)
     {
         // D[i] = A[i] + B[i] * C[i];
         return thrust::get<0>(t) + thrust::get<1>(t) * thrust::get<2>(t);
