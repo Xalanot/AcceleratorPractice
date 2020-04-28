@@ -67,7 +67,7 @@ int main(void)
     auto last = thrust::make_zip_iterator(thrust::make_tuple(A.end(),   B.end(),   C.end()));
 
     // apply the transformation
-    thrust::transform(first, last, first, arbitrary_functor1());
+    thrust::transform(first, last, D1.begin(), arbitrary_functor1());
 
     // print the output
     std::cout << "Tuple functor" << std::endl;
