@@ -48,18 +48,6 @@ struct arbitrary_functor1
     }
 };
 
-#if THRUST_CPP_DIALECT >= 2011 && !defined(THRUST_LEGACY_GCC)
-struct arbitrary_functor2
-{
-    __host__ __device__
-    void operator()(const float& a, const float& b, const float& c, float& d)
-    {
-        // D[i] = A[i] + B[i] * C[i];
-        d = a + b * c;
-    }
-};
-#endif // >= C++11
-
 int main(void)
 {
     // allocate storage
@@ -75,8 +63,8 @@ int main(void)
     A[3] = 8;  B[3] = 1;  C[3] = 4; 
     A[4] = 2;  B[4] = 8;  C[4] = 3; 
 
-    auto first = thrust::make_zip_iterator(thrust::make_tuple(A.begin(), B.begin(), C.begin(), D1.begin()));
-    auto last = thrust::make_zip_iterator(thrust::make_tuple(A.end(),   B.end(),   C.end(),   D1.end()));
+    auto first = thrust::make_zip_iterator(thrust::make_tuple(A.begin(), B.begin(), C.begin()));
+    auto last = thrust::make_zip_iterator(thrust::make_tuple(A.end(),   B.end(),   C.end()));
 
     // apply the transformation
     thrust::transform(first, last, first, arbitrary_functor1());
