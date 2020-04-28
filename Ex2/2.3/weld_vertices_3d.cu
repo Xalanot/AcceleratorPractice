@@ -48,6 +48,12 @@ int main(void)
     std::vector<thrust::device_vector<vec3>> inputs(8);
     inputs[0] = createCube(0, 0, 0);
     inputs[1] = createCube(-1, 0, 0);
+    inputs[2] = createCube(0, -1, 0);
+    inputs[3] = createCube(0, 0, -1);
+    inputs[4] = createCube(-1, -1, 0);
+    inputs[5] = createCube(-1, 0, -1);
+    inputs[6] = createCube(0, -1, -1);
+    inputs[7] = createCube(-1, -1, -1);
     for (size_t i = 0; i < inputs.size(); ++i)
     {
         thrust::copy(inputs[i].begin(), inputs[i].end(), input.begin() + i * 24);
