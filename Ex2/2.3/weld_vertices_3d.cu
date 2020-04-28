@@ -44,7 +44,14 @@ typedef thrust::tuple<unsigned int, unsigned int, unsigned int, unsigned int> fa
 int main(void)
 {
     // allocate memory for input mesh representation
-    thrust::device_vector<vec3> input = createCube(0, 0, 0);
+    thrust::device_vector<vec3> input(48); 
+    thrust::device_vector<thrust::device_vector<vec>> inputs(8);
+    inputs[0] = createCube(0, 0, 0);
+    inputs[1] = createCube(-1, 0, 0);
+    for (size_t i = 0; i < inputs.size(); ++i)
+    {
+        thrust.copy(inputs[i].begin(), inputs[i].end() + input.begin() + i * 24);
+    }
 
     // allocate space for output mesh representation
     thrust::device_vector<vec3> vertices = input;
