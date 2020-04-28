@@ -5,6 +5,22 @@
 #include <iterator>
 #include <iostream>
 
+struct sine : public thrust::unary_function<float,float>
+{
+  __host__ __device__
+  float operator()(int x) 
+  { 
+      if (x == 0)
+      {
+          return true;
+      } 
+      else
+      {
+          return false;
+      }
+  }
+};
+
 int main(void)
 {
     // this example computes indices for all the nonzero values in a sequence
