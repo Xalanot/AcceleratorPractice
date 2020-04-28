@@ -5,4 +5,4 @@
 #
 #SBATCH -w mp-capture01
 
-srun ./arbitrary_transformation
+srun ./sum_rows
