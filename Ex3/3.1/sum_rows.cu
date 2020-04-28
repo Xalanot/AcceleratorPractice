@@ -38,7 +38,7 @@ int main(void)
   thrust::device_vector<int> row_sums(R);
   thrust::device_vector<int> row_indices(R);
 
-  thrust::device_vector<int>(10) seq;
+  thrust::device_vector<int> seq(10);
   thrust::sequence(seq.begin(), seq.end(), 0.f, 0.5f);
 
   for (size_t i = 0; i < seq.size(); ++i)
