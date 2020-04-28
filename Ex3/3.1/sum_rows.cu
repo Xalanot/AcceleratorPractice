@@ -40,7 +40,7 @@ int main(void)
 
   thrust::device_vector<int> seq(10);
   thrust::sequence(seq.begin(), seq.end(), 0.f, 0.5f);
-
+  std::cout << "seq size: " << seq.size() << std::endl;
   for (size_t i = 0; i < seq.size(); ++i)
   {
       std::cout << "seq: " << seq[i] << std::endl;
