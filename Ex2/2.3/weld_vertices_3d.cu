@@ -50,7 +50,7 @@ int main(void)
     inputs[1] = createCube(-1, 0, 0);
     for (size_t i = 0; i < inputs.size(); ++i)
     {
-        thrust.copy(inputs[i].begin(), inputs[i].end() + input.begin() + i * 24);
+        thrust::copy(inputs[i].begin(), inputs[i].end() + input.begin() + i * 24);
     }
 
     // allocate space for output mesh representation
