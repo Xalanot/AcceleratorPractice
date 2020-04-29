@@ -20,14 +20,26 @@ typedef thrust::tuple<float,float,float> Float3;
 
 
 // This functor implements the dot product between 3d vectors
-struct DotProduct : public thrust::binary_function<Float3,Float3,float>
+struct Float3Product : public thrust::binary_function<Float3,Float3,float>
 {
     __host__ __device__
-        float operator()(const Float3& a, const Float3& b) const
+        Float3 operator()(const Float3& a, const Float3& b) const
         {
-            return thrust::get<0>(a) * thrust::get<0>(b) +    // x components
-                   thrust::get<1>(a) * thrust::get<1>(b) +    // y components
-                   thrust::get<2>(a) * thrust::get<2>(b);     // z components
+            return Float3(thrust::get<0>(a) * thrust::get<0>(b),    // x components
+                          thrust::get<1>(a) * thrust::get<1>(b),   // y components
+                          thrust::get<2>(a) * thrust::get<2>(b);     // z components
+        }
+};
+
+// This functor implements the dot product between 3d vectors
+struct Float3Add : public thrust::binary_function<Float3,Float3,float>
+{
+    __host__ __device__
+        Float3 operator()(const Float3& a, const Float3& b) const
+        {
+            return Float3(thrust::get<0>(a) + thrust::get<0>(b),    // x components
+                          thrust::get<1>(a) + thrust::get<1>(b),   // y components
+                          thrust::get<2>(a) + thrust::get<2>(b);     // z components
         }
 };
 
@@ -54,7 +66,9 @@ int main(void)
     Float3 result = thrust::inner_product(thrust::make_zip_iterator(thrust::make_tuple(A0.begin(), A1.begin(), A2.begin())),
                                    thrust::make_zip_iterator(thrust::make_tuple(A0.end(), A1.end(), A2.end())),
                                    thrust::make_zip_iterator(thrust::make_tuple(B0.begin(), B1.begin(), B2.begin())),
-                                   init);
+                                   init,
+                                   Float3Add(),
+                                   Float3Product());
 
                        
     std::cout << "result: ";
