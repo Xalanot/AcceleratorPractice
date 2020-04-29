@@ -15,7 +15,7 @@
 
 
 // We'll use a 3-tuple to store our 3d vector type
-typedef thrust::tuple<float,float,float> Int3;
+typedef thrust::tuple<float,float,float> Float3;
 
 
 // This functor implements the dot product between 3d vectors
