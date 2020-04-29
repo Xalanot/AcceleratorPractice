@@ -85,7 +85,7 @@ thrust::device_vector<int> generateMap(int M, int n, int N)
 {
     thrust::device_vector<int> map(M * n);
     int currentIndex = 0;
-    for (int i = 0; i < M * N)
+    for (int i = 0; i < M * N; ++i)
     {
         if ( (i % N) < n)
         {
@@ -157,7 +157,7 @@ int main(void)
   result_type result_new = 
     thrust::reduce(
         permutation_iterator_first,
-        permutation_iterator_last
+        permutation_iterator_last,
         init,
         binary_op_new);
 
