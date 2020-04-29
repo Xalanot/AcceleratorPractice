@@ -68,9 +68,9 @@ struct reduce_tuple :
 
 template <typename IndexType, typename ValueType>
 struct reduce_tuple_new :
-    public thrust::binary_function< thrust::tuple<bool,ValueType,ValueType>,
-                                    thrust::tuple<bool,ValueType,ValueType>,
-                                    thrust::tuple<bool,ValueType,ValueType> >
+    public thrust::binary_function< thrust::tuple<ValueType,ValueType>,
+                                    thrust::tuple<ValueType,ValueType>,
+                                    thrust::tuple<ValueType,ValueType> >
 {
   typedef typename thrust::tuple<ValueType,ValueType> Tuple;
 
@@ -155,7 +155,7 @@ int main(void)
   auto permutation_iterator_first = thrust::make_permutation_iterator(zip_iterator_first, map.begin());
   auto permutation_iterator_last = thrust::make_permutation_iterator(zip_iterator_first, map.end());
 
-  auto init_new = zip_iterator_first[0];
+  thrust::tuple<float, float> init_new = zip_iterator_first[0];
   thrust::maximum<thrust::tuple<float, float>> binary_op_new;
   thrust::tuple<float, float> result_new = 
     thrust::reduce(
