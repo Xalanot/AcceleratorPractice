@@ -157,7 +157,7 @@ int main(void)
 
   auto init_new = zip_iterator_first[0];
   thrust::maximum<thrust::tuple<float, float>> binary_op_new;
-  auto result_new = 
+  thrust::device_vector<float, float> result_new = 
     thrust::reduce(
         zip_iterator_first,
         zip_iterator_last,
