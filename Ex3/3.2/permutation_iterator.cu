@@ -24,20 +24,23 @@ int main(void)
     source[4] = 50;
     source[5] = 60;
 
-    // fuse gather with reduction: 
-    //   sum = source[map[0]] + source[map[1]] + ...
+    thrust::device_vector<int> result(4);
+
     // source[map[i]] = source[map[i]] + source[map[i+1]]
     thrust::transform(
         thrust::make_permutation_iterator(source.begin(), map.begin()),
         thrust::make_permutation_iterator(source.begin(), map.end()),
         thrust::make_permutation_iterator(source.begin(), map.begin()+1),
-        thrust::make_permutation_iterator(source.begin(), map.begin()),
+        result.begin(),
         thrust::plus<int>());
 
     // print sum
-    thrust::copy(thrust::make_permutation_iterator(source.begin(), map.begin()),
+    /*thrust::copy(thrust::make_permutation_iterator(source.begin(), map.begin()),
                  thrust::make_permutation_iterator(source.begin(), map.end()), 
-                 std::ostream_iterator<int>(std::cout, "\t"));
+                 std::ostream_iterator<int>(std::cout, "\t")); */
+    thrust::copy(result.begin(),
+                 result.end(), 
+                 std::ostream_iterator<int>(std::cout, "\t"));              
 
     return 0;
 }
