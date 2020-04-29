@@ -35,7 +35,9 @@ int main(void)
         thrust::plus<int>());
 
     // print sum
-    thrust::copy(source.begin(), source.end(), std::ostream_iterator<int>(std::cout, "\t"));
+    thrust::copy(thrust::make_permutation_iterator(source.begin(), map.begin()),
+                 thrust::make_permutation_iterator(source.begin(), map.end(), 
+                 std::ostream_iterator<int>(std::cout, "\t"));
 
     return 0;
 }
