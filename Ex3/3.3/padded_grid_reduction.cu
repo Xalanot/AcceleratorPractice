@@ -65,12 +65,13 @@ struct reduce_tuple :
     }
 };
 
+template <typename ValueType>
 struct reduce_tuple_new :
     public thrust::binary_function< thrust::tuple<ValueType,ValueType>,
                                     thrust::tuple<ValueType,ValueType>,
                                     thrust::tuple<ValueType,ValueType> >
 {
-  typedef typename thrust::tuple<bool,ValueType,ValueType> Tuple;
+  typedef typename thrust::tuple<ValueType,ValueType> Tuple;
 
   __host__ __device__
     Tuple operator()(const Tuple& t0, const Tuple& t1) const
