@@ -6,19 +6,6 @@
 // this example fuses a gather operation with a reduction for
 // greater efficiency than separate gather() and reduce() calls
 
-template<typename T>
-struct add_neighbours : public thrust::unary_function<int,int>
-{
-    add_neighbours(T ptr) : ptr(ptr) {}
-    T ptr;
-
-    __host__ __device__
-    int operator()(int x) 
-    { 
-        return (*ptr)[x] + (*ptr)[x+1];
-    }
-};
-
 int main(void)
 {
     // gather locations
@@ -26,7 +13,7 @@ int main(void)
     map[0] = 3;
     map[1] = 1;
     map[2] = 0;
-    map[3] = 4;
+    map[3] = 5;
 
     // array to gather from
     thrust::device_vector<int> source(6);
@@ -39,12 +26,16 @@ int main(void)
 
     // fuse gather with reduction: 
     //   sum = source[map[0]] + source[map[1]] + ...
-    thrust::transform(map.begin(), map.end(),
-                      thrust::make_permutation_iterator(source.begin(), map.begin()),
-                      add_neighbours<std::shared_ptr<const thrust::device_vector<int>>>(std::make_shared<const thrust::device_vector<int>>(source)));
+    // source[map[i]] = source[map[i]] + source[map[i+1]]
+    thrust::transform(
+        thrust::make_permutation_iterator(source.begin(), map.begin()),
+        thrust::make_permutation_iterator(source.begin(), map.end()),
+        thrust::make_permutation_iterator(source.begin(), map.begin()+1),
+        thrust::make_permutation_iterator(source.begin(), map.begin()),
+        thrust::plus<int>());
 
     // print sum
-    thrust::copy(thrust::make_permutation_iterator(source.begin(), map.begin()), thrust::make_permutation_iterator(source.begin(), map.end()), std::ostream_iterator<int>(std::cout, "\n"));
+    thrust::copy(source.begin(), source.end(), std::ostream_iterator<int>(std::cout, "\t"));
 
     return 0;
 }
