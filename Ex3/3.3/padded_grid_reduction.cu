@@ -3,6 +3,7 @@
 #include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
 #include <thrust/iterator/constant_iterator.h>
+#include <thrust/iterator/permutation_iterator.h>
 #include <thrust/iterator/zip_iterator.h>
 #include <thrust/random.h>
 #include <thrust/extrema.h>
@@ -151,8 +152,8 @@ int main(void)
   thrust::device_vector<int> map = generateMap(M, n, N);
   auto zip_iterator_first = thrust::make_zip_iterator(thrust::make_tuple(data.begin(), data.begin()));
   auto zip_iterator_last = thrust::make_zip_iterator(thrust::make_tuple(data.end(), data.end()));
-  auto permutation_iterator_first = (zip_iterator_first, map.begin());
-  auto permutation_iterator_last = (zip_iterator_first, map.end());
+  auto permutation_iterator_first = thrust::make_permutation_iterator(zip_iterator_first, map.begin());
+  auto permutation_iterator_last = thrust::make_permutation_iterator(zip_iterator_first, map.end());
   reduce_tuple_new<float, float> binary_op_new;
   result_type result_new = 
     thrust::reduce(
