@@ -6,15 +6,16 @@
 // this example fuses a gather operation with a reduction for
 // greater efficiency than separate gather() and reduce() calls
 
+template<typename T>
 struct add_neighbours : public thrust::unary_function<int,int>
 {
-    add_neighbours(thrust::device_vector<int> source) : source(source) {}
-    thrust::device_vector<int> source;
+    add_neighbours(T ptr) : ptr(ptr) {}
+    T ptr;
 
     __host__ __device__
     int operator()(int x) 
     { 
-        return source[x] + source[x+1];
+        return T[x] + T[x+1];
     }
 };
 
@@ -40,7 +41,7 @@ int main(void)
     //   sum = source[map[0]] + source[map[1]] + ...
     thrust::transform(map.begin(), map.end(),
                       thrust::make_permutation_iterator(source.begin(), map.begin()),
-                      add_neighbours(source));
+                      add_neighbours(std::make_shared(source)));
 
     // print sum
     thrust::copy(thrust::make_permutation_iterator(source.begin(), map.begin()), thrust::make_permutation_iterator(source.begin(), map.end()), std::ostream_iterator<int>(std::cout, "\n"));
