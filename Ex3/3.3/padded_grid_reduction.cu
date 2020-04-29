@@ -157,15 +157,15 @@ int main(void)
 
   thrust::tuple<float, float> init_new = zip_iterator_first[0];
   reduce_tuple_new<int, float> binary_op_new;
-  /*result_type result_new = 
+  result_type result_new = 
     thrust::reduce(
         zip_iterator_first,
         zip_iterator_last,
-        zip_iterator_first[0],
+        init_new,
         binary_op_new);
 
   std::cout << "minimum value: " << thrust::get<1>(result_new) << std::endl;
-  std::cout << "maximum value: " << thrust::get<2>(result_new) << std::endl;*/
+  std::cout << "maximum value: " << thrust::get<2>(result_new) << std::endl;
     
 
 
