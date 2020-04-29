@@ -155,6 +155,7 @@ int main(void)
   auto permutation_iterator_first = thrust::make_permutation_iterator(zip_iterator_first, map.begin());
   auto permutation_iterator_last = thrust::make_permutation_iterator(zip_iterator_first, map.end());
 
+  thrust::tuple<float, float> init_new(0, 0);
   reduce_tuple_new<float> binary_op_new;
   result_type result_new = 
     thrust::reduce(
