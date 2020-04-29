@@ -160,7 +160,7 @@ int main(void)
   result_type result_new = 
     thrust::reduce(
         zip_iterator_first,
-        zip_iterator_last,
+        zip_iterator_first + 2,
         init_new,
         binary_op_new);
 
