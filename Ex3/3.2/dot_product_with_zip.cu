@@ -4,6 +4,7 @@
 #include <thrust/transform.h>
 #include <thrust/iterator/zip_iterator.h>
 #include <thrust/random.h>
+#include <thrust/inner_product.h>
 
 
 // This example shows how thrust::zip_iterator can be used to create a
