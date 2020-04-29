@@ -81,7 +81,7 @@ thrust::device_vector<int> generateTransposeMap(size_t m, size_t n)
         size_t j = i / n;
         size_t k = i % n;
 
-        transposeMap[i] = m * k + j;
+        transposeMap[i] = n * k + j;
     }
 
     return transposeMap;
