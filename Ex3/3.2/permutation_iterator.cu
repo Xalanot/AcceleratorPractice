@@ -43,7 +43,7 @@ int main(void)
                       add_neighbours(source));
 
     // print sum
-    thrust::copy(thrust::make_permutation_iterator(source.begin(), map.begin(), thrust::make_permutation_iterator(source.begin(), map.end(), std::ostream_iterator<int>(std::cout, "\n"));
+    thrust::copy(thrust::make_permutation_iterator(source.begin(), map.begin()), thrust::make_permutation_iterator(source.begin(), map.end()), std::ostream_iterator<int>(std::cout, "\n"));
 
     return 0;
 }
