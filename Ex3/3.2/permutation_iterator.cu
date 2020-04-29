@@ -15,7 +15,7 @@ struct add_neighbours : public thrust::unary_function<int,int>
     __host__ __device__
     int operator()(int x) 
     { 
-        return T[x] + T[x+1];
+        return ptr[x] + ptr[x+1];
     }
 };
 
