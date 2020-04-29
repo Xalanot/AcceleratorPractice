@@ -161,7 +161,7 @@ int main(void)
     thrust::reduce(
         permutation_iterator_first,
         permutation_iterator_last,
-        init,
+        init_new,
         binary_op_new);
 
   std::cout << "minimum value: " << thrust::get<1>(result_new) << std::endl;
