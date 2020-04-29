@@ -35,14 +35,14 @@ int main(void)
 {
     thrust::device_vector<float> A0(3);  // x components of the 'A' vectors
     thrust::device_vector<float> A1(3);  // y components of the 'A' vectors
-    thrust::device_vector<float> A2(3));  // z components of the 'A' vectors
+    thrust::device_vector<float> A2(3);  // z components of the 'A' vectors
     A0[0] = 1; A1[0] = 4; A2[0] = 7;
     A0[1] = 2; A1[1] = 5; A2[1] = 8;
     A0[2] = 3; A1[2] = 6; A2[2] = 9;
 
     thrust::device_vector<float> B0(3);  // x components of the 'B' vectors
     thrust::device_vector<float> B1(3);  // y components of the 'B' vectors
-    thrust::device_vector<float> B2(3));  // z components of the 'B' vectors
+    thrust::device_vector<float> B2(3);  // z components of the 'B' vectors
     B0[0] = 10; B1[0] = 13; B1[0] = 16;
     B0[1] = 11; B1[1] = 14; B1[1] = 17;
     B0[2] = 12; B1[2] = 15; B1[2] = 18;
@@ -53,7 +53,7 @@ int main(void)
     Float3 result = thrust::reduce(thrust::make_zip_iterator(thrust::make_tuple(A0.begin(), A1.begin(), A2.begin())),
                                    thrust::make_zip_iterator(thrust::make_tuple(A0.end(), A1.end(), A2.end())),
                                    thrust::make_zip_iterator(thrust::make_tuple(B0.begin(), B1.begin(), B2.begin())),
-                                   init;
+                                   init,
                                    thrust::plus<float>());
 
                        
