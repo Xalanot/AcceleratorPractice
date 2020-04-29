@@ -40,16 +40,11 @@ int main(void)
 
   thrust::device_vector<int> seq(R * C);
   thrust::sequence(seq.begin(), seq.end(), 0.f, static_cast<float>(1.f / C));
-  std::cout << "seq size: " << seq.size() << std::endl;
-  for (size_t i = 0; i < seq.size(); ++i)
-  {
-      std::cout << "seq: " << seq[i] << std::endl;
-  }
   
   // compute row sums by summing values with equal row indices
   thrust::reduce_by_key
-    (thrust::make_transform_iterator(thrust::counting_iterator<int>(0), linear_index_to_row_index<int>(C)),
-     thrust::make_transform_iterator(thrust::counting_iterator<int>(0), linear_index_to_row_index<int>(C)) + (R*C),
+    (seq.begin(),
+     seq.end(),
      array.begin(),
      row_indices.begin(),
      row_sums.begin(),
