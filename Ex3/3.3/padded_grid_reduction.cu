@@ -66,11 +66,11 @@ struct reduce_tuple :
     }
 };
 
-template <typename ValueType>
+template <typename IndexType, typename ValueType>
 struct reduce_tuple_new :
-    public thrust::binary_function< thrust::tuple<ValueType,ValueType>,
-                                    thrust::tuple<ValueType,ValueType>,
-                                    thrust::tuple<ValueType,ValueType> >
+    public thrust::binary_function< thrust::tuple<bool,ValueType,ValueType>,
+                                    thrust::tuple<bool,ValueType,ValueType>,
+                                    thrust::tuple<bool,ValueType,ValueType> >
 {
   typedef typename thrust::tuple<ValueType,ValueType> Tuple;
 
@@ -156,13 +156,13 @@ int main(void)
   auto permutation_iterator_last = thrust::make_permutation_iterator(zip_iterator_first, map.end());
 
   thrust::tuple<float, float> init_new(FLT_MAX, -FLT_MAX);
-  reduce_tuple_new<float> binary_op_new;
+  reduce_tuple_new<int, float> binary_op_new;
   result_type result_new = 
     thrust::reduce(
         zip_iterator_first,
         zip_iterator_first + 2,
         init_new,
-        thrust::maximum<thrust::tuple<float, float>>());
+        binary_op_new);
 
   std::cout << "minimum value: " << thrust::get<1>(result_new) << std::endl;
   std::cout << "maximum value: " << thrust::get<2>(result_new) << std::endl;
