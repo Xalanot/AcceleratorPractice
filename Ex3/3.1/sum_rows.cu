@@ -38,8 +38,8 @@ int main(void)
   thrust::device_vector<int> row_sums(R);
   thrust::device_vector<int> row_indices(R);
 
-  thrust::device_vector<int> seq(10);
-  thrust::sequence(seq.begin(), seq.end(), 0.f, 0.5f);
+  thrust::device_vector<int> seq(R * C);
+  thrust::sequence(seq.begin(), seq.end(), 0.f, static_cast<float>(1 / C));
   std::cout << "seq size: " << seq.size() << std::endl;
   for (size_t i = 0; i < seq.size(); ++i)
   {
