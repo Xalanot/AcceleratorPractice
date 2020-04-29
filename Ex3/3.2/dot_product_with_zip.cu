@@ -27,7 +27,7 @@ struct Float3Product : public thrust::binary_function<Float3,Float3,float>
         {
             return Float3(thrust::get<0>(a) * thrust::get<0>(b),    // x components
                           thrust::get<1>(a) * thrust::get<1>(b),   // y components
-                          thrust::get<2>(a) * thrust::get<2>(b);     // z components
+                          thrust::get<2>(a) * thrust::get<2>(b));     // z components
         }
 };
 
@@ -39,7 +39,7 @@ struct Float3Add : public thrust::binary_function<Float3,Float3,float>
         {
             return Float3(thrust::get<0>(a) + thrust::get<0>(b),    // x components
                           thrust::get<1>(a) + thrust::get<1>(b),   // y components
-                          thrust::get<2>(a) + thrust::get<2>(b);     // z components
+                          thrust::get<2>(a) + thrust::get<2>(b));     // z components
         }
 };
 
