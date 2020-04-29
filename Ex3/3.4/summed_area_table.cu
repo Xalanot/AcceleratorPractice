@@ -73,7 +73,7 @@ void scan_horizontally(size_t n, thrust::device_vector<T>& d_data)
      d_data.begin());
 }
 
-thrust::device_vector<int> generateTransposeMap(size_t m, size_t int)
+thrust::device_vector<int> generateTransposeMap(size_t m, size_t n)
 {
     thrust::device_vector<int> transposeMap(m * n);
     for (size_t i = 0; i < m * n; ++i)
