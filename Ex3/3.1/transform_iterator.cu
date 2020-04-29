@@ -46,8 +46,8 @@ void print_range(const std::string& name, Iterator first, Iterator last)
 int main(void)
 {
     // clamp values to the range [1, 5]
-    int lo = 1;
-    int hi = 5;
+    int lo = 7;
+    int hi = 3;
 
     // initialize values
     thrust::device_vector<int> values(8);
