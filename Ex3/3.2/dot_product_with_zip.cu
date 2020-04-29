@@ -56,9 +56,9 @@ int main(void)
     thrust::device_vector<float> B0(3);  // x components of the 'B' vectors
     thrust::device_vector<float> B1(3);  // y components of the 'B' vectors
     thrust::device_vector<float> B2(3);  // z components of the 'B' vectors
-    B0[0] = 10; B1[0] = 13; B1[0] = 16;
-    B0[1] = 11; B1[1] = 14; B1[1] = 17;
-    B0[2] = 12; B1[2] = 15; B1[2] = 18;
+    B0[0] = 10; B1[0] = 13; B2[0] = 16;
+    B0[1] = 11; B1[1] = 14; B2[1] = 17;
+    B0[2] = 12; B1[2] = 15; B2[2] = 18;
 
     // Storage for result of each dot product
     Float3 init(0, 0, 0);
