@@ -149,8 +149,8 @@ int main(void)
   // new
   std::cout << "new" << std::endl;
   thrust::device_vector<int> map = generateMap(M, n, N);
-  auto zip_iterator_first = thrust::make_zip_iterator(data.begin(), data.begin());
-  auto zip_iterator_last = thrust::make_zip_iterator(data.end(), data.end());
+  auto zip_iterator_first = thrust::make_zip_iterator(thrust::make_tuple(data.begin(), data.begin()));
+  auto zip_iterator_last = thrust::make_zip_iterator(thrust::make_tuple(data.end(), data.end()));
   auto permutation_iterator_first = (zip_iterator_first, map.begin());
   auto permutation_iterator_last = (zip_iterator_first, map.end());
   reduce_tuple_new<float, float> binary_op_new;
