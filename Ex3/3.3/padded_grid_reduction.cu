@@ -161,7 +161,7 @@ int main(void)
     thrust::reduce(
         zip_iterator_first,
         zip_iterator_first + 2,
-        init_new,
+        zip_iterator_first[0],
         binary_op_new);
 
   std::cout << "minimum value: " << thrust::get<1>(result_new) << std::endl;
