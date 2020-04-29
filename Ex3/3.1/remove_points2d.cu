@@ -50,7 +50,7 @@ int main(void)
     std::cout << std::endl;
 
     // remove points where x^2 + y^2 > 1 and determine new array sizes
-    hrust::partition(thrust::make_zip_iterator(thrust::make_tuple(x.begin(), y.begin())),
+    thrust::partition(thrust::make_zip_iterator(thrust::make_tuple(x.begin(), y.begin())),
                      thrust::make_zip_iterator(thrust::make_tuple(x.end(), y.end())),
                      is_inside_circle<float>());
 
