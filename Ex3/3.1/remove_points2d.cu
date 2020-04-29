@@ -55,7 +55,7 @@ int main(void)
                      is_inside_circle<float>());
 
     // print the partioned points
-    for(size_t i = 0; i < new_size; i++)
+    for(size_t i = 0; i < x.size(); i++)
         std::cout << "(" << x[i] << "," << y[i] << ")" << std::endl;
 
     return 0;
