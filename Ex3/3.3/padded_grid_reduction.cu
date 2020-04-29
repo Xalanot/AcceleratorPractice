@@ -65,6 +65,38 @@ struct reduce_tuple :
     }
 };
 
+struct reduce_tuple_new :
+    public thrust::binary_function< thrust::tuple<ValueType,ValueType>,
+                                    thrust::tuple<ValueType,ValueType>,
+                                    thrust::tuple<ValueType,ValueType> >
+{
+  typedef typename thrust::tuple<bool,ValueType,ValueType> Tuple;
+
+  __host__ __device__
+    Tuple operator()(const Tuple& t0, const Tuple& t1) const
+    { 
+      return Tuple(thrust::min(thrust::get<0>(t0), thrust::get<0>(t1)),
+                   thrust::max(thrust::get<1>(t0), thrust::get<1>(t1)));
+    }
+};
+
+thrust::device_vector<int> generateMap(int M, int n, int N)
+{
+    thrust::device_vector<int> map(M * n);
+    int currentIndex = 0;
+    for (int i = 0; i < M * N)
+    {
+        if ( (i % N) < n)
+        {
+            map[currentIndex] = i;
+            currentIndex++;
+        }
+    }
+
+    return map;
+}
+
+
 int main(void)
 {
   int M = 3;  // number of rows
@@ -112,6 +144,26 @@ int main(void)
 
   std::cout << "minimum value: " << thrust::get<1>(result) << std::endl;
   std::cout << "maximum value: " << thrust::get<2>(result) << std::endl;
+
+  // new
+  std::cout << "new" << std::endl;
+  thrust::device_vector<int> map = generateMap(M, n, N);
+  auto zip_iterator_first = thrust::make_zip_iterator(data.begin(), data.begin());
+  auto zip_iterator_last = thrust::make_zip_iterator(data.end(), data.end());
+  auto permutation_iterator_first = (zip_iterator_first, map.begin());
+  auto permutation_iterator_last = (zip_iterator_first, map.end());
+  reduce_tuple_new<float, float> binary_op_new;
+  result_type result_new = 
+    thrust::reduce(
+        permutation_iterator_first,
+        permutation_iterator_last
+        init,
+        binary_op_new);
+
+  std::cout << "minimum value: " << thrust::get<1>(result_new) << std::endl;
+  std::cout << "maximum value: " << thrust::get<2>(result_new) << std::endl;
+    
+
 
   return 0;
 }
