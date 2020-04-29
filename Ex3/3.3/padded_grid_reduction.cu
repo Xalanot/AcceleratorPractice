@@ -164,8 +164,8 @@ int main(void)
         init_new,
         binary_op_new);
 
-  std::cout << "minimum value: " << thrust::get<1>(result_new) << std::endl;
-  std::cout << "maximum value: " << thrust::get<2>(result_new) << std::endl;
+  std::cout << "minimum value: " << thrust::get<0>(result_new) << std::endl;
+  std::cout << "maximum value: " << thrust::get<1>(result_new) << std::endl;
     
 
 
