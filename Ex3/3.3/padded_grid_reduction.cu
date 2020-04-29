@@ -159,8 +159,8 @@ int main(void)
   reduce_tuple_new<float> binary_op_new;
   result_type result_new = 
     thrust::reduce(
-        permutation_iterator_first,
-        permutation_iterator_last,
+        zip_iterator_first,
+        zip_iterator_last,
         init_new,
         binary_op_new);
 
