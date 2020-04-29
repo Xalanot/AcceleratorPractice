@@ -130,6 +130,10 @@ int main(void)
   scan_horizontally(n, data);
   print(m, n, data);
 
+  auto map = generateTransposeMap(m,n);
+  std::cout << "map" << std::endl;
+  print(m, n, map;
+
   std::cout << "[step 2] scan vertically" << std::endl;
   scan_vertically(m, n, data);
   print(m, n, data);
