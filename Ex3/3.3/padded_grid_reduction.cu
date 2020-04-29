@@ -158,7 +158,7 @@ int main(void)
   thrust::tuple<float, float> init_new(FLT_MAX, -FLT_MAX);
   reduce_tuple_new<float> binary_op_new;
 
-  init_new = binary_op_new(permutation_iterator_first, permutation_iterator_first + 1);
+  init_new = binary_op_new(permutation_iterator_first[0], permutation_iterator_first[1]);
   std::cout << thrust::get<0>(init_new) << std::endl;
   /* result_type result_new = 
     thrust::reduce(
