@@ -41,7 +41,7 @@ int main(void)
     //   sum = source[map[0]] + source[map[1]] + ...
     thrust::transform(map.begin(), map.end(),
                       thrust::make_permutation_iterator(source.begin(), map.begin()),
-                      add_neighbours<std::shared_ptr<thrust::device_vector<int>>>(std::make_shared<thrust::device_vector<int>(source)));
+                      add_neighbours<std::shared_ptr<const thrust::device_vector<int>>>(std::make_shared<const thrust::device_vector<int>(source)));
 
     // print sum
     thrust::copy(thrust::make_permutation_iterator(source.begin(), map.begin()), thrust::make_permutation_iterator(source.begin(), map.end()), std::ostream_iterator<int>(std::cout, "\n"));
