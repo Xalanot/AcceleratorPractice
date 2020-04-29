@@ -73,6 +73,34 @@ void scan_horizontally(size_t n, thrust::device_vector<T>& d_data)
      d_data.begin());
 }
 
+thrust::device_vector<int> generateTransposeMap(size_t m, size_t int)
+{
+    thrust::device_vector<int> transposeMap(m * n);
+    for (size_t i = 0; i < m * n; ++i)
+    {
+        size_t j = i / n;
+        size_t k = i % n;
+
+        transposeMap[i] = m * k + j;
+    }
+
+    return transposeMap;
+}
+
+// scan the rows of an M-by-N array
+template <typename T>
+void scan_vertically(size_t m, size_t n, thrust::device_vector<T>& d_data)
+{
+  thrust::counting_iterator<size_t> indices(0);
+  auto transposeMap = generateTransposeMap(m, n);
+
+  thrust::inclusive_scan_by_key
+    (thrust::make_transform_iterator(indices, row_index(n)),
+     thrust::make_transform_iterator(indices, row_index(n)) + d_data.size(),
+     thrust::make_permutation_iterator(d_data.begin(), transposeMap.begin()),
+     thrust::make_permutation_iterator(d_data.begin(), transposeMap.begin()));
+}
+
 // print an M-by-N array
 template <typename T>
 void print(size_t m, size_t n, thrust::device_vector<T>& d_data)
@@ -102,7 +130,11 @@ int main(void)
   scan_horizontally(n, data);
   print(m, n, data);
 
-  std::cout << "[step 2] transpose array" << std::endl;
+  std::cout << "[step 2] scan vertically" << std::endl;
+  scan_vertically(m, n, data);
+  print(m, n, data);
+
+  /*std::cout << "[step 2] transpose array" << std::endl;
   thrust::device_vector<int> temp(m * n);
   transpose(m, n, data, temp);
   print(n, m, temp);
@@ -113,7 +145,7 @@ int main(void)
 
   std::cout << "[step 4] transpose the transpose" << std::endl;
   transpose(n, m, temp, data);
-  print(m, n, data);
+  print(m, n, data);*/
 
   return 0;
 }
