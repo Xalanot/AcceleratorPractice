@@ -155,9 +155,12 @@ int main(void)
   auto permutation_iterator_first = thrust::make_permutation_iterator(zip_iterator_first, map.begin());
   auto permutation_iterator_last = thrust::make_permutation_iterator(zip_iterator_first, map.end());
 
-  thrust::tuple<float, float> init_new(0, 0);
+  thrust::tuple<float, float> init_new(FLT_MAX, -FLT_MAX));
   reduce_tuple_new<float> binary_op_new;
-  result_type result_new = 
+
+  init_new = binary_op_new(permutation_iterator_first, permutation_iterator_first + 1);
+  std::cout << thrust::get<0>(init_new) << std::endl;
+  /* result_type result_new = 
     thrust::reduce(
         permutation_iterator_first,
         permutation_iterator_last,
@@ -165,7 +168,7 @@ int main(void)
         binary_op_new);
 
   std::cout << "minimum value: " << thrust::get<1>(result_new) << std::endl;
-  std::cout << "maximum value: " << thrust::get<2>(result_new) << std::endl;
+  std::cout << "maximum value: " << thrust::get<2>(result_new) << std::endl; */
     
 
 
