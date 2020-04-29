@@ -38,7 +38,7 @@ int main(void)
 
     // fuse gather with reduction: 
     //   sum = source[map[0]] + source[map[1]] + ...
-    thrust::transform(map.begin(), map.end()
+    thrust::transform(map.begin(), map.end(),
                       thrust::make_permutation_iterator(source.begin(), map.begin()),
                       add_neighbours(source));
 
