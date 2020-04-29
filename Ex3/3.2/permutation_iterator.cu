@@ -37,7 +37,7 @@ int main(void)
     // print sum
     for (size_t i = 0; i < map.size(); ++i)
     {
-        std::cout source[map[i]] << std::endl;
+        std::cout << source[map[i]] << std::endl;
     }
     /*thrust::copy(result.begin(),
                  result.end(), 
