@@ -116,7 +116,7 @@ void scan_vertically(size_t m, size_t n, thrust::device_vector<T>& d_data)
 {
   thrust::counting_iterator<size_t> indices(0);
   //auto transposeMap = generateTransposeMap(m, n);
-  auto mapBegin = thrust::make_transform_iterator(indices, transpose_index(m,n));
+  auto mapBegin = thrust::make_transform_iterator(indices, transpose_index(n,m));
 
   thrust::inclusive_scan_by_key
     (thrust::make_transform_iterator(indices, row_index(m)),
