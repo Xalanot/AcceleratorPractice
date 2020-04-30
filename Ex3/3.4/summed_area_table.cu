@@ -149,7 +149,7 @@ void print(size_t m, size_t n, thrust::device_vector<T>& d_data)
 
 int main(void)
 {
-  int iterations = 100;
+  int iterations = 10;
 
   std::vector<size_t> mVec;
   std::vector<size_t> nVec;

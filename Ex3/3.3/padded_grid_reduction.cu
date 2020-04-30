@@ -98,37 +98,8 @@ thrust::device_vector<int> generateMap(int M, int n, int N)
     return map;
 }
 
-
-int main(void)
+thrust::tuple<bool, float, float> reduce_old(int n, int N, thrust::device_vector<float>& data)
 {
-  int M = 3;  // number of rows
-  int n = 4;  // number of columns excluding padding
-  int N = 5;  // number of columns including padding
-
-  thrust::default_random_engine rng(12345);
-  thrust::uniform_real_distribution<float> dist(0.0f, 1.0f);
-
-  thrust::device_vector<float> data(M * N, -1);
-
-  // initialize valid values in grid
-  for(int i = 0; i < M; i++)
-    for(int j = 0; j < n; j++)
-      data[i * N + j] = dist(rng);
-
-  // print full grid
-  std::cout << "padded grid" << std::endl;
-  std::cout << std::fixed << std::setprecision(4);
-  for(int i = 0; i < M; i++)
-  {
-    std::cout << " ";
-    for(int j = 0; j < N; j++)
-    {
-      std::cout << data[i * N + j] << " ";
-    }   
-    std::cout << "\n";
-  }
-  std::cout << "\n";
-
   // compute min & max over valid region of the 2d grid
   typedef thrust::tuple<bool, float, float> result_type;
 
@@ -144,11 +115,11 @@ int main(void)
         init,
         binary_op);
 
-  std::cout << "minimum value: " << thrust::get<1>(result) << std::endl;
-  std::cout << "maximum value: " << thrust::get<2>(result) << std::endl;
+  return result;
+}
 
-  // new
-  std::cout << "new" << std::endl;
+thrust::tuple<float, float> reduce_new(int M, int n, int N, thrust::device_vector<float>& data)
+{
   thrust::device_vector<int> map = generateMap(M, n, N);
   auto zip_iterator_first = thrust::make_zip_iterator(thrust::make_tuple(data.begin(), data.begin()));
   auto zip_iterator_last = thrust::make_zip_iterator(thrust::make_tuple(data.end(), data.end()));
@@ -163,6 +134,38 @@ int main(void)
         permutation_iterator_last,
         init_new,
         binary_op_new);
+
+  return result_new;
+}
+
+int main(void)
+{
+  thrust::default_random_engine rng(12345);
+  thrust::uniform_real_distribution<float> dist(0.0f, 1.0f);
+
+  // first run
+  int M = 3;  // number of rows
+  int n = 4;  // number of columns excluding padding
+  int N = 5;  // number of columns including padding
+
+
+
+  thrust::device_vector<float> data(M * N, -1);
+
+  // initialize valid values in grid
+  for(int i = 0; i < M; i++)
+    for(int j = 0; j < n; j++)
+      data[i * N + j] = dist(rng);
+
+  auto result = reduce_old(n, N, data);
+
+  std::cout << "minimum value: " << thrust::get<1>(result) << std::endl;
+  std::cout << "maximum value: " << thrust::get<2>(result) << std::endl;
+
+  // new
+  std::cout << "new" << std::endl;
+
+  auto result_new = result_new(M, n, N, data);
 
   std::cout << "minimum value: " << thrust::get<0>(result_new) << std::endl;
   std::cout << "maximum value: " << thrust::get<1>(result_new) << std::endl;
