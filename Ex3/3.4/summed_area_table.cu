@@ -81,7 +81,7 @@ thrust::device_vector<int> generateTransposeMap(size_t m, size_t n)
         size_t j = i / m;
         size_t k = i % m;
 
-        transposeMap[i] = m * k + j;
+        transposeMap[i] = n * k + j;
     }
 
     return transposeMap;
@@ -132,7 +132,7 @@ int main(void)
 
   auto map = generateTransposeMap(m,n);
   std::cout << "map" << std::endl;
-  print(m, n, map);
+  print(n, m, map);
 
   std::cout << "[step 2] scan vertically" << std::endl;
   scan_vertically(m, n, data);
