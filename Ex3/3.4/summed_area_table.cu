@@ -188,7 +188,9 @@ int main(void)
   // sanity check
   thrust::device_vector<int> data_old(m * n, 1);
   thrust::device_vector<int> data_new(m * n, 1);
-  if (scan_old(m, n, data_old) != scan_new(m, n, data_new))
+  scan_old(m, n, data_old);
+  scan_new(m, n, data_new);
+  if (data_old != data_new)
   {
       std::cout << "wrong result" << std::endl;
   }
@@ -227,7 +229,9 @@ int main(void)
   // sanity check
   thrust::device_vector<int> data_old2(m * n, 1);
   thrust::device_vector<int> data_new2(m * n, 1);
-  if (scan_old(m, n, data_old2) != scan_new(m, n, data_new2))
+  scan_old(m, n, data_old2);
+  scan_new(m, n, data_new2);
+  if (data_old2 != ata_new2)
   {
       std::cout << "wrong result" << std::endl;
   }
