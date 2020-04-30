@@ -121,7 +121,7 @@ void scan_vertically(size_t m, size_t n, thrust::device_vector<T>& d_data)
   thrust::inclusive_scan_by_key
     (thrust::make_transform_iterator(indices, row_index(m)),
      thrust::make_transform_iterator(indices, row_index(m)) + d_data.size(),
-     thrust::make_permutation_iterator(d_data.begin(), transposeMap.begin()),
+     thrust::make_permutation_iterator(d_data.begin(), mapBegin),
      thrust::make_permutation_iterator(d_data.begin(), mapBegin));
 }
 
