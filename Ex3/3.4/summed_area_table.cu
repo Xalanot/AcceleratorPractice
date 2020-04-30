@@ -9,6 +9,7 @@
 #include <chrono>
 #include <iostream>
 #include <iomanip>
+#include <string>
 #include <vector>
 
 #include "../pml/measurement.h"
@@ -235,6 +236,12 @@ int main(void)
   {
       std::cout << "wrong result" << std::endl;
   }
+
+  CSVWriter csvwriter("summed_area_table.csv");
+  csvwriter.setHeaderNames( {"m", "n", "old times", "new times"} );
+
+  csvwriter.write(mVec, nVec, oldTimes, newTimes);
+
 
   return 0;
 }
