@@ -115,13 +115,14 @@ template <typename T>
 void scan_vertically(size_t m, size_t n, thrust::device_vector<T>& d_data)
 {
   thrust::counting_iterator<size_t> indices(0);
-  auto transposeMap = generateTransposeMap(m, n);
+  //auto transposeMap = generateTransposeMap(m, n);
+  auto mapBegin = thrust::make_transform_iterator(indices, transpose_index(m,n));
 
   thrust::inclusive_scan_by_key
     (thrust::make_transform_iterator(indices, row_index(m)),
      thrust::make_transform_iterator(indices, row_index(m)) + d_data.size(),
      thrust::make_permutation_iterator(d_data.begin(), transposeMap.begin()),
-     thrust::make_permutation_iterator(d_data.begin(), transposeMap.begin()));
+     thrust::make_permutation_iterator(d_data.begin(), mapBegin));
 }
 
 void scan_new(size_t m, size_t n, thrust::device_vector<int>& data)
