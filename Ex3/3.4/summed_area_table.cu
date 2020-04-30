@@ -5,8 +5,14 @@
 #include <thrust/scan.h>
 #include <thrust/iterator/counting_iterator.h>
 #include <thrust/iterator/transform_iterator.h>
+
+#include <chrono>
 #include <iostream>
 #include <iomanip>
+#include <vector>
+
+#include "../pml/measurement.h"
+#include "../pml/csvwriter.h"
 
 // This example computes a summed area table using segmented scan
 // http://en.wikipedia.org/wiki/Summed_area_table
@@ -73,6 +79,22 @@ void scan_horizontally(size_t n, thrust::device_vector<T>& d_data)
      d_data.begin());
 }
 
+void scan_old(size_t m, size_t n, thrust::device_vector<int>& data)
+{
+  // [step 1] scan horizontally
+  scan_horizontally(n, data);
+
+  // [step 2] transpose array
+  thrust::device_vector<int> temp(m * n);
+  transpose(m, n, data, temp);
+
+  // [step 3] scan transpose horizontally
+  scan_horizontally(m, temp);
+
+  // [step 4] transpose the transpose
+  transpose(n, m, temp, data);
+}
+
 thrust::device_vector<int> generateTransposeMap(size_t m, size_t n)
 {
     thrust::device_vector<int> transposeMap(m * n);
@@ -101,6 +123,15 @@ void scan_vertically(size_t m, size_t n, thrust::device_vector<T>& d_data)
      thrust::make_permutation_iterator(d_data.begin(), transposeMap.begin()));
 }
 
+void scan_new(size_t m, size_t n, thrust::device_vector<int>& data)
+{
+    // [step 1] scan horizontally
+    scan_horizontally(n, data);
+
+    // [step 2] scan vertically
+    scan_vertically(m, n, data);
+}
+
 // print an M-by-N array
 template <typename T>
 void print(size_t m, size_t n, thrust::device_vector<T>& d_data)
@@ -117,39 +148,89 @@ void print(size_t m, size_t n, thrust::device_vector<T>& d_data)
 
 int main(void)
 {
-  size_t m = 3; // number of rows
-  size_t n = 4; // number of columns
+  int iterations = 100;
 
-  // 2d array stored in row-major order [(0,0), (0,1), (0,2) ... ]
-  thrust::device_vector<int> data(m * n, 1);
+  std::vector<size_t> mVec;
+  std::vector<size_t> nVec;
+  std::vector<MeasurementSeries<std::chrono::microseconds>> oldTimes;
+  std::vector<MeasurementSeries<std::chrono::microseconds>> newTimes;
+  // first run
+  size_t m = 1000; // number of rows
+  mVec.push_back(m);
+  size_t n = 1000; // number of columns
+  nVec.push_back(n);
 
-  std::cout << "[step 0] initial array" << std::endl;
-  print(m, n, data);
+  MeasurementSeries<std::chrono::microseconds> oldMeasurement;
+  for (int i = 0; i < iterations; ++i)
+  {
+      thrust::device_vector<int> data(m * n, 1);
+      cudaDeviceSynchronize();
+      oldMeasurement.start();
+      scan_old(m, n, data);
+      cudaDeviceSynchronize();
+      oldMeasurement.stop();
+  }
+  oldTimes.push_back(oldMeasurement);
 
-  std::cout << "[step 1] scan horizontally" << std::endl;
-  scan_horizontally(n, data);
-  print(m, n, data);
 
-  auto map = generateTransposeMap(m,n);
-  std::cout << "map" << std::endl;
-  print(n, m, map);
+  MeasurementSeries<std::chrono::microseconds> newMeasurement;
+  for (int i = 0; i < iterations; ++i)
+  {
+      thrust::device_vector<int> data(m * n, 1);
+      cudaDeviceSynchronize();
+      newMeasurement.start();
+      scan_new(m, n, data);
+      cudaDeviceSynchronize();
+      newMeasurement.stop();
+  }
+  newTimes.push_back(newMeasurement);
 
-  std::cout << "[step 2] scan vertically" << std::endl;
-  scan_vertically(m, n, data);
-  print(m, n, data);
+  // sanity check
+  thrust::device_vector<int> data_old(m * n, 1);
+  thrust::device_vector<int> data_new(m * n, 1);
+  if (scan_old(m, n, data_old) != scan_new(m, n, data_new))
+  {
+      std::cout << "wrong result" << std::endl;
+  }
+  
+  // second run
+  m = 100000; // number of rows
+  mVec.push_back(m);
+  n = 10; // number of columns
+  nVec.push_back(n);
 
-  /*std::cout << "[step 2] transpose array" << std::endl;
-  thrust::device_vector<int> temp(m * n);
-  transpose(m, n, data, temp);
-  print(n, m, temp);
+  MeasurementSeries<std::chrono::microseconds> oldMeasurement2;
+  for (int i = 0; i < iterations; ++i)
+  {
+      thrust::device_vector<int> data(m * n, 1);
+      cudaDeviceSynchronize();
+      oldMeasurement2.start();
+      scan_old(m, n, data);
+      cudaDeviceSynchronize();
+      oldMeasurement2.stop();
+  }
+  oldTimes.push_back(oldMeasurement2);
 
-  std::cout << "[step 3] scan transpose horizontally" << std::endl;
-  scan_horizontally(m, temp);
-  print(n, m, temp);
 
-  std::cout << "[step 4] transpose the transpose" << std::endl;
-  transpose(n, m, temp, data);
-  print(m, n, data);*/
+  MeasurementSeries<std::chrono::microseconds> newMeasurement2;
+  for (int i = 0; i < iterations; ++i)
+  {
+      thrust::device_vector<int> data(m * n, 1);
+      cudaDeviceSynchronize();
+      newMeasurement2.start();
+      scan_new(m, n, data);
+      cudaDeviceSynchronize();
+      newMeasurement2.stop();
+  }
+  newTimes.push_back(newMeasurement2);
+
+  // sanity check
+  thrust::device_vector<int> data_old2(m * n, 1);
+  thrust::device_vector<int> data_new2(m * n, 1);
+  if (scan_old(m, n, data_old2) != scan_new(m, n, data_new2))
+  {
+      std::cout << "wrong result" << std::endl;
+  }
 
   return 0;
 }
