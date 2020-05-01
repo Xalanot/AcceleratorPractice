@@ -27,17 +27,13 @@ struct MyStruct
     }
 };
 
-void initialize_keys(thrust::device_vector<int>& keys)
+void initialize_keys(thrust::host_vector<int>& keys)
 {
   thrust::default_random_engine rng;
   thrust::uniform_int_distribution<int> dist(0, 2147483647);
 
-  thrust::host_vector<int> h_keys(keys.size());
-
-  for(size_t i = 0; i < h_keys.size(); i++)
-    h_keys[i] = dist(rng);
-
-  keys = h_keys;
+  for(size_t i = 0; i < keys.size(); i++)
+    keys[i] = dist(rng);
 }
 
 
@@ -66,7 +62,7 @@ void sortAoS(size_t N, MeasurementSeries<T>& measurementSeries)
     thrust::device_vector<MyStruct> structures_d = structures_h;
 
     thrust::sort(structures_d.begin(), structures_d.end());
-    
+
     structures_h = Structures_d;
 
     cudaDeviceSynchronize();
