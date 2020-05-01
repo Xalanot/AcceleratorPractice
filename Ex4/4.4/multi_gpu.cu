@@ -135,7 +135,7 @@ int main(int argc, char **argv)
 
         checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
         cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);        
-
+        std::cout << "copy back" << std::endl;
         checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(Y_h), thrust::raw_pointer_cast(Y_d.data()), 2 * float_size, cudaMemcpyDeviceToHost, deviceManagers[i].d2hStream));
 
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].d2hStream));
