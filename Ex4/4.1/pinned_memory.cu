@@ -124,6 +124,11 @@ struct get_rand_number : public thrust::binary_function<void, void, size_t>
   }
 };
 
+size_t bytesToGByes(size_t bytes)
+{
+    return bytes >> 30;
+}
+
 void checkDevice(size_t memSize)
 {
     int device;
@@ -145,7 +150,7 @@ void checkDevice(size_t memSize)
         {
             std::cout << "Device #" << device
                 << " [" << properties.name << "] does not have enough memory" << std::endl;
-            std::cout << "There is " << properties.totalGlobalMem / (1024 * 1024 * 1024) << " too few bytes of memory" << std::endl;
+            std::cout << "There is " << bytesToGB(properties.totalGlobalMem) << " too few bytes of memory" << std::endl;
             exit(1);
         }
     }  
