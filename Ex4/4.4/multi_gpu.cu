@@ -125,19 +125,14 @@ int main(int argc, char **argv)
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].h2dStream));
         cudaStreamWaitEvent(deviceManagers[i].h2dStream, deviceManagers[i].copyEvent, 0);
 
-        for (int j = 0; i < 2; ++j)
-        {
-            std::cout << "Y_d: " << Y_d[j] << std::endl;
-        }
-
         //checkCudaError(cudaEventRecord(deviceManagers[i].start, deviceManagers[i].transformStream));
         thrust::transform(thrust::cuda::par.on(deviceManagers[i].transformStream), X_d.begin(), X_d.end(), Y_d.begin(), Y_d.begin(), saxpy_functor(2));
         //checkCudaError(cudaEventRecord(deviceManagers[i].stop, deviceManagers[i].transformStream));
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-        std::cout << "after wait" << std::endl;
+        //std::this_thread::sleep_for(std::chrono::seconds(2));
+        //std::cout << "after wait" << std::endl;
         checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
         cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);        
-        std::cout << "copy back" << std::endl;
+        //std::cout << "copy back" << std::endl;
         checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(Y_h), thrust::raw_pointer_cast(Y_d.data()), 2 * float_size, cudaMemcpyDeviceToHost, deviceManagers[i].d2hStream));
 
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].d2hStream));
