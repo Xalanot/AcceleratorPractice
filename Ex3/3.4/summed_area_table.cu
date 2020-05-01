@@ -96,26 +96,11 @@ void scan_old(size_t m, size_t n, thrust::device_vector<int>& data)
   transpose(n, m, temp, data);
 }
 
-thrust::device_vector<int> generateTransposeMap(size_t m, size_t n)
-{
-    thrust::device_vector<int> transposeMap(m * n);
-    for (size_t i = 0; i < m * n; ++i)
-    {
-        size_t j = i / m;
-        size_t k = i % m;
-
-        transposeMap[i] = n * k + j;
-    }
-
-    return transposeMap;
-}
-
 // scan the rows of an M-by-N array
 template <typename T>
 void scan_vertically(size_t m, size_t n, thrust::device_vector<T>& d_data)
 {
   thrust::counting_iterator<size_t> indices(0);
-  //auto transposeMap = generateTransposeMap(m, n);
   auto mapBegin = thrust::make_transform_iterator(indices, transpose_index(n,m));
 
   thrust::inclusive_scan_by_key
