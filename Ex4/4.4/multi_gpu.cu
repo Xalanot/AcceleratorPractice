@@ -104,7 +104,7 @@ int main(int argc, char **argv)
     std::vector<DeviceManager> deviceManagers;
     for (int i = 0; i < deviceCount; ++i)
     {
-        deviceManagers.emplace_back( {i} );
+        deviceManagers.emplace_back( DeviceManager{i} );
     }
 
     #pragma omp parallel num_threads(deviceCount)
@@ -127,8 +127,8 @@ int main(int argc, char **argv)
         thrust::transform(thrust::cuda::par.on(deviceManagers[i].transformStream), X_d.begin(), X_d.end(), Y_d.begin(), Y_d.begin(), saxpy_functor(2));
         //checkCudaError(cudaEventRecord(deviceManagers[i].stop, deviceManagers[i].transformStream));
 
-        checkCudaError(cudaEventRecord(deviceManager[i].transformEvent, deviceManagers[i].transformStream));
-        cudaStreamWaitEvent(deviceManager[i].transformStream, deviceManagers[i].transformEvent, 0);        
+        checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
+        cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);        
 
         checkCudaError(cudaMemcpyAsync(Y_h + i * 2, thrust::raw_pointer_cast(Y_d.data()), 2, cudaMemcpyDeviceToHost, deviceManagers[i].d2hStream));
 
