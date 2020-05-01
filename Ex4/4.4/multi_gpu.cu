@@ -97,7 +97,7 @@ int main(int argc, char **argv)
     thrust::tabulate(Y_h, Y_h + N, get_rand_number(1337, 10));
 
     std::cout << "X0: " << X_h[0] << std::endl;
-    std::cout << "Y0: " << Y_h[0] << Std::endl;
+    std::cout << "Y0: " << Y_h[0] << std::endl;
     std::cout << "X3: " << X_h[3] << std::endl;
     std::cout << "Y3: " << Y_h[3] << std::endl;
 
