@@ -83,8 +83,8 @@ void sortSoA(size_t N, MeasurementSeries<T>& measurementSeries)
 
     thrust::sort_by_key(keys_d.begin(), keys_d.end(), values_d.begin());
 
-    keys_d = keys_h;
-    values_d = values_h;
+    keys_h = keys_d;
+    values_h = values_d;
 
     cudaDeviceSynchronize();
     measurementSeries.stop();
