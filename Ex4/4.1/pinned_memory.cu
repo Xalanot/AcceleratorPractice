@@ -124,7 +124,7 @@ struct get_rand_number : public thrust::binary_function<void, void, size_t>
   }
 };
 
-void checkDevice()
+void checkDevice(size_t memSize)
 {
     int device;
     cudaGetDevice(&device);
