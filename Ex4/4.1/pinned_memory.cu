@@ -145,7 +145,7 @@ void checkDevice()
         {
             std::cout << "Device #" << device <<
                 << " [" << properties.name << "] does not have enough memory" << std::endl;
-            exit(1)
+            exit(1);
         }
     }  
 }
@@ -155,7 +155,7 @@ int main(int argc, char *argv[]){
     size_t vecSize = static_cast<size_t>(1) << 32;
     std::cout << vecSize << std::endl;
     size_t memSize = sizeof(int) * vecSize;
-    checkDevice(size_t memSize);
+    checkDevice(memSize);
     /*size_t vecSize;
     vecSize = atoll(argv[1]);
     size_t memSize = sizeof(int)*vecSize;
