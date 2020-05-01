@@ -110,7 +110,7 @@ int main(int argc, char **argv)
     #pragma omp parallel num_threads(deviceCount)
     for (int i = 0; i < deviceCount; ++i)
     {
-        std::cout << "i" << std::endl;
+        std::cout << "i: " << i << std::endl;
         // set the device
         checkCudaError(cudaSetDevice(i));
 
