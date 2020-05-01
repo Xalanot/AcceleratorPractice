@@ -150,7 +150,7 @@ void sort3(size_t numberOfElements)
         std::cout << "  caught std::bad_alloc from thrust::sort" << std::endl;
     }
 
-    alloc.deallocate(reinterpret_cast<char*>(raw_ptr), vecSize * sizeof(int));
+    alloc.deallocate(reinterpret_cast<char*>(raw_ptr), numberOfElements * sizeof(int));
 }
 
 int main(int argc, char *argv[]){
