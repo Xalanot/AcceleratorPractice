@@ -8,7 +8,7 @@
 
 #include "common_pinned_memory.h"
 
-#define DEBUG 1
+#define DEBUG 0
 
 class fallback_allocator
 {
