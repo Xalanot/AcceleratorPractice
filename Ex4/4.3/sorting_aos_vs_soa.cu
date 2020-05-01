@@ -92,9 +92,53 @@ void sortSoA(size_t N, MeasurementSeries<T>& measurementSeries)
     assert(thrust::is_sorted(keys_h.begin(), keys_h.end()));
 }
 
+template<typename T>
+void sort3(size_t N, MeasurementSeries<T>& measurementSeries)
+{
+    thrust::host_vector<MyStruct> structures_h(N);
+    thrust::device_vector<MyStruct> structures_d(N);
+    thrust::device_vector<int> keys(N);
+    thrust::device_vector<int> values(N);
+
+    initialize_keys(structures_h);
+
+    cudaDeviceSynchronize();
+    measurementSeries.start();
+
+    // Copy SoA to device
+    structures_d = structures_h;
+    // Transfer data to AoS on device
+    thrust::transform(structures_d.begin(), structures_d.end(), keys.begin(), [] __device__ __host__ (MyStruct str) {return str.key;});
+    thrust::transform(structures_d.begin(), structures_d.end(), values.begin(), [] __device__ __host__ (MyStruct str) {return str.value;});
+    
+    // Sort on the device with SoA format
+    thrust::sort_by_key(keys.begin(), keys.end(), values.begin());
+    assert(thrust::is_sorted(keys.begin(), keys.end()));
+    
+    // Transfer data back to host
+    thrust::transform(keys.begin(), keys.end(), structures_d.begin(), [] __device__ __host__ (int key) 
+                      {MyStruct str;
+                       str.key = key;
+                       return str;});
+    thrust::transform(thrust::make_zip_iterator(thrust::make_tuple(keys.begin(), values.begin())),
+                      thrust::make_zip_iterator(thrust::make_tuple(keys.end(), values.end())),
+                      structures_d.begin(),
+                      [] __device__ __host__ (thrust::tuple<int, float> t)
+                      {MyStruct str;
+                      str.key = thrust::get<0>(t);
+                      str.value = thrust::get<1>(t);
+                      return str;});
+
+    structures_h = structures_d;
+    
+    cudaDeviceSynchronize();
+    measurementSeries.stop();
+    assert(thrust::is_sorted(keys_h.begin(), keys_h.end()));
+}
+
 int main(void)
 {
-  typedef std::chrono::microseconds time;
+  typedef std::chrono::milliseconds time;
   size_t N = 2 * 1024 * 1024;
   int iterations = 10;
 
@@ -112,8 +156,16 @@ int main(void)
       sortSoA(N, SoASeries);
   }
 
+  // Sort 3
+  MeasurementSeries<time> thirdSeries;
+  for (int i = 0; i < iterations; ++i)
+  {
+      sort3(N, third);
+  }
+
   std::cout << "aos: " << AoSSeries << std::endl;
   std::cout << "soa: " << SoASeries << std::endl;
+  std::cozt << "three: " << thirdSeries << std::endl;
 
   return 0;
 }
