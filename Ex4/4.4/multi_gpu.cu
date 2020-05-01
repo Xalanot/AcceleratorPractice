@@ -136,7 +136,7 @@ int main(int argc, char **argv)
         checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
         cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);        
 
-        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(Y_h + i * 2), thrust::raw_pointer_cast(Y_d.data()), 2, cudaMemcpyDeviceToHost, deviceManagers[i].d2hStream));
+        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(Y_h), thrust::raw_pointer_cast(Y_d.data()), 2, cudaMemcpyDeviceToHost, deviceManagers[i].d2hStream));
 
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].d2hStream));
         cudaStreamWaitEvent(deviceManagers[i].d2hStream, deviceManagers[i].copyEvent, 0); 
