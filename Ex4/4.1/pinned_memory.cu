@@ -182,6 +182,7 @@ int main(int argc, char *argv[]){
 
     for (size_t i = 20; i < 33; ++i)
     {
+        std::cout << i << std::endl;
         size_t numberOfElements = static_cast<size_t>(1) << i;
         if (!checkDevice(sizeof(int) * i))
         {
