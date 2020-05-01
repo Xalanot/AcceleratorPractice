@@ -61,8 +61,8 @@ struct saxpy_functor : public thrust::binary_function<float,float,float>
         }
 };
 
-struct deviceManager{
-    deviceManager(int i)
+struct DeviceManager{
+    DeviceManager(int i)
     {
         cudaSetDevice(i);
 
@@ -101,7 +101,11 @@ int main(int argc, char **argv)
     std::cout << "X3: " << X_h[3] << std::endl;
     std::cout << "Y3: " << Y_h[3] << std::endl;
 
-    std::vector<deviceManager> deviceManagers(deviceCount);
+    std::vector<DeviceManager> deviceManagers;
+    for (int i = 0; i < deviceCount; ++i)
+    {
+        deviceManagers.emplace_back( {i} );
+    }
 
     #pragma omp parallel num_threads(deviceCount)
     for (int i = 0; i < deviceCount; ++i)
