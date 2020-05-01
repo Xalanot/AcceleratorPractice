@@ -124,6 +124,11 @@ int main(int argc, char **argv)
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].h2dStream));
         cudaStreamWaitEvent(deviceManagers[i].h2dStream, deviceManagers[i].copyEvent, 0);
 
+        for (int i = 0; i < 2; ++i)
+        {
+            std::cout << "Y_d: " << Y_d[0] << std::endl;
+        }
+
         //checkCudaError(cudaEventRecord(deviceManagers[i].start, deviceManagers[i].transformStream));
         thrust::transform(thrust::cuda::par.on(deviceManagers[i].transformStream), X_d.begin(), X_d.end(), Y_d.begin(), Y_d.begin(), saxpy_functor(2));
         //checkCudaError(cudaEventRecord(deviceManagers[i].stop, deviceManagers[i].transformStream));
