@@ -100,7 +100,7 @@ void sort1(size_t numberOfElements)
     int* hostMemPointer = nullptr;
     checkCudaError(cudaHostAlloc((void**)&hostMemPointer, memSize, 0));
 
-    thrust::tabulate(hostMemPointer, hostMemPointer + numberOfElements, get_rand_number(1337, numberOfElements));
+    thrust::tabulate(hostMemPointer, hostMemPointer + numberOfElements, get_rand_number(1337, 10 * numberOfElements));
     
     // copy to device with hostpointer
     thrust::device_vector<int> device_vec(hostMemPointer, hostMemPointer + numberOfElements);
