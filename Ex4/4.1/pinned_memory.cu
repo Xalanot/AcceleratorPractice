@@ -143,7 +143,6 @@ void checkDevice()
         std::cout << "Device #" << device 
             << " [" << properties.name << "] with " 
             << properties.totalGlobalMem << " bytes of device memory is compatible" << std::endl
-            << "Datasize is: " << memSize << "\t" << "Max memsize is:" << properties.totalGlobalMem - (100*1024*1024) << std::endl;
     }  
 }
 
