@@ -165,7 +165,7 @@ int main(void)
 
   std::cout << "aos: " << AoSSeries << std::endl;
   std::cout << "soa: " << SoASeries << std::endl;
-  std::cozt << "three: " << thirdSeries << std::endl;
+  std::cout << "three: " << thirdSeries << std::endl;
 
   return 0;
 }
