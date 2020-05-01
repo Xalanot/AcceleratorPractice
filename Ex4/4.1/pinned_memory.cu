@@ -152,7 +152,7 @@ void checkDevice(size_t memSize)
 
 
 int main(int argc, char *argv[]){
-    size_t vecSize = static_cast<size_t>(1) << 32;
+    size_t vecSize = static_cast<size_t>(1) << 10;
     std::cout << vecSize << std::endl;
     size_t memSize = sizeof(int) * vecSize;
     checkDevice(memSize);
