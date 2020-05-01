@@ -104,110 +104,58 @@ void sort1(size_t numberOfElements)
     
     // copy to device with hostpointer
     thrust::device_vector<int> device_vec(hostMemPointer, hostMemPointer + numberOfElements);
-    for (int i = 0; i < device_vec.size(); ++i)
-    {
-        std::cout << device_vec[i] << std::endl;
-    }
-    std::cout << "sort" << std::endl;
     // sort on device
     thrust::sort(device_vec.begin(), device_vec.end());
     // transfer back to host
-    for (int i = 0; i < device_vec.size(); ++i)
-    {
-        std::cout << device_vec[i] << std::endl;
-    }
     thrust::host_vector<int> host_vec = device_vec;
-
 
     cudaFreeHost(hostMemPointer);
 }
 
+void sort2(size_t numberOfElements)
+{
+    size_t memSize = sizeof(int) * numberOfElements;
+    checkDevice(memSize);
+
+    int* hostMemPointer = nullptr;
+    checkCudaError(cudaHostAlloc((void**)&hostMemPointer, memSize, cudaHostAllocPortable));
+
+    thrust::tabulate(hostMemPointer, hostMemPointer + numberOfElements, get_rand_number(1337, 10 * numberOfElements));
+    
+    // copy to device with hostpointer
+    thrust::device_vector<int> device_vec(hostMemPointer, hostMemPointer + numberOfElements);
+    // sort on device
+    thrust::sort(device_vec.begin(), device_vec.end());
+    // transfer back to host
+    thrust::host_vector<int> host_vec = device_vec;
+
+    cudaFreeHost(hostMemPointer);   
+}
+
+void sort3(size_t numberOfElements)
+{
+    fallback_allocator alloc;
+
+    // use our special malloc to allocate
+    int *raw_ptr = reinterpret_cast<int*>(alloc.allocate(numberOfElements * sizeof(int)));        
+
+    thrust::cuda::pointer<int> begin = thrust::cuda::pointer<int>(raw_ptr);
+    thrust::cuda::pointer<int> end   = begin + numberOfElements;        
+
+    thrust::tabulate(begin, end, get_rand_number(1337, numberOfElements));
+    try{
+        thrust::sort(thrust::cuda::par(alloc), begin, end);
+    }
+    catch(std::bad_alloc){
+        std::cout << "  caught std::bad_alloc from thrust::sort" << std::endl;
+    }
+
+    alloc.deallocate(reinterpret_cast<char*>(raw_ptr), vecSize * sizeof(int));
+}
+
 int main(int argc, char *argv[]){
     size_t numberOfElements= static_cast<size_t>(1) << 2;
-    sort1(numberOfElements);
-    /*size_t vecSize;
-    vecSize = atoll(argv[1]);
-    size_t memSize = sizeof(int)*vecSize;
-    int *hostMemPointer = NULL;
-    double timer0, timer1, timer2;
-    int device;
-    int sufficientMemSize = 1;
-    //int *deviceMemPointer = NULL;
-
-    // 4.1.1 sort on gpu with copy from host and transfer back
-    if(sufficientMemSize)
-    {
-        checkCudaError(cudaHostAlloc((void**)&hostMemPointer, memSize, 0));
-
-        thrust::tabulate(hostMemPointer, hostMemPointer + vecSize, get_rand_number(123, vecSize));
-
-        cudaDeviceSynchronize();
-        auto timer_start = std::chrono::high_resolution_clock::now();
-        
-        // copy to device with hostpointer
-        thrust::device_vector<int>device_vec(hostMemPointer, hostMemPointer + vecSize);
-        // sort on device
-        thrust::sort(device_vec.begin(), device_vec.end());
-        // transfer back to host
-        thrust::host_vector<int>host_vec = device_vec;
-
-        auto timer_end = std::chrono::high_resolution_clock::now();
-        timer0 = std::chrono::duration<double>(timer_end - timer_start).count();
-
-        cudaFreeHost(hostMemPointer);
-    }
-
-    // 4.1.2 sort on gpu with no copy
-    if(sufficientMemSize)
-    {
-        hostMemPointer = NULL;
-        // allocate space on host in cuda adress space
-        checkCudaError(cudaHostAlloc((void**)&hostMemPointer, memSize, cudaHostAllocPortable));
-
-        thrust::tabulate(hostMemPointer, hostMemPointer + vecSize, get_rand_number(123, vecSize));
-        
-        // set device vector to pointer of host memory in cuda adress space
-        thrust::device_vector<int>device_vec_unf(hostMemPointer, hostMemPointer + vecSize);
-        
-        cudaDeviceSynchronize();
-        auto timer_start = std::chrono::high_resolution_clock::now();
-        // sort on device
-        thrust::sort(device_vec_unf.begin(), device_vec_unf.end());
-        auto timer_end = std::chrono::high_resolution_clock::now();
-
-        timer1 = std::chrono::duration<double>(timer_end - timer_start).count();
-
-        cudaFreeHost(hostMemPointer);
-    }
-
-    // 4.1.3 sort on host and device memory with fallback allocator
-    {
-        fallback_allocator alloc;
-
-        // use our special malloc to allocate
-        int *raw_ptr = reinterpret_cast<int*>(alloc.allocate(vecSize * sizeof(int)));        
-
-        thrust::cuda::pointer<int> begin = thrust::cuda::pointer<int>(raw_ptr);
-        thrust::cuda::pointer<int> end   = begin + vecSize;        
-
-        thrust::tabulate(begin, end, get_rand_number(123, vecSize));
-
-        cudaDeviceSynchronize();
-        auto timer_start = std::chrono::high_resolution_clock::now();
-        try{
-            thrust::sort(thrust::cuda::par(alloc), begin, end);
-        }
-        catch(std::bad_alloc){
-            std::cout << "  caught std::bad_alloc from thrust::sort" << std::endl;
-        }
-        auto timer_end = std::chrono::high_resolution_clock::now();
-
-        timer2 = std::chrono::duration<double>(timer_end - timer_start).count();
-
-        alloc.deallocate(reinterpret_cast<char*>(raw_ptr), vecSize * sizeof(int));
-    }
-
-    std::cout << vecSize << "\t" << timer0 << "\t" << timer1 << "\t" << timer2 << "\t" << std::endl; */
+    sort3(numberOfElements);
 
     return 0;
 }
