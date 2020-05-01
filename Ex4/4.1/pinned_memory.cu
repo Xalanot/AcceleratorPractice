@@ -173,7 +173,7 @@ void sort3(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
 }
 
 int main(int argc, char *argv[]){
-    int iterations = 100;
+    int iterations = 10;
 
     std::vector<int> sizes;
     std::vector<MeasurementSeries<std::chrono::milliseconds>> sort1Times;
