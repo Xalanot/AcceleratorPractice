@@ -66,12 +66,12 @@ struct DeviceManager{
     {
         cudaSetDevice(i);
 
-        checkCudaError(cudaStreamCreateWithFlags(h2dStream, cudaStreamNonBlocking));
-        checkCudaError(cudaStreamCreateWithFlags(d2hStream, cudaStreamNonBlocking));  
-        checkCudaError(cudaStreamCreateWithFlags(transformStream, cudaStreamNonBlocking));
+        checkCudaError(cudaStreamCreateWithFlags(&h2dStream, cudaStreamNonBlocking));
+        checkCudaError(cudaStreamCreateWithFlags(&d2hStream, cudaStreamNonBlocking));  
+        checkCudaError(cudaStreamCreateWithFlags(&transformStream, cudaStreamNonBlocking));
 
-        checkCudaError(cudaEventCreate(transformEvent));
-        checkCudaError(cudaEventCreate(copyEvent));
+        checkCudaError(cudaEventCreate(&transformEvent));
+        checkCudaError(cudaEventCreate(&copyEvent));
     }
 
     cudaStream_t h2dStream, d2hStream, transformStream;
