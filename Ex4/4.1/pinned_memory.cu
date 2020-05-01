@@ -190,21 +190,21 @@ int main(int argc, char *argv[]){
 
         sizes.push_back(i);
 
-        MeasurementSeries<std::chrono::milliseconds>> sort1Series;
+        MeasurementSeries<std::chrono::milliseconds> sort1Series;
         for (int j = 0; j < iterations; ++j)
         {
             sort1(numberOfElements, sort1Series);
         }
         sort1Times.push_back(sort1Series);
 
-        MeasurementSeries<std::chrono::milliseconds>> sort2Series;
+        MeasurementSeries<std::chrono::milliseconds> sort2Series;
         for (int j = 0; j < iterations; ++j)
         {
             sort2(numberOfElements, sort2Series);
         }
         sort2Times.push_back(sort2Series);
 
-        MeasurementSeries<std::chrono::milliseconds>> sort3Series;
+        MeasurementSeries<std::chrono::milliseconds> sort3Series;
         for (int j = 0; j < iterations; ++j)
         {
             sort3(numberOfElements, sort3Series);
