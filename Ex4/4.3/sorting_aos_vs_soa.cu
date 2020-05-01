@@ -37,17 +37,13 @@ void initialize_keys(thrust::host_vector<int>& keys)
 }
 
 
-void initialize_keys(thrust::device_vector<MyStruct>& structures)
+void initialize_keys(thrust::host_vector<MyStruct>& structures)
 {
   thrust::default_random_engine rng;
   thrust::uniform_int_distribution<int> dist(0, 2147483647);
 
-  thrust::host_vector<MyStruct> h_structures(structures.size());
-
-  for(size_t i = 0; i < h_structures.size(); i++)
-    h_structures[i].key = dist(rng);
-
-  structures = h_structures;
+  for(size_t i = 0; i < structures.size(); i++)
+    structures[i].key = dist(rng);
 }
 
 template<typename T>
