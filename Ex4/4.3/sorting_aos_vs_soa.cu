@@ -64,8 +64,10 @@ void sortAoS(size_t N, MeasurementSeries<T>& measurementSeries)
     measurementSeries.start();
 
     thrust::device_vector<MyStruct> structures_d = structures_h;
+
     thrust::sort(structures_d.begin(), structures_d.end());
-    thrust::device_vector<MyStruct> structures_h = Structures_d;
+    
+    structures_h = Structures_d;
 
     cudaDeviceSynchronize();
     measurementSeries.stop();
@@ -106,14 +108,14 @@ int main(void)
 
   // Sort Key-Value pairs using Array of Structures (AoS) storage 
   MeasurementSeries<time> AoSSeries;
-  for (int i = 0; i < iterations)
+  for (int i = 0; i < iterations; ++i)
   {
       sortAoS(N, AoSSeries);
   }
 
   // Sort Key-Value pairs using Structure of Arrays (SoA) storage 
   MeasurementSeries<time> SoASeries;
-  for (int i = 0; i < iterations)
+  for (int i = 0; i < iterations; ++i)
   {
       sortSoA(N, SoASeries);
   }
