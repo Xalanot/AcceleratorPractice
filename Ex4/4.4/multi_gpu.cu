@@ -118,7 +118,7 @@ int main(int argc, char **argv)
         thrust::device_vector<float> X_d(2);
         thrust::device_vector<float> Y_d(2);
 
-        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h.data() + i * 2), 2, cudaMemcpyHostToDevice, deviceManagers[i].h2dStream));
+        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + i * 2), 2, cudaMemcpyHostToDevice, deviceManagers[i].h2dStream));
         checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(Y_d.data()), thrust::raw_pointer_cast(Y_h.data()) + i * 2, 2, cudaMemcpyHostToDevice, deviceManagers[i].h2dStream));
 
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].h2dStream));
