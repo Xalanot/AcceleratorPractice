@@ -160,7 +160,7 @@ int main(void)
   MeasurementSeries<time> thirdSeries;
   for (int i = 0; i < iterations; ++i)
   {
-      sort3(N, third);
+      sort3(N, thirdSeries);
   }
 
   std::cout << "aos: " << AoSSeries << std::endl;
