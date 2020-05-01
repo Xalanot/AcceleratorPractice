@@ -6,18 +6,7 @@
 #include <thrust/memory.h>
 #include <thrust/system/cuda/memory.h>
 
-#define DEBUG 1
-
-// Error handeling of cuda functions
-#define checkCudaError(ans) { gpuAssert((ans), __FILE__, __LINE__); }
-inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
-{
-   if (code != cudaSuccess)
-   {
-      fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
-      if (abort) exit(code);
-   }
-}
+#include "common_pinned_memory.h"
 
 
 class fallback_allocator
@@ -102,66 +91,39 @@ class fallback_allocator
     }
 };
 
-
-struct get_rand_number : public thrust::binary_function<void, void, size_t>
-{  
-  int seed;
-  size_t maxRange;
-  thrust::default_random_engine rng;
-  thrust::uniform_int_distribution<size_t> rng_index;
-
-  get_rand_number(int seed, size_t maxRange) {
-    seed = seed;
-    maxRange = maxRange;
-    rng = thrust::default_random_engine(seed);
-    rng_index = thrust::uniform_int_distribution<size_t>(0, maxRange);
-  }    
-
-  __host__ __device__
-  size_t operator()(long x)
-  {
-    return rng_index(rng);
-  }
-};
-
-size_t bytesToGBytes(size_t bytes)
+void sort1(size_t numberOfElements)
 {
-    return bytes >> 30;
-}
+    size_t memSize = sizeof(int) * numberOfElements;
+    checkDevice(memSize);
 
-void checkDevice(size_t memSize)
-{
-    int device;
-    cudaGetDevice(&device);
-    cudaDeviceProp properties;
-    cudaGetDeviceProperties(&properties, device);
+    int* hostMemPointer = nullptr;
+    checkCudaError(cudaHostAlloc((void**)&hostMemPointer, memSize, 0));
 
-    // check if the device supports unifiedAdressing and mapHostMemory
-    if(!properties.unifiedAddressing || !properties.canMapHostMemory)
+    thrust::tabulate(hostMemPointer, hostMemPointer + numberOfElements, get_rand_number(1337, vecSize));
+    
+    // copy to device with hostpointer
+    thrust::device_vector<int> device_vec(hostMemPointer, hostMemPointer + numberOfElements);
+    for (int i = 0; i < device_vec.size(); ++i)
     {
-        std::cout << "Device #" << device 
-            << " [" << properties.name << "] does not support memory mapping" << std::endl;
-        exit(1);
+        std::cout << device_vec[i] << std::endl;
     }
-    else
+    std::cout << "sort" << std::endl
+    // sort on device
+    thrust::sort(device_vec.begin(), device_vec.end());
+    // transfer back to host
+    for (int i = 0; i < device_vec.size(); ++i)
     {
-        // check if there is enough memory size on the deive, we want to leave 5% left over
-        if (properties.totalGlobalMem * 0.95 < memSize)
-        {
-            std::cout << "Device #" << device
-                << " [" << properties.name << "] does not have enough memory" << std::endl;
-            std::cout << "There is " << bytesToGBytes(memSize - properties.totalGlobalMem * 0.95) << "GB too few bytes of memory" << std::endl;
-            exit(1);
-        }
-    }  
-}
+        std::cout << device_vec[i] << std::endl;
+    }
+    thrust::host_vector<int> host_vec = device_vec;
 
+
+    cudaFreeHost(hostMemPointer);
+}
 
 int main(int argc, char *argv[]){
-    size_t vecSize = static_cast<size_t>(1) << 32;
-    std::cout << vecSize << std::endl;
-    size_t memSize = sizeof(int) * vecSize;
-    checkDevice(memSize);
+    size_t numberOfElements= static_cast<size_t>(1) << 2;
+    sort1(numberOfElements);
     /*size_t vecSize;
     vecSize = atoll(argv[1]);
     size_t memSize = sizeof(int)*vecSize;
@@ -170,38 +132,6 @@ int main(int argc, char *argv[]){
     int device;
     int sufficientMemSize = 1;
     //int *deviceMemPointer = NULL;
-
-    if(DEBUG){
-        std::cout << "Vector size: " << vecSize << std::endl;
-        std::cout << "Memory size: " << memSize << std::endl;
-    }    
-
-    cudaGetDevice(&device);
-    cudaDeviceProp properties;
-    cudaGetDeviceProperties(&properties, device);
-
-    // this example requires both unified addressing and memory mapping    
-    if(DEBUG)
-        if(!properties.unifiedAddressing || !properties.canMapHostMemory)
-        {
-            std::cout << "Device #" << device 
-                << " [" << properties.name << "] does not support memory mapping" << std::endl;
-            return 0;
-        }
-        else
-        {
-            std::cout << "Device #" << device 
-                << " [" << properties.name << "] with " 
-                << properties.totalGlobalMem << " bytes of device memory is compatible" << std::endl
-                << "Datasize is: " << memSize << "\t" << "Max memsize is:" << properties.totalGlobalMem - (100*1024*1024) << std::endl;
-        }    
-    
-    // subtract 100Mib so there is some place for other stuff
-    if(memSize > properties.totalGlobalMem - (100*1024*1024))
-        sufficientMemSize = 0;
-
-    if(DEBUG)
-        std::cout << "Sufficient memory size: " << sufficientMemSize << std::endl;
 
     // 4.1.1 sort on gpu with copy from host and transfer back
     if(sufficientMemSize)
