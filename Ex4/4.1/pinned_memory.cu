@@ -142,13 +142,13 @@ void checkDevice()
     {
         std::cout << "Device #" << device 
             << " [" << properties.name << "] with " 
-            << properties.totalGlobalMem << " bytes of device memory is compatible" << std::endl
+            << properties.totalGlobalMem << " bytes of device memory is compatible" << std::endl;
     }  
 }
 
 
 int main(int argc, char *argv[]){
-    checkDevice()
+    checkDevice();
     /*size_t vecSize;
     vecSize = atoll(argv[1]);
     size_t memSize = sizeof(int)*vecSize;
@@ -263,7 +263,7 @@ int main(int argc, char *argv[]){
         alloc.deallocate(reinterpret_cast<char*>(raw_ptr), vecSize * sizeof(int));
     }
 
-    std::cout << vecSize << "\t" << timer0 << "\t" << timer1 << "\t" << timer2 << "\t" << std::endl;
+    std::cout << vecSize << "\t" << timer0 << "\t" << timer1 << "\t" << timer2 << "\t" << std::endl; */
 
-    return 0;*/
+    return 0;
 }
