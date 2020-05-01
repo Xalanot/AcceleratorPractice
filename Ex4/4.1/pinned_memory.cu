@@ -143,7 +143,7 @@ void checkDevice(size_t memSize)
         // check if there is enough memory size on the deive, we want to leave 5% left over
         if (properties.totalGlobalMem * 0.95 < memSize)
         {
-            std::cout << "Device #" << device <<
+            std::cout << "Device #" << device
                 << " [" << properties.name << "] does not have enough memory" << std::endl;
             exit(1);
         }
