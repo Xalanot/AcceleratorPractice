@@ -42,7 +42,7 @@ size_t bytesToGBytes(size_t bytes)
     return bytes >> 30;
 }
 
-void checkDevice(size_t memSize)
+bool checkDevice(size_t memSize)
 {
     int device;
     cudaGetDevice(&device);
@@ -52,19 +52,27 @@ void checkDevice(size_t memSize)
     // check if the device supports unifiedAdressing and mapHostMemory
     if(!properties.unifiedAddressing || !properties.canMapHostMemory)
     {
-        std::cout << "Device #" << device 
+        if (DEBUG)
+        {
+            std::cout << "Device #" << device 
             << " [" << properties.name << "] does not support memory mapping" << std::endl;
-        exit(1);
+        }
+        return false;
     }
     else
     {
         // check if there is enough memory size on the deive, we want to leave 5% left over
         if (properties.totalGlobalMem * 0.95 < memSize)
         {
-            std::cout << "Device #" << device
-                << " [" << properties.name << "] does not have enough memory" << std::endl;
-            std::cout << "There is " << bytesToGBytes(memSize - properties.totalGlobalMem * 0.95) << "GB too few bytes of memory" << std::endl;
-            exit(1);
+            if (DEBUG)
+            {
+                std::cout << "Device #" << device
+                    << " [" << properties.name << "] does not have enough memory" << std::endl;
+                std::cout << "There is " << bytesToGBytes(memSize - properties.totalGlobalMem * 0.95) << "GB too few bytes of memory" << std::endl;
+            }
+            return false;
         }
-    }  
+    }
+
+    return true;  
 }
