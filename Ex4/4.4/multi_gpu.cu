@@ -124,9 +124,9 @@ int main(int argc, char **argv)
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].h2dStream));
         cudaStreamWaitEvent(deviceManagers[i].h2dStream, deviceManagers[i].copyEvent, 0);
 
-        for (int i = 0; i < 2; ++i)
+        for (int j = 0; i < 2; ++j)
         {
-            std::cout << "Y_d: " << Y_d[0] << std::endl;
+            std::cout << "Y_d: " << Y_d[j] << std::endl;
         }
 
         //checkCudaError(cudaEventRecord(deviceManagers[i].start, deviceManagers[i].transformStream));
