@@ -133,7 +133,7 @@ void sort3(size_t N, MeasurementSeries<T>& measurementSeries)
     
     cudaDeviceSynchronize();
     measurementSeries.stop();
-    assert(thrust::is_sorted(keys_h.begin(), keys_h.end()));
+    assert(thrust::is_sorted(structures_h.begin(), structures_h.end()));
 }
 
 int main(void)
