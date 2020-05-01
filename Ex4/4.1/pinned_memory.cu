@@ -140,15 +140,21 @@ void checkDevice()
     }
     else
     {
-        std::cout << "Device #" << device 
-            << " [" << properties.name << "] with " 
-            << properties.totalGlobalMem << " bytes of device memory is compatible" << std::endl;
+        // check if there is enough memory size on the deive, we want to leave 5% left over
+        if (properties.totalGlobalMem * 0.95 < memSize)
+        {
+            std::cout << "Device #" << device <<
+                << " [" << properties.name << "] does not have enough memory" << std::endl;
+            exit(1)
+        }
     }  
 }
 
 
 int main(int argc, char *argv[]){
-    checkDevice();
+    checkDevice(size_t memSize);
+    size_t vecSize = static_cast<size_t>(1) << 32;
+    std::cout << vecSize << std::endl;
     /*size_t vecSize;
     vecSize = atoll(argv[1]);
     size_t memSize = sizeof(int)*vecSize;
