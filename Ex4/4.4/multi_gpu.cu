@@ -64,7 +64,7 @@ struct saxpy_functor : public thrust::binary_function<float,float,float>
 struct DeviceManager{
     DeviceManager(int i)
     {
-        cudaSetDevice(i);
+        checkCudaError(cudaSetDevice(i));
 
         checkCudaError(cudaStreamCreateWithFlags(&h2dStream, cudaStreamNonBlocking));
         checkCudaError(cudaStreamCreateWithFlags(&d2hStream, cudaStreamNonBlocking));  
