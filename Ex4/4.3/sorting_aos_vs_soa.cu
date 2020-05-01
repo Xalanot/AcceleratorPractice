@@ -59,7 +59,7 @@ void sortAoS(size_t N, MeasurementSeries<T>& measurementSeries)
 
     thrust::sort(structures_d.begin(), structures_d.end());
 
-    structures_h = Structures_d;
+    structures_h = structures_d;
 
     cudaDeviceSynchronize();
     measurementSeries.stop();
@@ -81,7 +81,7 @@ void sortSoA(size_t N, MeasurementSeries<T>& measurementSeries)
     thrust::device_vector<int> keys_d = keys_h;
     thrust::device_vector<float> values_d = values_h;
 
-    thrust::sort_by_key(keys.begin(), keys.end(), values.begin());
+    thrust::sort_by_key(keys_d.begin(), keys_d.end(), values_d.begin());
 
     keys_d = keys_h;
     values_d = values_h;
