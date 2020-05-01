@@ -108,7 +108,7 @@ int main(int argc, char **argv)
     }
 
     #pragma omp parallel num_threads(deviceCount)
-    for (int i = 0; i < deviceCount; ++i)
+    for (int i = 0; i < 1; ++i)
     {
         std::cout << "i: " << i << std::endl;
         // set the device
