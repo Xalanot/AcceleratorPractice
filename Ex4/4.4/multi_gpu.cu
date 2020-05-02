@@ -18,38 +18,6 @@
 #include <cassert>
 #include <thrust/system/cuda/memory.h>
 
-// Error handeling of cuda functions
-#define checkCudaError(ans) { gpuAssert((ans), __FILE__, __LINE__); }
-inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
-{
-   if (code != cudaSuccess)
-   {
-      fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
-      if (abort) exit(code);
-   }
-};
-
-struct get_rand_number : public thrust::binary_function<void, void, float>
-{  
-  int seed;
-  size_t maxRange;
-  thrust::default_random_engine rng;
-  thrust::random::uniform_real_distribution<float> rng_index;
-
-  get_rand_number(int seed, size_t maxRange) {
-    seed = seed;
-    maxRange = maxRange;
-    rng = thrust::default_random_engine(seed);
-    rng_index = thrust::uniform_real_distribution<float>(0, maxRange);
-  }    
-
-  __host__ __device__
-  float operator()(long x)
-  {
-    return rng_index(rng);
-  }
-};
-
 struct saxpy_functor : public thrust::binary_function<float,float,float>
 {
     const float a;
@@ -62,36 +30,18 @@ struct saxpy_functor : public thrust::binary_function<float,float,float>
         }
 };
 
-struct DeviceManager{
-    DeviceManager(int i)
-    {
-        checkCudaError(cudaSetDevice(i));
-
-        checkCudaError(cudaStreamCreateWithFlags(&h2dStream, cudaStreamNonBlocking));
-        checkCudaError(cudaStreamCreateWithFlags(&d2hStream, cudaStreamNonBlocking));  
-        checkCudaError(cudaStreamCreateWithFlags(&transformStream, cudaStreamNonBlocking));
-
-        checkCudaError(cudaEventCreate(&transformEvent));
-        checkCudaError(cudaEventCreate(&copyEvent));
-    }
-
-    cudaStream_t h2dStream, d2hStream, transformStream;
-    cudaEvent_t transformEvent, copyEvent;
-};
-
-int main(int argc, char **argv)
+void saxpy_multi_vs_single(size_t N, int deviceCount)
 {
     size_t float_size = sizeof(float);
-    int deviceCount;
-    checkCudaError(cudaGetDeviceCount(&deviceCount));
-    
+
     float* X_h = nullptr;
     float* Y_h = nullptr;
-    size_t N = 1000000;
+    float* Z_h_multi = nullptr;
 
     // allocate memory on host device
     checkCudaError(cudaHostAlloc(&X_h, float_size * N, 0));
     checkCudaError(cudaHostAlloc(&Y_h, float_size * N, 0));
+    Z_h_multi = static_cast<float*>(malloc(N * float_size))
 
     // fill data with random values
     thrust::tabulate(X_h, X_h + N, get_rand_number(42, 10));
@@ -102,44 +52,61 @@ int main(int argc, char **argv)
     std::cout << "X3: " << X_h[3] << std::endl;
     std::cout << "Y3: " << Y_h[3] << std::endl;
 
+    // call saxpy_multi
+    saxpy_multi(2.f, X_h, Y_h, Z_h, N, deviceCount);
+
+    std::cout << "Z0: " << Z_h[0] << std::endl;
+    std::cout << "Z3: " << Z_h[3] << std::endl;
+}
+
+void saxpy_multi(float a, float* X_h, float* Y_h, float* Z_h, size_t N, int deviceCount)
+{
     std::vector<DeviceManager> deviceManagers;
     for (int i = 0; i < deviceCount; ++i)
     {
         deviceManagers.emplace_back( DeviceManager{i} );
     }
 
+    size_t deviceSize = N / deviceCount;
+    size_t float_size = sizeof(float);
+
     #pragma omp parallel for num_threads(deviceCount)
-    for (int i = 0; i < 2; ++i)
+    for (int i = 0; i < deviceCount; ++i)
     {
-        std::cout << "i: " << i << std::endl;
         // set the device
         checkCudaError(cudaSetDevice(i));
 
         // copy data on the device
-        thrust::device_vector<float> X_d(N / 2);
-        thrust::device_vector<float> Y_d(N / 2);
+        thrust::device_vector<float> X_d(deviceSize);
+        thrust::device_vector<float> Y_d(deviceSize);
+        thrust::device_vector<float> Z_d(deviceSize);
 
-        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + i * N / 2), N / 2 * float_size, cudaMemcpyHostToDevice, deviceManagers[i].h2dStream));
-        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(Y_d.data()), thrust::raw_pointer_cast(Y_h + i * N / 2), N / 2 * float_size, cudaMemcpyHostToDevice, deviceManagers[i].h2dStream));
+        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + i * deviceSize), deviceSize * float_size, cudaMemcpyHostToDevice, deviceManagers[i].h2dStream));
+        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(Y_d.data()), thrust::raw_pointer_cast(Y_h + i * deviceSize), deviceSize * float_size, cudaMemcpyHostToDevice, deviceManagers[i].h2dStream));
 
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].h2dStream));
         cudaStreamWaitEvent(deviceManagers[i].h2dStream, deviceManagers[i].copyEvent, 0);
 
         //checkCudaError(cudaEventRecord(deviceManagers[i].start, deviceManagers[i].transformStream));
-        thrust::transform(thrust::cuda::par.on(deviceManagers[i].transformStream), X_d.begin(), X_d.end(), Y_d.begin(), Y_d.begin(), saxpy_functor(2));
+        thrust::transform(thrust::cuda::par.on(deviceManagers[i].transformStream), X_d.begin(), X_d.end(), Y_d.begin(), Z_d.begin(), saxpy_functor(a));
         //checkCudaError(cudaEventRecord(deviceManagers[i].stop, deviceManagers[i].transformStream));
 
         checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
         cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);        
         //std::cout << "copy back" << std::endl;
-        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(Y_h + i * N / 2), thrust::raw_pointer_cast(Y_d.data()), N / 2 * float_size, cudaMemcpyDeviceToHost, deviceManagers[i].d2hStream));
+        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(Z_h + i * deviceSize), thrust::raw_pointer_cast(Z_d.data()), deviceSize * float_size, cudaMemcpyDeviceToHost, deviceManagers[i].d2hStream));
 
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].d2hStream));
         cudaStreamWaitEvent(deviceManagers[i].d2hStream, deviceManagers[i].copyEvent, 0); 
     }
+}
 
-    std::cout << "Z0: " << Y_h[0] << std::endl;
-    std::cout << "Z3: " << Y_h[3] << std::endl;
+int main(int argc, char **argv)
+{ 
+    int deviceCount;
+    checkCudaError(cudaGetDeviceCount(&deviceCount));
+
+    saxpy_multi_vs_single(2, deviceCount);
 
     return 0;
 }
