@@ -21,7 +21,7 @@
 
 #include "common_multi_gpu.h"
 
-#include "..pml/measurement.h"
+#include "../pml/measurement.h"
 
 struct saxpy_functor : public thrust::binary_function<float,float,float>
 {
