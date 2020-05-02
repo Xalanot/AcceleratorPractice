@@ -161,7 +161,7 @@ int main(int argc, char **argv)
     int deviceCount;
     checkCudaError(cudaGetDeviceCount(&deviceCount));
 
-    saxpy_multi_vs_single(100000000, deviceCount);
+    saxpy_multi_vs_single(1000000000, deviceCount);
 
     return 0;
 }
