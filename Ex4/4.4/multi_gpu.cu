@@ -92,6 +92,7 @@ void saxpy_multi(float a, float* X_h, float* Y_h, float* Z_h, size_t N, int devi
 
         checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
         cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);
+        checkCudaError(cudaEventSynchronize(deviceManagers[i].stop));
         checkCudaError(cudaEventElapsedTime(&deviceManagers[i].myTime, deviceManagers[i].start, deviceManagers[i].stop));
 
         checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(Z_h + i * deviceSize), thrust::raw_pointer_cast(Z_d.data()), deviceSize * float_size, cudaMemcpyDeviceToHost, deviceManagers[i].d2hStream));
