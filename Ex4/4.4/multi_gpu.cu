@@ -18,6 +18,8 @@
 #include <cassert>
 #include <thrust/system/cuda/memory.h>
 
+#include "common_multi_gpu.h"
+
 struct saxpy_functor : public thrust::binary_function<float,float,float>
 {
     const float a;
