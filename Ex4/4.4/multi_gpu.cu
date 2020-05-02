@@ -32,6 +32,22 @@ struct saxpy_functor : public thrust::binary_function<float,float,float>
         }
 };
 
+void saxpy_single(float a, float* X_h, float* Y_h, float* Z_h, size_t N)
+{
+    checkCudaError(cudaSetDevice(0));
+
+    thrust::device_vector<float> X_d(N);
+    thrust::device_vector<float> Y_d(N);
+    thrust::device_vector<float> Z_d(N);
+
+    checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h), N * float_size, cudaMemcpyHostToDevice));
+    checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(Y_d.data()), thrust::raw_pointer_cast(Y_h), N * float_size, cudaMemcpyHostToDevice));
+
+    thrust::transform(X_d.begin(), X_d.end(), Y_d.begin(), Z_d.begin(), saxpy_functor(a));
+
+    checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(Z_h), thrust::raw_pointer_cast(Z_d.data()), N * float_size, cudaMemcpyDeviceToHost));
+}
+
 void saxpy_multi(float a, float* X_h, float* Y_h, float* Z_h, size_t N, int deviceCount)
 {
     std::vector<DeviceManager> deviceManagers;
@@ -80,12 +96,10 @@ void saxpy_multi_vs_single(size_t N, int deviceCount)
 
     float* X_h = nullptr;
     float* Y_h = nullptr;
-    float* Z_h_multi = nullptr;
 
     // allocate memory on host device
     checkCudaError(cudaHostAlloc(&X_h, float_size * N, 0));
     checkCudaError(cudaHostAlloc(&Y_h, float_size * N, 0));
-    Z_h_multi = static_cast<float*>(malloc(N * float_size));
 
     // fill data with random values
     thrust::tabulate(X_h, X_h + N, get_rand_number(42, 10));
@@ -96,11 +110,28 @@ void saxpy_multi_vs_single(size_t N, int deviceCount)
     std::cout << "X3: " << X_h[3] << std::endl;
     std::cout << "Y3: " << Y_h[3] << std::endl;
 
-    // call saxpy_multi
+    // saxpy_single
+    float* Z_h_single = static_cast<float*>(malloc(N * float_size));
+
+    // saxpy_multi
+    float* Z_h_multi = static_cast<float*>(malloc(N * float_size));
     saxpy_multi(2.f, X_h, Y_h, Z_h_multi, N, deviceCount);
 
     std::cout << "Z0: " << Z_h_multi[0] << std::endl;
     std::cout << "Z3: " << Z_h_multi[3] << std::endl;
+
+    for (int i = 0; i < N; ++i)
+    {
+        if (Z_h_single[i] != Z_h_multi)
+        {
+            std::cout << "wrong result" << std::endl;
+        }
+    }
+
+    cudaFreeHost(X_h);
+    cudaFreeHost(Y_h);
+    free(Z_h_single);
+    free(Z_h_multi);
 }
 
 
