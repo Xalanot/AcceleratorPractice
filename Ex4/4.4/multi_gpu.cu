@@ -34,6 +34,7 @@ struct saxpy_functor : public thrust::binary_function<float,float,float>
 
 void saxpy_single(float a, float* X_h, float* Y_h, float* Z_h, size_t N)
 {
+    size_t float_size = sizeof(float);
     checkCudaError(cudaSetDevice(0));
 
     thrust::device_vector<float> X_d(N);
