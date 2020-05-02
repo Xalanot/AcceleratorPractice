@@ -123,7 +123,7 @@ void saxpy_multi_vs_single(size_t N, int deviceCount)
 
     for (int i = 0; i < N; ++i)
     {
-        if (Z_h_single[i] != Z_h_multi)
+        if (Z_h_single[i] != Z_h_multi[i])
         {
             std::cout << "wrong result" << std::endl;
         }
