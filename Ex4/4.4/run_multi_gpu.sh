@@ -5,4 +5,4 @@
 #
 #SBATCH -w mp-capture02
 
-srun ./multi_gpu
+srun nvprof --print-gpu-trace ./multi_gpu
