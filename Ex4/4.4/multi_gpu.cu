@@ -87,7 +87,7 @@ int main(int argc, char **argv)
     
     float* X_h = nullptr;
     float* Y_h = nullptr;
-    size_t N = 4;
+    size_t N = 10000;
 
     // allocate memory on host device
     checkCudaError(cudaHostAlloc(&X_h, float_size * N, 0));
@@ -119,8 +119,8 @@ int main(int argc, char **argv)
         thrust::device_vector<float> X_d(2);
         thrust::device_vector<float> Y_d(2);
 
-        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + i * 2), 2 * float_size, cudaMemcpyHostToDevice, deviceManagers[i].h2dStream));
-        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(Y_d.data()), thrust::raw_pointer_cast(Y_h + i * 2), 2 * float_size, cudaMemcpyHostToDevice, deviceManagers[i].h2dStream));
+        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + i * N / 2), N / 2 * float_size, cudaMemcpyHostToDevice, deviceManagers[i].h2dStream));
+        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(Y_d.data()), thrust::raw_pointer_cast(Y_h + i * N / 2), N / 2 * float_size, cudaMemcpyHostToDevice, deviceManagers[i].h2dStream));
 
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].h2dStream));
         cudaStreamWaitEvent(deviceManagers[i].h2dStream, deviceManagers[i].copyEvent, 0);
@@ -132,7 +132,7 @@ int main(int argc, char **argv)
         checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
         cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);        
         //std::cout << "copy back" << std::endl;
-        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(Y_h + i * 2), thrust::raw_pointer_cast(Y_d.data()), 2 * float_size, cudaMemcpyDeviceToHost, deviceManagers[i].d2hStream));
+        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(Y_h + i * N / 2), thrust::raw_pointer_cast(Y_d.data()), N / 2 * float_size, cudaMemcpyDeviceToHost, deviceManagers[i].d2hStream));
 
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].d2hStream));
         cudaStreamWaitEvent(deviceManagers[i].d2hStream, deviceManagers[i].copyEvent, 0); 
