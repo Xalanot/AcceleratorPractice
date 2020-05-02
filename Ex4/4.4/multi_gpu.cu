@@ -87,7 +87,7 @@ int main(int argc, char **argv)
     
     float* X_h = nullptr;
     float* Y_h = nullptr;
-    size_t N = 10000;
+    size_t N = 1000000;
 
     // allocate memory on host device
     checkCudaError(cudaHostAlloc(&X_h, float_size * N, 0));
