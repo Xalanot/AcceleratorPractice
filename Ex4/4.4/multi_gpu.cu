@@ -32,35 +32,6 @@ struct saxpy_functor : public thrust::binary_function<float,float,float>
         }
 };
 
-void saxpy_multi_vs_single(size_t N, int deviceCount)
-{
-    size_t float_size = sizeof(float);
-
-    float* X_h = nullptr;
-    float* Y_h = nullptr;
-    float* Z_h_multi = nullptr;
-
-    // allocate memory on host device
-    checkCudaError(cudaHostAlloc(&X_h, float_size * N, 0));
-    checkCudaError(cudaHostAlloc(&Y_h, float_size * N, 0));
-    Z_h_multi = static_cast<float*>(malloc(N * float_size))
-
-    // fill data with random values
-    thrust::tabulate(X_h, X_h + N, get_rand_number(42, 10));
-    thrust::tabulate(Y_h, Y_h + N, get_rand_number(1337, 10));
-
-    std::cout << "X0: " << X_h[0] << std::endl;
-    std::cout << "Y0: " << Y_h[0] << std::endl;
-    std::cout << "X3: " << X_h[3] << std::endl;
-    std::cout << "Y3: " << Y_h[3] << std::endl;
-
-    // call saxpy_multi
-    saxpy_multi(2.f, X_h, Y_h, Z_h, N, deviceCount);
-
-    std::cout << "Z0: " << Z_h[0] << std::endl;
-    std::cout << "Z3: " << Z_h[3] << std::endl;
-}
-
 void saxpy_multi(float a, float* X_h, float* Y_h, float* Z_h, size_t N, int deviceCount)
 {
     std::vector<DeviceManager> deviceManagers;
@@ -102,6 +73,37 @@ void saxpy_multi(float a, float* X_h, float* Y_h, float* Z_h, size_t N, int devi
         cudaStreamWaitEvent(deviceManagers[i].d2hStream, deviceManagers[i].copyEvent, 0); 
     }
 }
+
+void saxpy_multi_vs_single(size_t N, int deviceCount)
+{
+    size_t float_size = sizeof(float);
+
+    float* X_h = nullptr;
+    float* Y_h = nullptr;
+    float* Z_h_multi = nullptr;
+
+    // allocate memory on host device
+    checkCudaError(cudaHostAlloc(&X_h, float_size * N, 0));
+    checkCudaError(cudaHostAlloc(&Y_h, float_size * N, 0));
+    Z_h_multi = static_cast<float*>(malloc(N * float_size));
+
+    // fill data with random values
+    thrust::tabulate(X_h, X_h + N, get_rand_number(42, 10));
+    thrust::tabulate(Y_h, Y_h + N, get_rand_number(1337, 10));
+
+    std::cout << "X0: " << X_h[0] << std::endl;
+    std::cout << "Y0: " << Y_h[0] << std::endl;
+    std::cout << "X3: " << X_h[3] << std::endl;
+    std::cout << "Y3: " << Y_h[3] << std::endl;
+
+    // call saxpy_multi
+    saxpy_multi(2.f, X_h, Y_h, Z_h_multi, N, deviceCount);
+
+    std::cout << "Z0: " << Z_h[0] << std::endl;
+    std::cout << "Z3: " << Z_h[3] << std::endl;
+}
+
+
 
 int main(int argc, char **argv)
 { 
