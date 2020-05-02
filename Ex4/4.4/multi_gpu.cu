@@ -108,7 +108,7 @@ int main(int argc, char **argv)
         deviceManagers.emplace_back( DeviceManager{i} );
     }
 
-    #pragma omp parallel num_threads(deviceCount)
+    #pragma omp parallel for num_threads(deviceCount)
     for (int i = 0; i < 2; ++i)
     {
         std::cout << "i: " << i << std::endl;
