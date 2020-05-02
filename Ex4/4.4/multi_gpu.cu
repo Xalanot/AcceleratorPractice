@@ -21,6 +21,8 @@
 
 #include "common_multi_gpu.h"
 
+#include "..pml/measurement.h"
+
 struct saxpy_functor : public thrust::binary_function<float,float,float>
 {
     const float a;
@@ -45,7 +47,13 @@ void saxpy_single(float a, float* X_h, float* Y_h, float* Z_h, size_t N)
     checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h), N * float_size, cudaMemcpyHostToDevice));
     checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(Y_d.data()), thrust::raw_pointer_cast(Y_h), N * float_size, cudaMemcpyHostToDevice));
 
+    Measurement<std::chrono::milliseconds> measurement;
+    cudaDeviceSynchronize();
+    measurement.start();
     thrust::transform(X_d.begin(), X_d.end(), Y_d.begin(), Z_d.begin(), saxpy_functor(a));
+    cudaDeviceSynchronize();
+    measurement.stop();
+    std::cout << "total time single: " << measurement << " milliseconds" << std::endl;
 
     checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(Z_h), thrust::raw_pointer_cast(Z_d.data()), N * float_size, cudaMemcpyDeviceToHost));
 }
@@ -78,18 +86,26 @@ void saxpy_multi(float a, float* X_h, float* Y_h, float* Z_h, size_t N, int devi
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].h2dStream));
         cudaStreamWaitEvent(deviceManagers[i].h2dStream, deviceManagers[i].copyEvent, 0);
 
-        //checkCudaError(cudaEventRecord(deviceManagers[i].start, deviceManagers[i].transformStream));
+        checkCudaError(cudaEventRecord(deviceManagers[i].start, deviceManagers[i].transformStream));
         thrust::transform(thrust::cuda::par.on(deviceManagers[i].transformStream), X_d.begin(), X_d.end(), Y_d.begin(), Z_d.begin(), saxpy_functor(a));
-        //checkCudaError(cudaEventRecord(deviceManagers[i].stop, deviceManagers[i].transformStream));
+        checkCudaError(cudaEventRecord(deviceManagers[i].stop, deviceManagers[i].transformStream));
 
         checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
-        cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);        
-        //std::cout << "copy back" << std::endl;
+        cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);
+        checkCudaError(cudaEventElapsedTime(deviceManagers[i].myTime, deviceManagers[i].start, deviceManagers[i].stop));
+
         checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(Z_h + i * deviceSize), thrust::raw_pointer_cast(Z_d.data()), deviceSize * float_size, cudaMemcpyDeviceToHost, deviceManagers[i].d2hStream));
 
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].d2hStream));
         cudaStreamWaitEvent(deviceManagers[i].d2hStream, deviceManagers[i].copyEvent, 0); 
     }
+
+    float totalTime = 0;
+    for (auto const& deviceManager : deviceManagers)
+    {
+        totalTime += deviceManager.myTime;
+    }
+    std::cout << "total time multi: " << totalTime << " milliseconds" << std::endl;
 }
 
 void saxpy_multi_vs_single(size_t N, int deviceCount)

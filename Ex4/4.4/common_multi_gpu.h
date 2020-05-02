@@ -54,8 +54,13 @@ struct DeviceManager{
 
         checkCudaError(cudaEventCreate(&transformEvent));
         checkCudaError(cudaEventCreate(&copyEvent));
+
+        cudaEventCreate(&start);
+        cudaEventCreate(&stop);
     }
 
     cudaStream_t h2dStream, d2hStream, transformStream;
     cudaEvent_t transformEvent, copyEvent;
+    cudaEvent_t start, stop;
+    float myTime;
 };
