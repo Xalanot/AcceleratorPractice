@@ -107,11 +107,6 @@ void saxpy_multi_vs_single(size_t N, int deviceCount)
     thrust::tabulate(X_h, X_h + N, get_rand_number(42, 10));
     thrust::tabulate(Y_h, Y_h + N, get_rand_number(1337, 10));
 
-    std::cout << "X0: " << X_h[0] << std::endl;
-    std::cout << "Y0: " << Y_h[0] << std::endl;
-    std::cout << "X3: " << X_h[3] << std::endl;
-    std::cout << "Y3: " << Y_h[3] << std::endl;
-
     // saxpy_single
     float a = 2.f;
     float* Z_h_single = static_cast<float*>(malloc(N * float_size));
@@ -120,9 +115,6 @@ void saxpy_multi_vs_single(size_t N, int deviceCount)
     // saxpy_multi
     float* Z_h_multi = static_cast<float*>(malloc(N * float_size));
     saxpy_multi(2.f, X_h, Y_h, Z_h_multi, N, deviceCount);
-
-    std::cout << "Z0: " << Z_h_multi[0] << std::endl;
-    std::cout << "Z3: " << Z_h_multi[3] << std::endl;
 
     for (int i = 0; i < N; ++i)
     {
