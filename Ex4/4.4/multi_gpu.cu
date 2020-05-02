@@ -15,6 +15,7 @@
 #include <iostream>
 #include <sstream>
 #include <map>
+#include <stdlib.h>
 #include <cassert>
 #include <thrust/system/cuda/memory.h>
 
@@ -123,7 +124,7 @@ void saxpy_multi_vs_single(size_t N, int deviceCount)
 
     for (int i = 0; i < N; ++i)
     {
-        if (Z_h_single[i] != Z_h_multi[i])
+        if (abs(Z_h_single[i] - Z_h_multi[i]) < 1e-5)
         {
             std::cout << "wrong result" << std::endl;
         }
