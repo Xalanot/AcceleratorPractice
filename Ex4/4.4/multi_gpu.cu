@@ -113,7 +113,9 @@ void saxpy_multi_vs_single(size_t N, int deviceCount)
     std::cout << "Y3: " << Y_h[3] << std::endl;
 
     // saxpy_single
+    float a = 2.f;
     float* Z_h_single = static_cast<float*>(malloc(N * float_size));
+    saxpy_single(a, X_h, Y_h, Z_h_single, N);
 
     // saxpy_multi
     float* Z_h_multi = static_cast<float*>(malloc(N * float_size));
