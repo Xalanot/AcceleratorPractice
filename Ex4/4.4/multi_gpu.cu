@@ -99,8 +99,8 @@ void saxpy_multi_vs_single(size_t N, int deviceCount)
     // call saxpy_multi
     saxpy_multi(2.f, X_h, Y_h, Z_h_multi, N, deviceCount);
 
-    std::cout << "Z0: " << Z_h[0] << std::endl;
-    std::cout << "Z3: " << Z_h[3] << std::endl;
+    std::cout << "Z0: " << Z_h_multi[0] << std::endl;
+    std::cout << "Z3: " << Z_h_multi[3] << std::endl;
 }
 
 
