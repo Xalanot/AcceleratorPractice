@@ -31,6 +31,10 @@ float norm_multi_gpu(float *X_h, size_t N, int deviceCount)
         
         thrust::device_vector<float>X_d(deviceSize);
         checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(X_d.data()), X_h, deviceCount * float_size, cudaMemcpyDefault, deviceManagers[i].h2dStream));
+        for (int i = 0; i < deviceSize)
+        {
+            std::cout << X_d[i] << std::endl;
+        }
 
         // wait for copy to complete
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].h2dStream));
