@@ -9,7 +9,7 @@ struct square
         }
 };
 
-float norm_multi_gpu(float *X_h, size_t N, int deviceCount)
+float norm_multi(float *X_h, size_t N, int deviceCount)
 {    
     std::vector<DeviceManager> deviceManagers;
     for (int i = 0; i < deviceCount; ++i)
@@ -47,6 +47,20 @@ float norm_multi_gpu(float *X_h, size_t N, int deviceCount)
     }
     cudaDeviceSynchronize();
 
+    return sqrt(result);
+}
+
+float norm_single(float *X_h, size_t N, int deviceCount)
+{
+    size_t float_size = sizeof(float);
+    thrust::device_vector<float>X_d(deviceSize);
+    checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h), N * float_size, cudaMemcpyHostToDevice));
+
+    square<float> unary_op;
+    thrust::plus<float> binary_op;
+
+    float result = thrust::transform_reduce(X_d.begin(), X_d.end(), unary_op, 0.f, binary_op);
+
     return result;
 }
 
@@ -58,14 +72,18 @@ void norm_multi_vs_single(size_t N, int deviceCount)
     checkCudaError(cudaHostAlloc(&X_h, float_size * N, 0));
     thrust::tabulate(X_h, X_h + N, get_rand_number(43, 10));
 
-    for (int i = 0; i < N; ++i)
+    float result_single = norm_single(X_h, N, deviceCount);
+    float result_multi = norm_multi(X_h, N, deviceCount);
+
+    if (result_single == result_multi)
     {
-        std::cout << X_h[i] << std::endl;
+        std::cout << "right result" << std::endl;
     }
-
-    float result = norm_multi_gpu(X_h, N, deviceCount);
-
-    std::cout << "result: " << result << std::endl;
+    else
+    {
+        std::cout << "single: " << result_single << std::endl;
+        std::cout << "multi: " << result_multi << std::endl;
+    }
 }
 
 int main(int argc, char **argv)
