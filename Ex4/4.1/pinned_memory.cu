@@ -182,7 +182,7 @@ int main(int argc, char *argv[]){
     std::vector<MeasurementSeries<std::chrono::milliseconds>> sort2Times;
     std::vector<MeasurementSeries<std::chrono::milliseconds>> sort3Times;
 
-    for (size_t i = 20; i < 33; ++i)
+    for (size_t i = 20; i < 25; ++i)
     {
         std::cout << i << std::endl;
         size_t numberOfElements = static_cast<size_t>(1) << i;
