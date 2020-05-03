@@ -61,7 +61,7 @@ float norm_single(float *X_h, size_t N, int deviceCount)
 
     float result = thrust::transform_reduce(X_d.begin(), X_d.end(), unary_op, 0.f, binary_op);
 
-    return result;
+    return sqrt(result);
 }
 
 void norm_multi_vs_single(size_t N, int deviceCount)
@@ -75,7 +75,7 @@ void norm_multi_vs_single(size_t N, int deviceCount)
     float result_single = norm_single(X_h, N, deviceCount);
     float result_multi = norm_multi(X_h, N, deviceCount);
 
-    if (result_single == result_multi)
+    if (result_single  - result_multi > 1e-5)
     {
         std::cout << "right result" << std::endl;
     }
