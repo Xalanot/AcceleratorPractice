@@ -131,14 +131,15 @@ void sort2(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
 
     thrust::tabulate(hostMemPointer, hostMemPointer + numberOfElements, get_rand_number(1337, 10 * numberOfElements));
     
+    thrust::device_ptr<int> ptr = thrust::device_pointer_cast(hostMemPointer);
     cudaDeviceSynchronize();
     measurementSeries.start();
     // copy to device with hostpointer
-    thrust::device_vector<int> device_vec(hostMemPointer, hostMemPointer + numberOfElements);
+    //thrust::device_vector<int> device_vec(hostMemPointer, hostMemPointer + numberOfElements);
     // sort on device
-    thrust::sort(device_vec.begin(), device_vec.end());
+    thrust::sort(ptr, ptr + numberOfElements);
     // transfer back to host
-    thrust::host_vector<int> host_vec = device_vec;
+    //thrust::host_vector<int> host_vec = device_vec;
     cudaDeviceSynchronize();
     measurementSeries.stop();
 
