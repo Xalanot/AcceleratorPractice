@@ -56,7 +56,7 @@ void norm_multi_vs_single(size_t N, int deviceCount)
 
     float* X_h = nullptr;
     checkCudaError(cudaHostAlloc(&X_h, float_size * N, 0));
-    thrust::tabulate(X_h, X_h + N, get_rand_number(42, 10));
+    thrust::tabulate(X_h, X_h + N, get_rand_number(43, 10));
 
     for (int i = 0; i < N; ++i)
     {
