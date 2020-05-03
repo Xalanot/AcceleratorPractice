@@ -142,6 +142,7 @@ void sort2(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
     //thrust::host_vector<int> host_vec = device_vec;
     cudaDeviceSynchronize();
     measurementSeries.stop();
+    assert(thrust::is_sorted(ptr, ptr + numberOfElements));
 
     cudaFreeHost(hostMemPointer);   
 }
