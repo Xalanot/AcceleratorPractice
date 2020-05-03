@@ -53,7 +53,7 @@ float norm_multi(float *X_h, size_t N, int deviceCount)
 float norm_single(float *X_h, size_t N, int deviceCount)
 {
     size_t float_size = sizeof(float);
-    thrust::device_vector<float>X_d(deviceSize);
+    thrust::device_vector<float>X_d(N);
     checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h), N * float_size, cudaMemcpyHostToDevice));
 
     square<float> unary_op;
