@@ -66,8 +66,6 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
         size_t resultOffset = i * (resultSize + 1);
 
         checkCudaError(cudaSetDevice(i));
-
-        if (i == 1) std::cout << "ptrOffset" << ptrOffset << std::endl;
         
         thrust::device_vector<float> X_d(deviceSize);
         checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + ptrOffset), deviceSize * float_size, cudaMemcpyHostToDevice));
@@ -135,7 +133,7 @@ int main(int argc, char **argv)
 
     //saxpy_multi_vs_single(100000000, deviceCount);
     //norm_multi_vs_single(4, deviceCount);
-    simple_moving_average_multi_vs_single(100, deviceCount);
+    simple_moving_average_multi_vs_single(100000, deviceCount);
 
     return 0;
 }
