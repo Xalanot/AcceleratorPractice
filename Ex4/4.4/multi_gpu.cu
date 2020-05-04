@@ -82,7 +82,7 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
 
         if (i == 0)
         {
-            for (int j = 0; j < deviceSize; ++j)
+            for (int j = 0; j < resultSize; ++j)
             {
                 if (temp[j] - result_single[j] > 1e-5)
                 {
@@ -135,7 +135,7 @@ int main(int argc, char **argv)
 
     //saxpy_multi_vs_single(100000000, deviceCount);
     //norm_multi_vs_single(4, deviceCount);
-    simple_moving_average_multi_vs_single(10, deviceCount);
+    simple_moving_average_multi_vs_single(1000, deviceCount);
 
     return 0;
 }
