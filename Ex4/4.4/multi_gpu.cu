@@ -134,26 +134,22 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
     float* result_single = static_cast<float*>(malloc( (N - w + 1) * float_size));
     simple_moving_average_single(X_h, N, w, result_single);
 
-    if (i == 0)
         {
             for (int j = 0; j < deviceSize; ++j)
             {
                 //std::cout << "X: " << X_d[i] << std::endl;
                 std::cout << "X_h: " << X_h[i] << std::endl;
             }
-        }
 
     float* result_multi = static_cast<float*>(malloc( (N - w + 1) * float_size));
     simple_moving_average_multi(X_h, N, w, result_single, deviceCount);
 
-    if (i == 0)
-        {
+
             for (int j = 0; j < deviceSize; ++j)
             {
                 //std::cout << "X: " << X_d[i] << std::endl;
                 std::cout << "X_h: " << X_h[i] << std::endl;
             }
-        }
 
     for (int i = 0; i < N - w + 1; ++i)
     {
