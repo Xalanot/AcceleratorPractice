@@ -87,7 +87,7 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
 
         if (i == 0)
         {
-            for (int j = 0; j < resultSize; ++i)
+            for (int j = 0; j < resultSize; ++j)
             {
                 std::cout << temp[j] << std::endl;
             }
