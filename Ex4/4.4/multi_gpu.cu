@@ -68,7 +68,7 @@ void simple_moving_average_multi(float *X_h, size_t N, size_t w, float* result, 
         checkCudaError(cudaSetDevice(i));
         
         thrust::device_vector<float>X_d(deviceSize);
-        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(X_d.data()), X_h, 1 * float_size, cudaMemcpyDefault, deviceManagers[i].h2dStream));
+        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(X_d.data()), X_h + ptrOffset, deviceSize * float_size, cudaMemcpyDefault, deviceManagers[i].h2dStream));
 
         // wait for copy to complete
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].h2dStream));
@@ -84,7 +84,7 @@ void simple_moving_average_multi(float *X_h, size_t N, size_t w, float* result, 
         // compute moving averages from cumulative sum
         thrust::transform(thrust::cuda::par.on(deviceManagers[i].transformStream), temp.begin() + w, temp.end(), temp.begin(), temp.begin(), minus_and_divide<float>(static_cast<float>(w)));
 
-        checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(result), thrust::raw_pointer_cast(temp.data()), 1 * float_size, cudaMemcpyDeviceToHost));
+        checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(result + resultOffset), thrust::raw_pointer_cast(temp.data()), resultSize * float_size, cudaMemcpyDeviceToHost));
         /*
         checkCudaError(cudaEventSynchronize(myDevices[i].stop));
         checkCudaError(cudaEventElapsedTime(&myDevices[i].myTime, myDevices[i].start, myDevices[i].stop));
