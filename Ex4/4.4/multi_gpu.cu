@@ -85,9 +85,8 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
         checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
         cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);
 
-        std::cout << "result size: " << resultSize << std::endl;
-        std::cout << "result offset: " << resultOffset << std::endl;
         checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(result + resultOffset), thrust::raw_pointer_cast(temp.data()), resultSize * float_size, cudaMemcpyDeviceToHost));
+
         /*
         checkCudaError(cudaEventSynchronize(myDevices[i].stop));
         checkCudaError(cudaEventElapsedTime(&myDevices[i].myTime, myDevices[i].start, myDevices[i].stop));
@@ -110,7 +109,7 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
     simple_moving_average_single(X_h, N, w, result_single);
 
     float* result_multi = static_cast<float*>(malloc( (N - w + 1) * float_size));
-    simple_moving_average_multi(X_h, N, w, result_single, deviceCount);
+    simple_moving_average_multi(X_h, N, w, result_multi, deviceCount);
 
     for (int i = 0; i < N - w + 1; ++i)
     {
