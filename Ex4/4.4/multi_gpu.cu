@@ -35,7 +35,8 @@ void simple_moving_average_single(float* X_h, size_t N, size_t w, float* result)
 }
 
 void simple_moving_average_multi(float *X_h, size_t N, size_t w, float* result, int deviceCount)
-{    
+{   
+    deviceCount = 1; 
     std::vector<DeviceManager> deviceManagers;
     for (int i = 0; i < deviceCount; ++i)
     {
