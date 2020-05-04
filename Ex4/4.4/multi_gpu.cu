@@ -75,12 +75,11 @@ void simple_moving_average_multi(float *X_h, size_t N, size_t w, float* result, 
         cudaStreamWaitEvent(deviceManagers[i].h2dStream, deviceManagers[i].copyEvent, 0);
     
         // allocate storage for cumulative sum
-        thrust::device_vector<float> temp(deviceSize - 1);
+        thrust::device_vector<float> temp(deviceSize);
 
         // compute cumulative sum
         thrust::exclusive_scan(thrust::cuda::par.on(deviceManagers[i].transformStream), X_d.begin(), X_d.end(), temp.begin());
         temp[temp.size()] = X_d.back() + temp[temp.size() - 1];
-        std::cout << "tmp size: " << temp.size() << std::endl;
 
         // compute moving averages from cumulative sum
         thrust::transform(thrust::cuda::par.on(deviceManagers[i].transformStream), temp.begin() + w, temp.end(), temp.begin(), temp.begin(), minus_and_divide<float>(static_cast<float>(w)));
