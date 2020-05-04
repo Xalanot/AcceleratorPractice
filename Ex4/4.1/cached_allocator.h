@@ -18,7 +18,6 @@ struct not_my_pointer
     : message()
   {
     std::stringstream s;
-    s << "Pointer `" << p << "` was not allocated by this allocator.";
     message = s.str();
   }
 
@@ -46,10 +45,6 @@ struct cached_allocator
 
   char *allocate(std::ptrdiff_t num_bytes)
   {
-    std::cout << "cached_allocator::allocate(): num_bytes == "
-              << num_bytes
-              << std::endl;
-
     char *result = 0;
 
     // Search the cache for a free block.
@@ -57,9 +52,6 @@ struct cached_allocator
 
     if (free_block != free_blocks.end())
     {
-      std::cout << "cached_allocator::allocate(): found a free block"
-                << std::endl;
-
       result = free_block->second;
 
       // Erase from the `free_blocks` map.
@@ -71,9 +63,6 @@ struct cached_allocator
       // `thrust::cuda::malloc`.
       try
       {
-        std::cout << "cached_allocator::allocate(): allocating new block"
-                  << std::endl;
-
         // Allocate memory and convert the resulting `thrust::cuda::pointer` to
         // a raw pointer.
         result = thrust::cuda::malloc<char>(num_bytes).get();
@@ -92,9 +81,6 @@ struct cached_allocator
 
   void deallocate(char *ptr, size_t)
   {
-    std::cout << "cached_allocator::deallocate(): ptr == "
-              << reinterpret_cast<void*>(ptr) << std::endl;
-
     // Erase the allocated block from the allocated blocks map.
     allocated_blocks_type::iterator iter = allocated_blocks.find(ptr);
 
@@ -117,8 +103,6 @@ private:
 
   void free_all()
   {
-    std::cout << "cached_allocator::free_all()" << std::endl;
-
     // Deallocate all outstanding blocks in both lists.
     for ( free_blocks_type::iterator i = free_blocks.begin()
         ; i != free_blocks.end()
