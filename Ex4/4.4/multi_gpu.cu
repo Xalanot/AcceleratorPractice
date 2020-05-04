@@ -41,8 +41,6 @@ void simple_moving_average_multi(thrust::host_vector<float> const& X_h, size_t N
         deviceManagers.emplace_back( DeviceManager{i} );
     }
 
-    size_t float_size = sizeof(float);
-
     #pragma omp parallel for num_threads(deviceCount) shared(result)
     for(int i = 0; i < deviceCount; ++i){
 
@@ -98,7 +96,6 @@ void simple_moving_average_multi(thrust::host_vector<float> const& X_h, size_t N
 
 void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
 {
-    size_t float_size = sizeof(float);
     thrust::host_vector<float> X_h(N);
     size_t w = 4;
     thrust::default_random_engine rng;
