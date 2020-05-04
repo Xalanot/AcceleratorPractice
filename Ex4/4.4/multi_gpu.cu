@@ -69,6 +69,16 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
         
         thrust::device_vector<float> X_d(deviceSize);
         checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + ptrOffset), deviceSize * float_size, cudaMemcpyHostToDevice));
+        if (i == 0) 
+        {
+            for (int j = 0; j < X_d.size())
+            {
+                if (X_d[j] != X_h[j])
+                {
+                    std::cout << "WRONG!!!" << std::endl;
+                }
+            }
+        }
     
         // allocate storage for cumulative sum
         thrust::device_vector<float> temp(deviceSize + 1);
