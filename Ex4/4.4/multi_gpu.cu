@@ -100,22 +100,20 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
 {
     size_t float_size = sizeof(float);
     float* X_h = static_cast<float*>(malloc(N * float_size));
+    size_t w = 4;
     thrust::default_random_engine rng;
     thrust::uniform_int_distribution<int> dist(0, 10);
-    for (size_t i = 0; i < N; i++)
+    for (size_t i = 0; i < N - w + 1; i++)
         X_h[i] = static_cast<float>(dist(rng));
-
-    size_t w = 4;
 
     float* result_single = static_cast<float*>(malloc( (N - w + 1) * float_size));
     simple_moving_average_single(X_h, N, w, result_single);
 
     float* result_multi = static_cast<float*>(malloc( (N - w + 1) * float_size));
-    //simple_moving_average_multi(X_h, N, w, result_multi, deviceCount);
+    simple_moving_average_multi(X_h, N, w, result_multi, deviceCount);
 
     for (int i = 0; i < 20; ++i)
     {
-        std::cout << "i: " << i << std::endl;
         if (result_single[i] - result_multi[i] > 1e-5)
         {
             std::cout << "wrong result at: " << i << std::endl;
