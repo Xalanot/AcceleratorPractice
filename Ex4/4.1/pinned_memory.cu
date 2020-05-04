@@ -6,6 +6,7 @@
 #include <thrust/memory.h>
 #include <thrust/system/cuda/memory.h>
 
+#include "cached_allocator.h"
 #include "common_pinned_memory.h"
 #include "fallback_allocator.h"
 
@@ -92,11 +93,14 @@ void sort3(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
 template <typename T>
 void sort4(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
 {
-  size_t float_size = sizeof(float);
-  if (checkDevice(numberOfElements * float_size))
+  size_t int_size = sizeof(int);
+  if (checkDevice(numberOfElements * int_size))
   {
     return sort3(numberOfElements, measurementSeries);
   }
+
+  thrust::host_vector<int> X_h(numberOfElements);
+  thrust::tabulate(X_h.begin(), X_h.end(), get_rand_number(1337, 10 * numberOfElements));
 
   std::vector<cudaStream_t> streams(3);
   for (auto& stream : streams)
@@ -118,8 +122,17 @@ void sort4(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
 
     std::cout << sizes[i] << std::endl;
   }
+
+  #pragma omp parallel for num_threads(deviceCount) shared(result)
+  for (int i = 0; i < 3; ++i)
+  {
+    thrust::device_vector<int> X_d(sizes[i]);
+    checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + i * sizes[0]), sizes[i] * int_size, cudaMemcpyHostToDevice, streams[i]));
+    cached_allocator allocator;
+    thrust::sort(thrust::cuda::par(cached_allocator).on(streams[i]), X_d.begin(), X_d.end());
+    assert(thrust::is_sorted(X_d.begin(), X_d.end()));
+  }
   
-  std::cout << "Too big" << std::endl;
 }
 
 int main(int argc, char *argv[]){
