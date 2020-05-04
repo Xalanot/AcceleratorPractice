@@ -113,7 +113,7 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
     {
         if (result_single[i] - result_multi[i] > 1e-5)
         {
-            std::cout << "wrong result" << std::endl;
+            std::cout << "wrong result at: " << i << std::endl;
             std::cout << "single: " << result_single[i] << std::endl;
             std::cout << "multi: " << result_multi[i] << std::endl;
         }
