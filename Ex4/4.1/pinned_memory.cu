@@ -91,9 +91,9 @@ template <typename T>
 void sort4(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
 {
   size_t float_size = sizeof(float);
-  if (checkSize(numberOfElements * float_size, measurementSeries))
+  if (checkSize(numberOfElements * float_size))
   {
-    return sort3(numberOfElements);
+    return sort3(numberOfElements, measurementSeries);
   }
   
   std::cout << "Too big" << std::endl;
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]){
     size_t N = static_cast<size_t>(1) << 30;
     MeasurementSeries<std::chrono::milliseconds> sort3Series;
     sort4(N, sort3Series);
-    
+
 
     /*for (size_t i = 20; i < 25; ++i)
     {
