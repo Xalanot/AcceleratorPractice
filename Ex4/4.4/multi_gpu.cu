@@ -111,7 +111,7 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
     simple_moving_average_single(X_h, N, w, result_single);
 
     float* result_multi = static_cast<float*>(malloc( (N - w + 1) * float_size));
-    simple_moving_average_multi(X_h, N, w, result_multi, deviceCount);
+    //simple_moving_average_multi(X_h, N, w, result_multi, deviceCount);
 
     for (int i = 0; i < 20; ++i)
     {
