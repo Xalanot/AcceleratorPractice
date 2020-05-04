@@ -82,6 +82,13 @@ void simple_moving_average_multi(float *X_h, size_t N, size_t w, float* result, 
         checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
         cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);
         temp[deviceSize] = X_d.back() + temp[deviceSize - 1];
+        if (i == 0)
+        {
+            for (int j = 0; j < temp.size(); ++j)
+            {
+                std::cout << "j: " << temp[j] << std::endl;
+            }
+        }
 
         // compute moving averages from cumulative sum
         thrust::transform(thrust::cuda::par.on(deviceManagers[i].transformStream), temp.begin() + w, temp.end(), temp.begin(), temp.begin(), minus_and_divide<float>(static_cast<float>(w)));
