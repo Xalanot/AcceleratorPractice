@@ -73,6 +73,7 @@ void simple_moving_average_multi(float *X_h, size_t N, size_t w, float* result, 
         // wait for copy to complete
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].h2dStream));
         cudaStreamWaitEvent(deviceManagers[i].h2dStream, deviceManagers[i].copyEvent, 0);
+        checkCudaError(cudaEventSynchronize(deviceManagers[i].copyEvent));
         if (i == 0)
         {
             for (int j = 0; j < deviceSize; ++j)
