@@ -40,7 +40,7 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
     float* X_h = static_cast<float*>(malloc(N * float_size));
     thrust::default_random_engine rng;
     thrust::uniform_int_distribution<int> dist(0, 10);
-    for (size_t i = 0; i < n; i++)
+    for (size_t i = 0; i < N; i++)
         X_h[i] = static_cast<float>(dist(rng));
 
     size_t w = 4;

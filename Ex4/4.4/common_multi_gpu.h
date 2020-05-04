@@ -1,3 +1,5 @@
+#pragma once
+
 #include <thrust/random.h>
 #include <cuda.h>
 #include <thread>
