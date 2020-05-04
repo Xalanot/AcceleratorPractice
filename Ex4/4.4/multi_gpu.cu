@@ -86,6 +86,7 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
         cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);
 
         std::cout << "result size: " << resultSize << std::endl;
+        std::cout << "result offset: " << resultOffset << std::endl;
         checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(result + resultOffset), thrust::raw_pointer_cast(temp.data()), resultSize * float_size, cudaMemcpyDeviceToHost));
         /*
         checkCudaError(cudaEventSynchronize(myDevices[i].stop));
