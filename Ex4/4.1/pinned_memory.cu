@@ -13,88 +13,6 @@
 
 #define DEBUG 0
 
-class fallback_allocator
-{
-  public:
-    // just allocate bytes
-    typedef char value_type;
-
-    // allocate's job to is allocate host memory as a functional fallback when cudaMalloc fails
-    char *allocate(std::ptrdiff_t n)
-    {
-      char *result = 0;
-
-      // attempt to allocate device memory
-      if(cudaMalloc(&result, n) == cudaSuccess)
-      {
-        if(DEBUG)
-            std::cout << "  allocated " << n << " bytes of device memory" << std::endl;
-      }
-      else
-      {
-        // reset the last CUDA error
-        cudaGetLastError();
-
-        // attempt to allocate pinned host memory
-        void *h_ptr = 0;
-        if(cudaMallocHost(&h_ptr, n) == cudaSuccess)
-        {
-          // attempt to map host pointer into device memory space
-          if(cudaHostGetDevicePointer(&result, h_ptr, 0) == cudaSuccess)
-          {
-            if(DEBUG)
-                std::cout << "  allocated " << n << " bytes of pinned host memory (fallback successful)" << std::endl;
-          }
-          else
-          {
-            // reset the last CUDA error
-            cudaGetLastError();
-
-            // attempt to deallocate buffer
-            if(DEBUG)
-                std::cout << "  failed to map host memory into device address space (fallback failed)" << std::endl;
-            cudaFreeHost(h_ptr);
-
-            throw std::bad_alloc();
-          }
-        }
-        else
-        {
-          // reset the last CUDA error
-          cudaGetLastError();
-          if(DEBUG)
-            std::cout << "  failed to allocate " << n << " bytes of memory (fallback failed)" << std::endl;
-
-          throw std::bad_alloc();
-        }
-      }
-
-      return result;
-    }
-
-    // deallocate's job to is inspect where the pointer lives and free it appropriately
-    void deallocate(char *ptr, size_t n)
-    {
-      void *raw_ptr = thrust::raw_pointer_cast(ptr);
-
-      // determine where memory resides
-      cudaPointerAttributes	attributes;
-
-      if(cudaPointerGetAttributes(&attributes, raw_ptr) == cudaSuccess)
-      {
-        // free the memory in the appropriate way
-        if(attributes.memoryType == cudaMemoryTypeHost)
-        {
-          cudaFreeHost(raw_ptr);
-        }
-        else
-        {
-          cudaFree(raw_ptr);
-        }
-      }
-    }
-};
-
 template<typename T>
 void sort1(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
 {
@@ -134,12 +52,7 @@ void sort2(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
     thrust::device_ptr<int> ptr = thrust::device_pointer_cast(hostMemPointer);
     cudaDeviceSynchronize();
     measurementSeries.start();
-    // copy to device with hostpointer
-    //thrust::device_vector<int> device_vec(hostMemPointer, hostMemPointer + numberOfElements);
-    // sort on device
     thrust::sort(ptr, ptr + numberOfElements);
-    // transfer back to host
-    //thrust::host_vector<int> host_vec = device_vec;
     cudaDeviceSynchronize();
     measurementSeries.stop();
     assert(thrust::is_sorted(ptr, ptr + numberOfElements));
@@ -174,6 +87,18 @@ void sort3(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
     alloc.deallocate(reinterpret_cast<char*>(raw_ptr), numberOfElements * sizeof(int));
 }
 
+template <typename T>
+void sort4(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
+{
+  size_t float_size = sizeof(float);
+  if (checkSize(numberOfElements * float_size, measurementSeries))
+  {
+    return sort3(numberOfElements);
+  }
+  
+  std::cout << "Too big" << std::endl;
+}
+
 int main(int argc, char *argv[]){
     int iterations = 1;
 
@@ -182,7 +107,12 @@ int main(int argc, char *argv[]){
     std::vector<MeasurementSeries<std::chrono::milliseconds>> sort2Times;
     std::vector<MeasurementSeries<std::chrono::milliseconds>> sort3Times;
 
-    for (size_t i = 20; i < 25; ++i)
+    size_t N = static_cast<size_t>(1) << 30;
+    MeasurementSeries<std::chrono::milliseconds> sort3Series;
+    sort4(N, sort3Series);
+    
+
+    /*for (size_t i = 20; i < 25; ++i)
     {
         std::cout << i << std::endl;
         size_t numberOfElements = static_cast<size_t>(1) << i;
@@ -218,7 +148,7 @@ int main(int argc, char *argv[]){
     CSVWriter csvwriter("pinned_memory.csv");
     csvwriter.setHeaderNames( {"size", "sort1", "sort2", "sort3"});
 
-    csvwriter.write(sizes, sort1Times, sort2Times, sort3Times);
+    csvwriter.write(sizes, sort1Times, sort2Times, sort3Times);*/
 
     return 0;
 }
