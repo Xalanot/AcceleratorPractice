@@ -7,6 +7,7 @@
 #include <thrust/system/cuda/memory.h>
 
 #include "common_pinned_memory.h"
+#include "fallback_allocator.h"
 
 #include "../pml/csvwriter.h"
 #include "../pml/measurement.h"
@@ -91,7 +92,7 @@ template <typename T>
 void sort4(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
 {
   size_t float_size = sizeof(float);
-  if (checkSize(numberOfElements * float_size))
+  if (checkDevice(numberOfElements * float_size))
   {
     return sort3(numberOfElements, measurementSeries);
   }
