@@ -97,6 +97,27 @@ void sort4(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
   {
     return sort3(numberOfElements, measurementSeries);
   }
+
+  std::vector<cudaStream_t> streams(3);
+  for (auto& stream : streams)
+  {
+    cudaStreamCreate(&stream);
+  }
+
+  std::vector<size_t> sizes(3);
+  for (size_t i = 0; i < sizes.size(); ++i)
+  {
+    if (i != sizes.size() - 1)
+    {
+      sizes[i] = numberOfElements / sizes.size();
+    }
+    else
+    {
+      sizes[i] = (numberOfElements + sizes.size() - 1) / sizes.size();
+    }
+
+    std::cout << sizes[i] << std::endl;
+  }
   
   std::cout << "Too big" << std::endl;
 }
