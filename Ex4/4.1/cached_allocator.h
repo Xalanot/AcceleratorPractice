@@ -12,6 +12,27 @@
 #include <map>
 #include <cassert>
 
+struct not_my_pointer
+{
+  not_my_pointer(void* p)
+    : message()
+  {
+    std::stringstream s;
+    s << "Pointer `" << p << "` was not allocated by this allocator.";
+    message = s.str();
+  }
+
+  virtual ~not_my_pointer() {}
+
+  virtual const char* what() const
+  {
+    return message.c_str();
+  }
+
+private:
+  std::string message;
+};
+
 struct cached_allocator
 {
   typedef char value_type;
