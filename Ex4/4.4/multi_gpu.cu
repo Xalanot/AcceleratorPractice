@@ -15,11 +15,10 @@ struct minus_and_divide : public thrust::binary_function<T,T,T>
     }
 };
 
-void simple_moving_average_single(float* X_h, size_t N, size_t w, float* result)
+void simple_moving_average_single(thrust::host_vector<float> const& X_h, size_t N, size_t w, thrust::host_vector<float>& result)
 {
     size_t float_size = sizeof(float);
-    thrust::device_vector<float> X_d(N);
-    checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h), N * float_size, cudaMemcpyHostToDevice));
+    thrust::device_vector<float> X_d(X_d);
     
     // allocate storage for cumulative sum
     thrust::device_vector<float> temp(N + 1);
@@ -31,7 +30,7 @@ void simple_moving_average_single(float* X_h, size_t N, size_t w, float* result)
     // compute moving averages from cumulative sum
     thrust::transform(temp.begin() + w, temp.end(), temp.begin(), temp.begin(), minus_and_divide<float>(static_cast<float>(w)));
 
-    checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(result), thrust::raw_pointer_cast(temp.data()), (N - w + 1) * float_size, cudaMemcpyDeviceToHost));
+    thrust::copy(temp.begin(), temp.begin() + result.size(), result.begin());
 }
 
 void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, float* result_single, int deviceCount)
@@ -101,18 +100,18 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
 void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
 {
     size_t float_size = sizeof(float);
-    float* X_h = static_cast<float*>(malloc(N * float_size));
+    thrust::host_vector<float> X_h(N);
     size_t w = 4;
     thrust::default_random_engine rng;
     thrust::uniform_int_distribution<int> dist(0, 10);
     for (size_t i = 0; i < N; i++)
         X_h[i] = static_cast<float>(dist(rng));
 
-    float* result_single = static_cast<float*>(malloc( (N - w + 1) * float_size));
+    thrust::host_vector<float> result_single(N - w + 1);
     simple_moving_average_single(X_h, N, w, result_single);
 
-    float* result_multi = static_cast<float*>(malloc( (N - w + 1) * float_size));
-    simple_moving_average_multi(X_h, N, w, result_multi, result_single, deviceCount);
+    thrust::host_vector<float> result_multi(N - w + 1);
+    //simple_moving_average_multi(X_h, N, w, result_multi, result_single, deviceCount);
 
     for (int i = 0; i < N - w + 1; ++i)
     {
@@ -123,10 +122,6 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
             std::cout << "multi: " << result_multi[i] << std::endl;
         }
     }
-
-    free(X_h);
-    free(result_single);
-    free(result_multi);
 }
 
 
@@ -137,7 +132,7 @@ int main(int argc, char **argv)
 
     //saxpy_multi_vs_single(100000000, deviceCount);
     //norm_multi_vs_single(4, deviceCount);
-    simple_moving_average_multi_vs_single(100000, deviceCount);
+    simple_moving_average_multi_vs_single(100, deviceCount);
 
     return 0;
 }
