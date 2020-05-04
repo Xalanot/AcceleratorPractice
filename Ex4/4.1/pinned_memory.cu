@@ -123,7 +123,7 @@ void sort4(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
     std::cout << sizes[i] << std::endl;
   }
 
-  #pragma omp parallel for num_threads(deviceCount) shared(result)
+  #pragma omp parallel for num_threads(3)
   for (int i = 0; i < 3; ++i)
   {
     thrust::device_vector<int> X_d(sizes[i]);
