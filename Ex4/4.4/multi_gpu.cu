@@ -120,6 +120,10 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
             std::cout << "multi: " << result_multi[i] << std::endl;
         }
     }
+
+    free(X_h);
+    free(result_single);
+    free(result_multi);
 }
 
 

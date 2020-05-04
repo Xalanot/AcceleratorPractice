@@ -109,4 +109,6 @@ void norm_multi_vs_single(size_t N, int deviceCount)
         std::cout << "single: " << result_single << std::endl;
         std::cout << "multi: " << result_multi << std::endl;
     }
+
+    cudaHostFree(X_h);
 }
