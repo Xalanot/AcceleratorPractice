@@ -92,6 +92,7 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
                 if (temp[j] - result_single[j] > 1e-5)
                 {
                     std::cout << "WRONG" << std::endl;
+                    std::cout << "j: " << j << std::endl;
                 }
             }
         }
