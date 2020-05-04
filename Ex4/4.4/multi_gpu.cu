@@ -67,7 +67,7 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
 
         checkCudaError(cudaSetDevice(i));
 
-        std::cout << "deviceSize: " << deviceSize << std::endl;
+        if (i == 1) std::cout << "ptrOffset" << ptrOffset << std::endl;
         
         thrust::device_vector<float> X_d(deviceSize);
         checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + ptrOffset), 1 * float_size, cudaMemcpyHostToDevice));
