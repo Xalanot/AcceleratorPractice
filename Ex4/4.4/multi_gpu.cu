@@ -79,6 +79,8 @@ void simple_moving_average_multi(float *X_h, size_t N, size_t w, float* result, 
 
         // compute cumulative sum
         thrust::exclusive_scan(thrust::cuda::par.on(deviceManagers[i].transformStream), X_d.begin(), X_d.end(), temp.begin());
+        checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
+        cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);
         temp[deviceSize] = X_d.back() + temp[deviceSize - 1];
 
         // compute moving averages from cumulative sum
