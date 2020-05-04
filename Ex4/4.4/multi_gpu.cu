@@ -66,7 +66,7 @@ void simple_moving_average_multi(thrust::host_vector<float> const& X_h, size_t N
 
         checkCudaError(cudaSetDevice(i));
         
-        thrust::device_vector<float> X_d(X_h);
+        thrust::device_vector<float> X_d((X_h.begin() + ptrOffset, X_h.begin() + ptrOffset + deviceSize));
     
         // allocate storage for cumulative sum
         thrust::device_vector<float> temp(deviceSize + 1);
@@ -92,7 +92,7 @@ void simple_moving_average_multi(thrust::host_vector<float> const& X_h, size_t N
             }
         }
 
-        thrust::copy(temp.begin(), temp.begin() + resultSize, result.begin() + ptrOffset);
+        thrust::copy(temp.begin(), temp.begin() + resultSize, result.begin() + resultOffset);
     }
 }
 
