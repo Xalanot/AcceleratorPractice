@@ -69,16 +69,6 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
         
         thrust::device_vector<float> X_d(deviceSize);
         checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + ptrOffset), deviceSize * float_size, cudaMemcpyHostToDevice));
-
-        // wait for copy to complete
-        if (i == 0)
-        {
-            for (int j = 0; j < deviceSize; ++j)
-            {
-                std::cout << "X: " << X_d[j] << std::endl;
-                std::cout << "X_h: " << X_h[j] << std::endl;
-            }
-        }
     
         // allocate storage for cumulative sum
         thrust::device_vector<float> temp(deviceSize + 1);
@@ -88,12 +78,13 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
         checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
         cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);
         temp[deviceSize] = X_d.back() + temp[deviceSize - 1];
+
         if (i == 0)
         {
-            std::cout << "deviceSize: " << deviceSize << std::endl;
-            for (int j = 0; j < temp.size(); ++j)
+            for (int j = 0; j < deviceSize; ++j)
             {
-                std::cout << "j: " << temp[j] << std::endl;
+                std::cout << "x: " << X_d[j] << std::endl;
+                std::cout << "temp: " << temp[j] << std::endl;
             }
         }
 
