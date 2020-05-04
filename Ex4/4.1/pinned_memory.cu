@@ -109,7 +109,7 @@ int main(int argc, char *argv[]){
     std::vector<MeasurementSeries<std::chrono::milliseconds>> sort2Times;
     std::vector<MeasurementSeries<std::chrono::milliseconds>> sort3Times;
 
-    size_t N = static_cast<size_t>(1) << 30;
+    size_t N = static_cast<size_t>(1) << 31;
     MeasurementSeries<std::chrono::milliseconds> sort3Series;
     sort4(N, sort3Series);
 
