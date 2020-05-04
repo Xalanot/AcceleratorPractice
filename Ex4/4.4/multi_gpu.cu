@@ -34,7 +34,7 @@ void simple_moving_average_single(float* X_h, size_t N, size_t w, float* result)
     checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(result), thrust::raw_pointer_cast(temp.data()), (N - w + 1) * float_size, cudaMemcpyDeviceToHost));
 }
 
-void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, int deviceCount)
+void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, float* result_single, int deviceCount)
 {   
     std::vector<DeviceManager> deviceManagers;
     for (int i = 0; i < deviceCount; ++i)
@@ -69,16 +69,6 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
         
         thrust::device_vector<float> X_d(deviceSize);
         checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + ptrOffset), deviceSize * float_size, cudaMemcpyHostToDevice));
-        if (i == 0) 
-        {
-            for (int j = 0; j < X_d.size(); ++j)
-            {
-                if (X_d[j] != X_h[j])
-                {
-                    std::cout << "WRONG!!!" << std::endl;
-                }
-            }
-        }
     
         // allocate storage for cumulative sum
         thrust::device_vector<float> temp(deviceSize + 1);
@@ -94,6 +84,17 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
 
         checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
         cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);
+
+        if (i == 0)
+        {
+            for (int j = 0; j < deviceSize; ++j)
+            {
+                if (temp[j] - result_single[j] > 1e-5)
+                {
+                    std::cout << "WRONG" << std::endl;
+                }
+            }
+        }
 
         checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(result + resultOffset), thrust::raw_pointer_cast(temp.data()), resultSize * float_size, cudaMemcpyDeviceToHost));
 
@@ -118,7 +119,7 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
     simple_moving_average_single(X_h, N, w, result_single);
 
     float* result_multi = static_cast<float*>(malloc( (N - w + 1) * float_size));
-    simple_moving_average_multi(X_h, N, w, result_multi, deviceCount);
+    simple_moving_average_multi(X_h, N, w, result_multi, result_single, deviceCount);
 
     for (int i = 0; i < N - w + 1; ++i)
     {
