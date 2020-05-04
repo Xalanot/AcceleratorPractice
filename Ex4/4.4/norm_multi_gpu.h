@@ -55,7 +55,7 @@ float norm_multi(float *X_h, size_t N, int deviceCount)
         checkCudaError(cudaSetDevice(i));
         
         thrust::device_vector<float>X_d(deviceSize);
-        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(X_d.data()), X_h + i * deviceCount, deviceCount * float_size, cudaMemcpyDefault, deviceManagers[i].h2dStream));
+        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(X_d.data()), X_h + i * deviceSize, deviceSize * float_size, cudaMemcpyDefault, deviceManagers[i].h2dStream));
 
         // wait for copy to complete
         checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].h2dStream));

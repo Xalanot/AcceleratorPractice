@@ -34,6 +34,64 @@ void simple_moving_average_single(float* X_h, size_t N, size_t w, float* result)
     checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(result), thrust::raw_pointer_cast(temp.data()), N * float_size, cudaMemcpyDeviceToHost));
 }
 
+float simple_moving_average_multi(float *X_h, size_t N, size_t w, float* result, int deviceCount)
+{    
+    std::vector<DeviceManager> deviceManagers;
+    for (int i = 0; i < deviceCount; ++i)
+    {
+        deviceManagers.emplace_back( DeviceManager{i} );
+    }
+
+    size_t float_size = sizeof(float);
+
+    #pragma omp parallel for num_threads(deviceCount) shared(result)
+    for(int i = 0; i < deviceCount; ++i){
+
+        size_t resultSize = 0;
+        size_t deviceSize = 0;
+
+        if ( i == 0)
+        {
+            resultSize = (N - w + 1 + deviceCount) / deviceCount;
+            deviceSize = (N + w) / deviceCount;
+            
+        }
+        else
+        {
+            resultSize = (N - w + 1) / deviceCount;
+            deviceSize = (N + w) / deviceCount - 1;
+        }
+
+        size_t ptrOffset = i * ( (N - w) / deviceCount + 1);
+        size_t resultOffset = i * (resultSize + 1);
+
+        checkCudaError(cudaSetDevice(i));
+        
+        thrust::device_vector<float>X_d(deviceSize);
+        checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(X_d.data()), X_h + ptrOffset, deviceSize * float_size, cudaMemcpyDefault, deviceManagers[i].h2dStream));
+
+        // wait for copy to complete
+        checkCudaError(cudaEventRecord(deviceManagers[i].copyEvent, deviceManagers[i].h2dStream));
+        cudaStreamWaitEvent(deviceManagers[i].h2dStream, deviceManagers[i].copyEvent, 0);
+    
+        // allocate storage for cumulative sum
+        thrust::device_vector<float> temp(N + 1);
+
+        // compute cumulative sum
+        thrust::exclusive_scan(thrust::cuda::par.on(deviceManagers[i].transformStream), X_d.begin(), X_d.end(), temp.begin());
+        temp[N] = X_d.back() + temp[N - 1];
+
+        // compute moving averages from cumulative sum
+        thrust::transform(thrust::cuda::par.on(deviceManagers[i].transformStream), temp.begin() + w, temp.end(), temp.begin(), temp.begin(), minus_and_divide<float>(static_cast<float>(w)));
+
+        checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(result + resultOffset), thrust::raw_pointer_cast(temp.data()), resultSize * float_size, cudaMemcpyDeviceToHost));
+        /*
+        checkCudaError(cudaEventSynchronize(myDevices[i].stop));
+        checkCudaError(cudaEventElapsedTime(&myDevices[i].myTime, myDevices[i].start, myDevices[i].stop));
+        */
+    }
+}
+
 void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
 {
     size_t float_size = sizeof(float);
@@ -47,6 +105,19 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
 
     float* result_single = static_cast<float*>(malloc( (N - w + 1) * float_size));
     simple_moving_average_single(X_h, N, w, result_single);
+
+    float* result_multi = static_cast<float*>(malloc( (N - w + 1) * float_size));
+    simple_moving_average_multi(X_h, N, w, result_single);
+
+    for (int i = 0; i < N - w + 1; ++i)
+    {
+        if (result_single[i] - result_multi[i] > 1e-5)
+        {
+            std::cout << "wrong result" << std::endl;
+            std::cout << "single: " << result_single[i] << std::endl;
+            std::cout << "multi: " << result_multi[i] << std::endl;
+        }
+    }
 }
 
 
