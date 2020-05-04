@@ -17,7 +17,6 @@ struct minus_and_divide : public thrust::binary_function<T,T,T>
 
 void simple_moving_average_single(thrust::host_vector<float> const& X_h, size_t N, size_t w, thrust::host_vector<float>& result)
 {
-    size_t float_size = sizeof(float);
     thrust::device_vector<float> X_d(X_h);
     
     // allocate storage for cumulative sum
@@ -33,7 +32,7 @@ void simple_moving_average_single(thrust::host_vector<float> const& X_h, size_t 
     thrust::copy(temp.begin(), temp.begin() + 1, result.begin());
 }
 
-void simple_moving_average_multi(thrust::host_vector<float> const& X_h, size_t N, size_t w, thrust::host_vector<float> const& result, thrust::host_vector<float>& result_single, int deviceCount)
+void simple_moving_average_multi(thrust::host_vector<float>& X_h, size_t N, size_t w, thrust::host_vector<float> const& result, thrust::host_vector<float>& result_single, int deviceCount)
 {   
     std::vector<DeviceManager> deviceManagers;
     for (int i = 0; i < deviceCount; ++i)
