@@ -108,7 +108,7 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
         X_h[i] = static_cast<float>(dist(rng));
 
     thrust::host_vector<float> result_single(N - w + 1);
-    simple_moving_average_single(X_h, N, w, result_single);
+    //simple_moving_average_single(X_h, N, w, result_single);
 
     thrust::host_vector<float> result_multi(N - w + 1);
     //simple_moving_average_multi(X_h, N, w, result_multi, result_single, deviceCount);
