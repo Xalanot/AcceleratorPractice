@@ -89,6 +89,7 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
                     std::cout << "WRONG" << std::endl;
                     std::cout << "j: " << j << std::endl;
                     std::cout << "temp: " << temp[j] << std::endl;
+                    std::cout << "single: " << result_single[j] << std::endl;
                 }
             }
         }
