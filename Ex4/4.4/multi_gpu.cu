@@ -36,14 +36,14 @@ void simple_moving_average_single(float* X_h, size_t N, size_t w, float* result)
 
 void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, int deviceCount)
 {   
-    if (i == 0)
+    /*if (i == 0)
         {
             for (int j = 0; j < 7; ++j)
             {
                 //std::cout << "X: " << X_d[i] << std::endl;
                 std::cout << "X_h: " << X_h[i] << std::endl;
             }
-        }
+        }*/
 
     std::vector<DeviceManager> deviceManagers;
     for (int i = 0; i < deviceCount; ++i)
@@ -80,14 +80,14 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
         checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + ptrOffset), deviceSize * float_size, cudaMemcpyHostToDevice));
 
         // wait for copy to complete
-        if (i == 0)
+        /*if (i == 0)
         {
             for (int j = 0; j < deviceSize; ++j)
             {
                 std::cout << "X: " << X_d[i] << std::endl;
                 std::cout << "X_h: " << X_h[i] << std::endl;
             }
-        }
+        }*/
     
         // allocate storage for cumulative sum
         thrust::device_vector<float> temp(deviceSize + 1);
@@ -134,8 +134,26 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
     float* result_single = static_cast<float*>(malloc( (N - w + 1) * float_size));
     simple_moving_average_single(X_h, N, w, result_single);
 
+    if (i == 0)
+        {
+            for (int j = 0; j < deviceSize; ++j)
+            {
+                //std::cout << "X: " << X_d[i] << std::endl;
+                std::cout << "X_h: " << X_h[i] << std::endl;
+            }
+        }
+
     float* result_multi = static_cast<float*>(malloc( (N - w + 1) * float_size));
     simple_moving_average_multi(X_h, N, w, result_single, deviceCount);
+
+    if (i == 0)
+        {
+            for (int j = 0; j < deviceSize; ++j)
+            {
+                //std::cout << "X: " << X_d[i] << std::endl;
+                std::cout << "X_h: " << X_h[i] << std::endl;
+            }
+        }
 
     for (int i = 0; i < N - w + 1; ++i)
     {
