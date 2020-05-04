@@ -32,7 +32,7 @@ void simple_moving_average_single(thrust::host_vector<float> const& X_h, size_t 
     thrust::copy(temp.begin(), temp.begin() + 1, result.begin());
 }
 
-void simple_moving_average_multi(thrust::host_vector<float>& X_h, size_t N, size_t w, thrust::host_vector<float> const& result, thrust::host_vector<float>& result_single, int deviceCount)
+void simple_moving_average_multi(thrust::host_vector<float>& X_h, size_t N, size_t w, thrust::host_vector<float>& result, thrust::host_vector<float> const& result_single, int deviceCount)
 {   
     std::vector<DeviceManager> deviceManagers;
     for (int i = 0; i < deviceCount; ++i)
