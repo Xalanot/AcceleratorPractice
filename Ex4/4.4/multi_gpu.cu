@@ -33,7 +33,7 @@ void simple_moving_average_single(thrust::host_vector<float> const& X_h, size_t 
     thrust::copy(temp.begin(), temp.begin() + 1, result.begin());
 }
 
-void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, float* result_single, int deviceCount)
+void simple_moving_average_multi(thrust::host_vector<float> const& X_h, size_t N, size_t w, thrust::host_vector<float> const& result, thrust::host_vector<float>& result_single, int deviceCount)
 {   
     std::vector<DeviceManager> deviceManagers;
     for (int i = 0; i < deviceCount; ++i)
@@ -66,8 +66,7 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
 
         checkCudaError(cudaSetDevice(i));
         
-        thrust::device_vector<float> X_d(deviceSize);
-        checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + ptrOffset), deviceSize * float_size, cudaMemcpyHostToDevice));
+        thrust::device_vector<float> X_d(X_h);
     
         // allocate storage for cumulative sum
         thrust::device_vector<float> temp(deviceSize + 1);
@@ -93,7 +92,7 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
             }
         }
 
-        checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(result + resultOffset), thrust::raw_pointer_cast(temp.data()), resultSize * float_size, cudaMemcpyDeviceToHost));
+        thrust::copy(temp.begin(), temp.begin() + resultSize, result.begin() + ptrOffset);
     }
 }
 
@@ -111,7 +110,7 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
     simple_moving_average_single(X_h, N, w, result_single);
 
     thrust::host_vector<float> result_multi(N - w + 1);
-    //simple_moving_average_multi(X_h, N, w, result_multi, result_single, deviceCount);
+    simple_moving_average_multi(X_h, N, w, result_multi, result_single, deviceCount);
 
     for (int i = 0; i < N - w + 1; ++i)
     {
