@@ -29,7 +29,7 @@ void simple_moving_average_single(thrust::host_vector<float> const& X_h, size_t 
     // compute moving averages from cumulative sum
     thrust::transform(temp.begin() + w, temp.end(), temp.begin(), temp.begin(), minus_and_divide<float>(static_cast<float>(w)));
 
-    thrust::copy(temp.begin(), temp.begin() + 1, result.begin());
+    thrust::copy(temp.begin(), temp.begin() + result.size(), result.begin());
 }
 
 void simple_moving_average_multi(thrust::host_vector<float>& X_h, size_t N, size_t w, thrust::host_vector<float>& result, thrust::host_vector<float> const& result_single, int deviceCount)
