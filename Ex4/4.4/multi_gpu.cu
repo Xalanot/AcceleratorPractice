@@ -75,15 +75,10 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
 
         // compute cumulative sum
         thrust::exclusive_scan(X_d.begin(), X_d.end(), temp.begin());
-        //checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
-        //cudaEventSynchronize(deviceManagers[i].transformEvent); 
         temp[deviceSize] = X_d.back() + temp[deviceSize - 1];
 
         // compute moving averages from cumulative sum
         thrust::transform(temp.begin() + w, temp.end(), temp.begin(), temp.begin(), minus_and_divide<float>(static_cast<float>(w)));
-
-        //checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
-        //cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);
 
         if (i == 0)
         {
@@ -98,11 +93,6 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
         }
 
         checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(result + resultOffset), thrust::raw_pointer_cast(temp.data()), resultSize * float_size, cudaMemcpyDeviceToHost));
-
-        /*
-        checkCudaError(cudaEventSynchronize(myDevices[i].stop));
-        checkCudaError(cudaEventElapsedTime(&myDevices[i].myTime, myDevices[i].start, myDevices[i].stop));
-        */
     }
 }
 
@@ -145,7 +135,7 @@ int main(int argc, char **argv)
 
     //saxpy_multi_vs_single(100000000, deviceCount);
     //norm_multi_vs_single(4, deviceCount);
-    simple_moving_average_multi_vs_single(100000, deviceCount);
+    simple_moving_average_multi_vs_single(10000, deviceCount);
 
     return 0;
 }
