@@ -31,7 +31,7 @@ void simple_moving_average_single(float* X_h, size_t N, size_t w, float* result)
     // compute moving averages from cumulative sum
     thrust::transform(temp.begin() + w, temp.end(), temp.begin(), temp.begin(), minus_and_divide<float>(static_cast<float>(w)));
 
-    checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(result), thrust::raw_pointer_cast(temp.data()), N * float_size, cudaMemcpyDeviceToHost));
+    checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(result), thrust::raw_pointer_cast(temp.data()), (N - w + 1) * float_size, cudaMemcpyDeviceToHost));
 }
 
 void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, int deviceCount)
@@ -107,7 +107,7 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
         X_h[i] = static_cast<float>(dist(rng));
 
     float* result_single = static_cast<float*>(malloc( (N - w + 1) * float_size));
-    //simple_moving_average_single(X_h, N, w, result_single);
+    simple_moving_average_single(X_h, N, w, result_single);
 
     float* result_multi = static_cast<float*>(malloc( (N - w + 1) * float_size));
     //simple_moving_average_multi(X_h, N, w, result_multi, deviceCount);
