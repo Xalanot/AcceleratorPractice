@@ -65,6 +65,7 @@ template<typename T>
 void sort3(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
 {
     fallback_allocator alloc;
+    std::cout << "sort3" << std::endl;
 
     // use our special malloc to allocate
     int *raw_ptr = reinterpret_cast<int*>(alloc.allocate(numberOfElements * sizeof(int)));        
