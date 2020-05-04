@@ -70,7 +70,7 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
         if (i == 1) std::cout << "ptrOffset" << ptrOffset << std::endl;
         
         thrust::device_vector<float> X_d(deviceSize);
-        checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + ptrOffset), 1 * float_size, cudaMemcpyHostToDevice));
+        checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + ptrOffset), deviceSize * float_size, cudaMemcpyHostToDevice));
     
         // allocate storage for cumulative sum
         thrust::device_vector<float> temp(deviceSize + 1);
@@ -110,7 +110,7 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
     simple_moving_average_single(X_h, N, w, result_single);
 
     float* result_multi = static_cast<float*>(malloc( (N - w + 1) * float_size));
-    //simple_moving_average_multi(X_h, N, w, result_multi, deviceCount);
+    simple_moving_average_multi(X_h, N, w, result_multi, deviceCount);
 
     for (int i = 0; i < 20; ++i)
     {
