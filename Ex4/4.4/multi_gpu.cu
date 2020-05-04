@@ -22,7 +22,7 @@ void simple_moving_average_single(float* X_h, size_t N, size_t w, float* result)
     checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h), N * float_size, cudaMemcpyHostToDevice));
     
     // allocate storage for cumulative sum
-    thrust::device_vector<T> temp(N + 1);
+    thrust::device_vector<float> temp(N + 1);
 
     // compute cumulative sum
     thrust::exclusive_scan(X_d.begin(), X_d.end(), temp.begin());
