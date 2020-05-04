@@ -84,6 +84,7 @@ void simple_moving_average_multi(float *X_h, size_t N, size_t w, float* result, 
         temp[deviceSize] = X_d.back() + temp[deviceSize - 1];
         if (i == 0)
         {
+            std::cout << "deviceSize: " << deviceSize << std::endl;
             for (int j = 0; j < temp.size(); ++j)
             {
                 std::cout << "j: " << temp[j] << std::endl;
