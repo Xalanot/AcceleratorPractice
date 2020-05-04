@@ -94,10 +94,10 @@ template <typename T>
 void sort4(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
 {
   size_t int_size = sizeof(int);
-  if (checkDevice(numberOfElements * int_size))
+  /*if (checkDevice(numberOfElements * int_size))
   {
     return sort3(numberOfElements, measurementSeries);
-  }
+  }*/
 
   thrust::host_vector<int> X_h(numberOfElements);
   thrust::tabulate(X_h.begin(), X_h.end(), get_rand_number(1337, 10 * numberOfElements));
@@ -143,7 +143,7 @@ int main(int argc, char *argv[]){
     std::vector<MeasurementSeries<std::chrono::milliseconds>> sort2Times;
     std::vector<MeasurementSeries<std::chrono::milliseconds>> sort3Times;
 
-    size_t N = static_cast<size_t>(1) << 31;
+    size_t N = static_cast<size_t>(1) << 25;
     MeasurementSeries<std::chrono::milliseconds> sort3Series;
     sort4(N, sort3Series);
 
