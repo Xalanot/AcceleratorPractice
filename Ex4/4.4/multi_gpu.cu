@@ -76,6 +76,7 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
             for (int j = 0; j < deviceSize; ++j)
             {
                 std::cout << "X: " << X_d[i] << std::endl;
+                std::cout << "X_h: " << X_h[i] << std::endl;
             }
         }
     
