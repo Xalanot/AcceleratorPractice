@@ -34,7 +34,7 @@ void simple_moving_average_single(float* X_h, size_t N, size_t w, float* result)
     checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(result), thrust::raw_pointer_cast(temp.data()), N * float_size, cudaMemcpyDeviceToHost));
 }
 
-void simple_moving_average_multi(float *X_h, size_t N, size_t w, float* result, int deviceCount)
+void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, int deviceCount)
 {   
     std::vector<DeviceManager> deviceManagers;
     for (int i = 0; i < deviceCount; ++i)
@@ -68,7 +68,7 @@ void simple_moving_average_multi(float *X_h, size_t N, size_t w, float* result, 
         checkCudaError(cudaSetDevice(i));
         
         thrust::device_vector<float> X_d(deviceSize);
-        checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), X_h + ptrOffset, deviceSize * float_size, cudaMemcpyHostToDevice));
+        checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + ptrOffset), deviceSize * float_size, cudaMemcpyHostToDevice));
 
         // wait for copy to complete
         if (i == 0)
