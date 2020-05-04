@@ -80,11 +80,11 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
         // compute moving averages from cumulative sum
         thrust::transform(temp.begin() + w, temp.end(), temp.begin(), temp.begin(), minus_and_divide<float>(static_cast<float>(w)));
 
-        if (i == 0)
+        if (i == 1)
         {
             for (int j = 0; j < resultSize; ++j)
             {
-                if (temp[j] - result_single[j] > 1e-5)
+                if (temp[j] - result_single[j + ptrOffset] > 1e-5)
                 {
                     std::cout << "WRONG" << std::endl;
                     std::cout << "j: " << j << std::endl;
