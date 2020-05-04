@@ -71,7 +71,7 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
         checkCudaError(cudaMemcpy(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + ptrOffset), deviceSize * float_size, cudaMemcpyHostToDevice));
         if (i == 0) 
         {
-            for (int j = 0; j < X_d.size())
+            for (int j = 0; j < X_d.size(); ++j)
             {
                 if (X_d[j] != X_h[j])
                 {
