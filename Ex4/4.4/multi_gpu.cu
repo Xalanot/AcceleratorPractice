@@ -45,7 +45,7 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
 
     size_t w = 4;
 
-    float* result_single = static_cast<float*>(malloc( (N - 4) * float_size));
+    float* result_single = static_cast<float*>(malloc( (N - w + 1) * float_size));
     simple_moving_average_single(X_h, N, w, result_single);
 }
 
