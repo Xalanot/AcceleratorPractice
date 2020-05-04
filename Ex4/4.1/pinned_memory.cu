@@ -127,9 +127,9 @@ void sort4(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
   for (int i = 0; i < 3; ++i)
   {
     thrust::device_vector<int> X_d(sizes[i]);
-    checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h + i * sizes[0]), sizes[i] * int_size, cudaMemcpyHostToDevice, streams[i]));
+    checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h.data() + i * sizes[0]), sizes[i] * int_size, cudaMemcpyHostToDevice, streams[i]));
     cached_allocator allocator;
-    thrust::sort(thrust::cuda::par(cached_allocator).on(streams[i]), X_d.begin(), X_d.end());
+    thrust::sort(thrust::cuda::par(allocator).on(streams[i]), X_d.begin(), X_d.end());
     assert(thrust::is_sorted(X_d.begin(), X_d.end()));
   }
   
