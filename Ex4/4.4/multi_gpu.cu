@@ -75,7 +75,7 @@ void simple_moving_average_multi(thrust::host_vector<float>& X_h, size_t N, size
         // compute moving averages from cumulative sum
         thrust::transform(temp.begin() + w, temp.end(), temp.begin(), temp.begin(), minus_and_divide<float>(static_cast<float>(w)));
 
-        /*if (i == 0)
+        if (i == 0)
         {
             for (int j = 0; j < resultSize; ++j)
             {
@@ -87,7 +87,7 @@ void simple_moving_average_multi(thrust::host_vector<float>& X_h, size_t N, size
                     std::cout << "single: " << result_single[j] << std::endl;
                 }
             }
-        }*/
+        }
 
         thrust::copy(temp.begin(), temp.begin() + resultSize, result.begin() + resultOffset);
     }
@@ -105,13 +105,8 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
     thrust::host_vector<float> result_single(N - w + 1);
     simple_moving_average_single(X_h, N, w, result_single);
 
-    for (int i = 0; i < result_single.size(); ++i)
-    {
-        std::cout << "i: " << result_single[i] << std::endl;
-    }
-
     thrust::host_vector<float> result_multi(N - w + 1);
-    /*simple_moving_average_multi(X_h, N, w, result_multi, result_single, deviceCount);
+    simple_moving_average_multi(X_h, N, w, result_multi, result_single, deviceCount);
 
     for (int i = 0; i < N - w + 1; ++i)
     {
@@ -121,7 +116,7 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
             std::cout << "single: " << result_single[i] << std::endl;
             std::cout << "multi: " << result_multi[i] << std::endl;
         }
-    }*/
+    }
 }
 
 
