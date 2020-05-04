@@ -18,7 +18,7 @@ struct minus_and_divide : public thrust::binary_function<T,T,T>
 void simple_moving_average_single(thrust::host_vector<float> const& X_h, size_t N, size_t w, thrust::host_vector<float>& result)
 {
     size_t float_size = sizeof(float);
-    thrust::device_vector<float> X_d(X_d);
+    thrust::device_vector<float> X_d(X_h);
     
     // allocate storage for cumulative sum
     thrust::device_vector<float> temp(N + 1);
@@ -30,7 +30,7 @@ void simple_moving_average_single(thrust::host_vector<float> const& X_h, size_t 
     // compute moving averages from cumulative sum
     thrust::transform(temp.begin() + w, temp.end(), temp.begin(), temp.begin(), minus_and_divide<float>(static_cast<float>(w)));
 
-    //thrust::copy(temp.begin(), temp.begin() + 1, result.begin());
+    thrust::copy(temp.begin(), temp.begin() + 1, result.begin());
 }
 
 void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, float* result_single, int deviceCount)
@@ -108,7 +108,7 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
         X_h[i] = static_cast<float>(dist(rng));
 
     thrust::host_vector<float> result_single(N - w + 1);
-    //simple_moving_average_single(X_h, N, w, result_single);
+    simple_moving_average_single(X_h, N, w, result_single);
 
     thrust::host_vector<float> result_multi(N - w + 1);
     //simple_moving_average_multi(X_h, N, w, result_multi, result_single, deviceCount);
