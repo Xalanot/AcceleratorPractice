@@ -74,16 +74,16 @@ void simple_moving_average_multi(float* X_h, size_t N, size_t w, float* result, 
         thrust::device_vector<float> temp(deviceSize + 1);
 
         // compute cumulative sum
-        thrust::exclusive_scan(thrust::cuda::par.on(deviceManagers[i].transformStream), X_d.begin(), X_d.end(), temp.begin());
-        checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
-        cudaEventSynchronize(deviceManagers[i].transformEvent); 
+        thrust::exclusive_scan(X_d.begin(), X_d.end(), temp.begin());
+        //checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
+        //cudaEventSynchronize(deviceManagers[i].transformEvent); 
         temp[deviceSize] = X_d.back() + temp[deviceSize - 1];
 
         // compute moving averages from cumulative sum
-        thrust::transform(thrust::cuda::par.on(deviceManagers[i].transformStream), temp.begin() + w, temp.end(), temp.begin(), temp.begin(), minus_and_divide<float>(static_cast<float>(w)));
+        thrust::transform(temp.begin() + w, temp.end(), temp.begin(), temp.begin(), minus_and_divide<float>(static_cast<float>(w)));
 
-        checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
-        cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);
+        //checkCudaError(cudaEventRecord(deviceManagers[i].transformEvent, deviceManagers[i].transformStream));
+        //cudaStreamWaitEvent(deviceManagers[i].transformStream, deviceManagers[i].transformEvent, 0);
 
         if (i == 0)
         {
