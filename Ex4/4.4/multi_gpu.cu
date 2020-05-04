@@ -113,7 +113,7 @@ void simple_moving_average_multi_vs_single(size_t N, int deviceCount)
     float* result_multi = static_cast<float*>(malloc( (N - w + 1) * float_size));
     simple_moving_average_multi(X_h, N, w, result_multi, deviceCount);
 
-    for (int i = 0; i < N - w; ++i)
+    for (int i = 0; i < 20; ++i)
     {
         std::cout << "i: " << i << std::endl;
         if (result_single[i] - result_multi[i] > 1e-5)
