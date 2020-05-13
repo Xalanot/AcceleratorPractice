@@ -5,4 +5,4 @@
 #
 #SBATCH -w mp-capture01
 
-srun nvprof --print-gpu-trace ./pinned_memory
+srun ./pinned_memory

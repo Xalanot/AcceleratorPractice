@@ -67,7 +67,11 @@ void sum_multiple_sparse_vectors(IndexVectors const& indexVectors,
     thrust::sort_by_key(thrust::device, tmp_index.begin(), tmp_index.end(), tmp_value.begin());
 
     // get unique index size
-    size_t unique_index_size = countUniqueElements(tmp_index);
+    size_t unique_index_size = size_t C_size = thrust::inner_product(tmp_index.begin(), tmp_index.end() - 1,
+                                          tmp_index.begin() + 1,
+                                          size_t(0),
+                                          thrust::plus<size_t>(),
+                                          thrust::not_equal_to<IndexType>()) + 1;
 
     // allocate space for output
     C_index.resize(unique_index_size);
