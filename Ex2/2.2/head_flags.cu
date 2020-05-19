@@ -8,8 +8,8 @@
 struct head_flag_to_key
     : public thrust::unary_function<const int,int>
 {
-    int currentKey = 0;
-    
+    int currentKey{0};
+
     __host__ __device__
     int operator()(const int flag) const
     {
