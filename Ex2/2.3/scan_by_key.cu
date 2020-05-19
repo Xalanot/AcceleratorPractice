@@ -56,7 +56,6 @@ struct value_flag_pair
 };
 
 struct pair_binary_op
-    : public thrust::binary_function<int, int, value_flag_pair>
 {
     __host__ __device__
     value_flag_pair operator()(int value, int flag) const
@@ -69,7 +68,6 @@ struct pair_binary_op
 };   
 
 struct scan_binary_op
-    : public thrust::binary_function<value_flag_pair, value_flag_pair, int>
 {
     __host__ __device__
     int operator()(value_flag_pair const& first, value_flag_pair const& second) const
