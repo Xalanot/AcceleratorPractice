@@ -113,7 +113,7 @@ struct scan_binary_op
     }
 };
 
-int main()
+int main(int argc, char** argv)
 {
     size_t N = std::stoi(argv[1]);;
     thrust::device_vector<int> values = getValueVector(N);
