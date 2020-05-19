@@ -72,7 +72,7 @@ struct scan_binary_op
     : public thrust::binary_function<value_flag_pair, value_flag_pair, int>
 {
     __host__ __device__
-    scan_binary_op operator()(value_flag_pair const& first, value_flag_pair const& second) const
+    int operator()(value_flag_pair const& first, value_flag_pair const& second) const
     {
         return first.value + second.value;
     }
