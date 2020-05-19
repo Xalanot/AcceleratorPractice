@@ -6,10 +6,10 @@
 // BinaryPredicate for the head flag segment representation
 // equivalent to thrust::not2(thrust::project2nd<int,int>()));
 struct head_flag_to_key
-    : public thrust::unary_function<int,int>
+    : public thrust::unary_function<const int,int>
 {
     __host__ __device__
-    int operator()(int flag) const
+    int operator()(const int flag) const
     {
         if (flag)
         {
