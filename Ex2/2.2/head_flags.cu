@@ -72,7 +72,8 @@ thrust::device_vector<int> getKeyVector(size_t N)
 thrust::device_vector<int> generateFlags(thrust::device_vector<int> const& keys)
 {
     thrust::device_vector<int> flags(keys.size());
-    thrust::transform(keys.begin(), keys.end(), flags.begin(), flags.begin(), thrust::not_equal_to<int>());
+    flags[0] = 1;
+    thrust::transform(keys.begin(), keys.end() - 1, keys.begin() + 1, flags.begin() + 1, thrust::not_equal_to<int>());
     return flags;
 }
 
