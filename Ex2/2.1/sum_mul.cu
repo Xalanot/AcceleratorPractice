@@ -8,7 +8,7 @@
 int my_rand(void)
 {
   static thrust::default_random_engine rng;
-  static thrust::uniform_int_distribution<int> dist(0, 5);
+  static thrust::uniform_int_distribution<int> dist(1, 3);
   return dist(rng);
 }
 
