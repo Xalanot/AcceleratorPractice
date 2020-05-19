@@ -53,6 +53,12 @@ struct value_flag_pair
 {
     int value;
     int flag;
+
+    value_flag_pair(int i)
+    {
+        value = i;
+        flag = 0;
+    }
 };
 
 struct pair_binary_op
@@ -72,7 +78,7 @@ struct scan_binary_op
     __host__ __device__
     int operator()(value_flag_pair const& first, value_flag_pair const& second) const
     {
-        return 1;
+        return first.value + second.value;
     }
 };
 
