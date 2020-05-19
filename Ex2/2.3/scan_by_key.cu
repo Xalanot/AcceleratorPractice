@@ -54,6 +54,8 @@ struct value_flag_pair
     int value;
     int flag;
 
+    value_flag_pair() = default;
+
     value_flag_pair(int i)
     {
         value = i;
