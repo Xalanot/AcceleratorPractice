@@ -27,7 +27,7 @@ void print(const Vector& v)
 thrust::device_vector<int> getValueVector(size_t N)
 {
     thrust::default_random_engine rng;
-    thrust::uniform_real_distribution<int> dist(0, 100);
+    thrust::uniform_int_distribution<int> dist(0, 100);
     thrust::device_vector<int> values(N);
     for (size_t i = 0; i < values.size(); ++i)
     {
@@ -40,13 +40,13 @@ thrust::device_vector<int> getValueVector(size_t N)
 thrust::device_vector<int> getKeyVector(size_t N)
 {
     thrust::default_random_engine rng;
-    thrust::uniform_real_distribution<size_t> dist(1, 5);
+    thrust::uniform_int_distribution<size_t> dist(1, 5);
     thrust::device_vector<int> keys(N);
     size_t currentSize = 0;
     int currentKey = 0;
     while (currentSize < N)
     {
-        if (N - currentSize < 100)
+        if (N - currentSize < 5)
         {
             for (size_t i = currentSize; i < keys.size(); ++i)
             {
