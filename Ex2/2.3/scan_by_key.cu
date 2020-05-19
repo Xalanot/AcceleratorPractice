@@ -55,6 +55,12 @@ struct value_flag_pair
     int flag;
 };
 
+std::ostream &operator<<(std::ostream &os, const value_flag_pair &pair)
+{
+  os << pair.value;
+  return os;
+}
+
 struct pair_binary_op
 {
     __host__ __device__
@@ -92,7 +98,7 @@ int main()
     thrust::inclusive_scan(pairs.begin(), pairs.end(), output.begin(), scan_binary_op());
 
     for(size_t i = 0; i < N; i++)
-        std::cout << output[i].flag << " ";
+        std::cout << output[i] << " ";
     std::cout << "\n";
     return 0;
 }
