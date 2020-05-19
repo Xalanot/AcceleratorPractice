@@ -51,6 +51,7 @@ thrust::device_vector<int> getKeyVector(size_t N)
             for (size_t i = currentSize; i < keys.size(); ++i)
             {
                 keys[i] = currentKey;
+                currentSize = keys.size();
             }
         }
         else 
