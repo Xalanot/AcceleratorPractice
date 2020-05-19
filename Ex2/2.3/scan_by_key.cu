@@ -84,7 +84,6 @@ struct scan_binary_op
         else
             pair.value = first.value + second.value;
         pair.flag = 0;
-        std::cout << pair.value << std::endl;
         return pair;
     }
 };
