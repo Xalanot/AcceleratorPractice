@@ -80,10 +80,15 @@ struct scan_binary_op
     {
         value_flag_pair pair;
         if (second.flag)
+        {
             pair.value = second.value;
+            pair.flag = 1;
+        }
         else
+        {
             pair.value = first.value + second.value;
-        pair.flag = 0;
+            pair.flag = 0;
+        }
         return pair;
     }
 };
