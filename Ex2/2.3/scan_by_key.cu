@@ -62,7 +62,7 @@ thrust::device_vector<int> getValueVectorFromPair(thrust::device_vector<value_fl
 {
     thrust::host_vector<value_flag_pair> h_pairs(pairs);
     thrust::device_vector<int> values(pairs.size());
-    for (size_t i = 0; i < pairs.size; ++i)
+    for (size_t i = 0; i < pairs.size(); ++i)
     {
         values[i] = h_pairs[i].value;
     }
