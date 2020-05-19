@@ -90,7 +90,7 @@ struct scan_binary_op
 
 int main()
 {
-    size_t N = 20;
+    size_t N = 30;
     thrust::device_vector<int> values = getValueVector(N);
     thrust::device_vector<int> flags = getFlagVector(N);
 
