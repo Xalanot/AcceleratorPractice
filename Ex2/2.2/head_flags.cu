@@ -5,15 +5,22 @@
 
 // BinaryPredicate for the head flag segment representation
 // equivalent to thrust::not2(thrust::project2nd<int,int>()));
-template <typename HeadFlagType>
-struct head_flag_predicate 
-    : public thrust::binary_function<HeadFlagType,HeadFlagType,bool>
+struct head_flag_to_key
+    : public thrust::unary_function<int,int>
 {
     __host__ __device__
-    bool operator()(HeadFlagType, HeadFlagType right) const
+    int operator()(int flag) const
     {
-        return !right;
+        if (flag)
+        {
+            currentKey++;
+            return currentKey;
+        }
+
+        return currentKey;
     }
+
+    int currentKey = 0;
 };
 
 template <typename Vector>
@@ -77,15 +84,25 @@ thrust::device_vector<int> generateFlags(thrust::device_vector<int> const& keys)
     return flags;
 }
 
+thrust::device_vector<int> generateKeys(thrust::device_vector<int> const& flags)
+{
+    thrust::device_vector<int> keys(flags.size());
+    thrust::transform(keys.begin() + 1, keys.end(), flags.begin() + 1, head_flag_to_key());
+    return keys;
+}
+
 int main(void)
 {
     int N = 20;
     thrust::device_vector<int> values = getValueVector(N);
     thrust::device_vector<int> keys = getKeyVector(N);
     thrust::device_vector<int> flags = generateFlags(keys);
-    
+    thrust::device_vector<int> keys2 = generateKeys(flags);
+
     print(keys);
     print(flags);
+    print(keys2);
+
 
     return 0;
 }
