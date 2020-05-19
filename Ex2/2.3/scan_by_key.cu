@@ -88,7 +88,7 @@ int main()
     thrust::transform(values.begin(), values.end(), flags.begin(), pairs.begin(), pair_binary_op());
 
     thrust::device_vector<int> output(N);
-    thrust::inclusive_scan(pairs.begin(), pairs.end(), output.begin(), 0, scan_binary_op());
+    thrust::inclusive_scan(pairs.begin(), pairs.end(), output.begin(), scan_binary_op());
 
     print(output);
     return 0;
