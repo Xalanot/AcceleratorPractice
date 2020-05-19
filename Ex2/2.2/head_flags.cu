@@ -87,7 +87,7 @@ thrust::device_vector<int> generateFlags(thrust::device_vector<int> const& keys)
 thrust::device_vector<int> generateKeys(thrust::device_vector<int> const& flags)
 {
     thrust::device_vector<int> keys(flags.size());
-    thrust::transform(keys.begin() + 1, keys.end(), flags.begin() + 1, head_flag_to_key());
+    thrust::transform(flags.begin() + 1, flags.end(), keys.begin() + 1, head_flag_to_key());
     return keys;
 }
 
