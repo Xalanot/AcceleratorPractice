@@ -28,7 +28,7 @@ thrust::device_vector<int> getValueVector(size_t N)
 thrust::device_vector<int> getKeyVector(size_t N)
 {
     thrust::default_random_engine rng;
-    thrust::uniform_int_distribution<size_t> dist(1, 5);
+    thrust::uniform_int_distribution<size_t> dist(50, 100);
     thrust::device_vector<int> keys(N);
     size_t currentSize = 0;
     int currentKey = 0;
