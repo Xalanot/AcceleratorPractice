@@ -5,4 +5,4 @@
 #
 #SBATCH -w mp-capture02
 
-srun ./head_flags 1000
+srun ./head_flags 20
