@@ -84,7 +84,12 @@ struct scan_binary_op
             pair.value = second.value;
             pair.flag = 1;
         }
-        else
+        else if (first.flag)
+        {
+            pair.value = first.value + second.value;
+            pair.flag = 1;
+        }
+        else 
         {
             pair.value = first.value + second.value;
             pair.flag = 0;
