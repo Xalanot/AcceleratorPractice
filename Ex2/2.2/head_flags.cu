@@ -28,7 +28,7 @@ thrust::device_vector<int> getValueVector(size_t N)
 thrust::device_vector<int> getKeyVector(size_t N)
 {
     thrust::default_random_engine rng;
-    thrust::uniform_int_distribution<size_t> dist(1, 5);
+    thrust::uniform_int_distribution<size_t> dist(50, 100);
     thrust::device_vector<int> keys(N);
     size_t currentSize = 0;
     int currentKey = 0;
@@ -72,17 +72,13 @@ thrust::device_vector<int> generateKeys(thrust::device_vector<int> const& flags)
     return keys;
 }
 
-int main(void)
+int main(int argc, char** argv)
 {
-    int N = 20;
+    int N = std::atoi(argv[1]);
     thrust::device_vector<int> values = getValueVector(N);
     thrust::device_vector<int> keys = getKeyVector(N);
     thrust::device_vector<int> flags = generateFlags(keys);
     thrust::device_vector<int> keys2 = generateKeys(flags);
-
-    print(keys);
-    print(flags);
-    print(keys2);
     
     assert(keys == keys2);
 
