@@ -36,7 +36,7 @@ thrust::device_vector<int> getFlagVector(size_t N)
     size_t currentSize = 0;
     while (currentSize < N)
     {
-        if (N - currentSize < 5)
+        if (N - currentSize < 100)
         {
             flags[currentSize] = 1;
             currentSize = flags.size();

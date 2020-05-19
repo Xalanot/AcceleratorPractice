@@ -34,7 +34,7 @@ thrust::device_vector<int> getKeyVector(size_t N)
     int currentKey = 0;
     while (currentSize < N)
     {
-        if (N - currentSize < 5)
+        if (N - currentSize < 100)
         {
             for (size_t i = currentSize; i < keys.size(); ++i)
             {
