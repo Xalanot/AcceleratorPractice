@@ -58,6 +58,18 @@ struct value_flag_pair
     int flag;
 };
 
+thrust::device_vector<int> getValueVectorFromPair(thrust::device_vector<value_flag_pair> const& pairs)
+{
+    thrust::host_vector<value_flag_pair> h_pairs(pairs);
+    thrust::device_vector<int> values(pairs.size());
+    for (size_t i = 0; i < pairs.size; ++i)
+    {
+        values[i] = h_pairs[i].value;
+    }
+
+    return values;
+}
+
 std::ostream &operator<<(std::ostream &os, const value_flag_pair &pair)
 {
   os << pair.value;
@@ -115,6 +127,6 @@ int main()
 
     thrust::device_vector<int> output2(N);
     thrust::inclusive_scan_by_key(flags.begin(), flags.end(), values.begin(), output2.begin(), head_flag_predicate<int>());
-    assert(output == output2);
+    assert(getValueVectorFromPair(output) == output2);
     return 0;
 }
