@@ -97,8 +97,6 @@ int main()
     thrust::device_vector<value_flag_pair> output(N);
     thrust::inclusive_scan(pairs.begin(), pairs.end(), output.begin(), scan_binary_op());
 
-    for(size_t i = 0; i < N; i++)
-        std::cout << output[i] << " ";
-    std::cout << "\n";
+    print(output);
     return 0;
 }
