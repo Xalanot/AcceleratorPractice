@@ -92,7 +92,7 @@ int main()
     thrust::inclusive_scan(pairs.begin(), pairs.end(), output.begin(), scan_binary_op());
 
     for(size_t i = 0; i < N; i++)
-        std::cout << output[i]->value << " ";
+        std::cout << output[i] << " ";
     std::cout << "\n";
     return 0;
 }
