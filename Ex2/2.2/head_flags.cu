@@ -85,7 +85,7 @@ thrust::device_vector<int> generateFlags(thrust::device_vector<int> const& keys)
 thrust::device_vector<int> generateKeys(thrust::device_vector<int> const& flags)
 {
     thrust::device_vector<int> keys(flags.size());
-    thrust::inclusive_scan(keys.begin(), keys.end(), flags.begin());
+    thrust::inclusive_scan(flags.begin(), flags.end(), keys.begin());
     return keys;
 }
 
