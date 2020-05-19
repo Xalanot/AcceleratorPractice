@@ -4,23 +4,6 @@
 #include <thrust/scan.h>
 #include <iostream>
 
-// BinaryPredicate for the head flag segment representation
-// equivalent to thrust::not2(thrust::project2nd<int,int>()));
-struct head_flag_to_key
-    : public thrust::binary_function<int,int,int>
-{
-    __host__ __device__
-    int operator()(int flag, int oldKey) const
-    {
-        if (flag)
-        {
-            return oldKey + 1;
-        }
-
-        return oldKey;
-    }
-};
-
 template <typename Vector>
 void print(const Vector& v)
 {
@@ -100,7 +83,8 @@ int main(void)
     print(keys);
     print(flags);
     print(keys2);
-
+    
+    assert(keys == keys2);
 
     return 0;
 }
