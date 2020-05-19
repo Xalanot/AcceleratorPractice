@@ -72,7 +72,7 @@ struct scan_binary_op
     __host__ __device__
     int operator()(value_flag_pair const& first, value_flag_pair const& second) const
     {
-        return first.value + second.value;
+        return 1;
     }
 };
 
