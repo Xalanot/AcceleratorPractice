@@ -4,13 +4,16 @@
 #include <thrust/scan.h>
 #include <iostream>
 
-template <typename Vector>
-void print(const Vector& v)
+template <typename HeadFlagType>
+struct head_flag_predicate 
+    : public thrust::binary_function<HeadFlagType,HeadFlagType,bool>
 {
-  for(size_t i = 0; i < v.size(); i++)
-    std::cout << v[i] << " ";
-  std::cout << "\n";
-}
+    __host__ __device__
+    bool operator()(HeadFlagType, HeadFlagType right) const
+    {
+        return !right;
+    }
+};
 
 thrust::device_vector<int> getValueVector(size_t N)
 {
@@ -28,7 +31,7 @@ thrust::device_vector<int> getValueVector(size_t N)
 thrust::device_vector<int> getFlagVector(size_t N)
 {
     thrust::default_random_engine rng;
-    thrust::uniform_int_distribution<size_t> dist(1, 5);
+    thrust::uniform_int_distribution<size_t> dist(50, 100);
     thrust::device_vector<int> flags(N);
     size_t currentSize = 0;
     while (currentSize < N)
@@ -100,7 +103,7 @@ struct scan_binary_op
 
 int main()
 {
-    size_t N = 20;
+    size_t N = std::stoi(argv[1]);;
     thrust::device_vector<int> values = getValueVector(N);
     thrust::device_vector<int> flags = getFlagVector(N);
 
@@ -110,8 +113,8 @@ int main()
     thrust::device_vector<value_flag_pair> output(N);
     thrust::inclusive_scan(pairs.begin(), pairs.end(), output.begin(), scan_binary_op());
 
-    print(values);
-    print(flags);
-    print(output);
+    thrust::device_vector<int> output2(N);
+    thrust::inclusive_scan_by_key(flags.begin(), flags.end(), values.begin(), output2.begin(), head_flag_predicate<int>());
+    assert(output == output2);
     return 0;
 }

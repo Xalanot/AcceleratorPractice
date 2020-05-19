@@ -5,4 +5,4 @@
 #
 #SBATCH -w mp-capture02
 
-srun ./scan_by_key
+srun ./scan_by_key 1000
