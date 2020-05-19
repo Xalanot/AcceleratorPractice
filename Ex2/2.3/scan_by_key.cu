@@ -79,7 +79,10 @@ struct scan_binary_op
     value_flag_pair operator()(value_flag_pair const& first, value_flag_pair const& second) const
     {
         value_flag_pair pair;
-        pair.value = first.value + second.value;
+        if (second.flag)
+            pair.value = second.value;
+        else
+            pair.value = first.value + second.value;
         pair.flag = 0;
         return pair;
     }
@@ -98,6 +101,7 @@ int main()
     thrust::inclusive_scan(pairs.begin(), pairs.end(), output.begin(), scan_binary_op());
 
     print(values);
+    print(flags);
     print(output);
     return 0;
 }
