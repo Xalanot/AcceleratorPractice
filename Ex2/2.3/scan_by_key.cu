@@ -53,14 +53,6 @@ struct value_flag_pair
 {
     int value;
     int flag;
-
-    value_flag_pair() = default;
-
-    value_flag_pair(int i)
-    {
-        value = i;
-        flag = 0;
-    }
 };
 
 struct pair_binary_op
@@ -78,9 +70,12 @@ struct pair_binary_op
 struct scan_binary_op
 {
     __host__ __device__
-    int operator()(value_flag_pair const& first, value_flag_pair const& second) const
+    value_flag_pair operator()(value_flag_pair const& first, value_flag_pair const& second) const
     {
-        return first.value + second.value;
+        value_flag_pair pair;
+        pair.value = first.value + second.value;
+        pair.flag = 0;
+        return value_flag_pair;
     }
 };
 
@@ -93,9 +88,11 @@ int main()
     thrust::device_vector<value_flag_pair> pairs(N);
     thrust::transform(values.begin(), values.end(), flags.begin(), pairs.begin(), pair_binary_op());
 
-    thrust::device_vector<int> output(N);
+    thrust::device_vector<pairs> output(N);
     thrust::inclusive_scan(pairs.begin(), pairs.end(), output.begin(), scan_binary_op());
 
-    print(output);
+    for(size_t i = 0; i < N; i++)
+        std::cout << output[i].value << " ";
+    std::cout << "\n";
     return 0;
 }
