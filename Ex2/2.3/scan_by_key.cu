@@ -75,7 +75,7 @@ struct scan_binary_op
         value_flag_pair pair;
         pair.value = first.value + second.value;
         pair.flag = 0;
-        return value_flag_pair;
+        return pair;
     }
 };
 
