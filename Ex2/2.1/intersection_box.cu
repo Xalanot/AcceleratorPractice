@@ -73,9 +73,20 @@ int main(void)
   
   // allocate storage for points
   thrust::device_vector<bbox> bboxes(N);
+  thrust::device_vector<point2d> points(N);
   
   // generate some random points in the unit square
   for(size_t i = 0; i < N; i++)
+  {
+      float x = u01(rng);
+      float y = u01(rng);
+      points[i] = point2d(x,y);
+  }
+  
+  // initial bounding box contains first point
+  bbox init = bbox(points[0], points[0]);
+  // generate some random points in the unit square
+  /*for(size_t i = 0; i < N; i++)
   {
       float x = u01(rng);
       float y = u01(rng);
@@ -87,12 +98,12 @@ int main(void)
 
       bboxes[i] = bbox(ll, ur);
   }
-  
+  */
   // binary reduction operation
   bbox_reduction binary_op;
-  bbox init = bboxes[0];
+  //bbox init = bboxes[0];
   // compute the intersection bounding box for the point set
-  bbox result = thrust::reduce(bboxes.begin(), bboxes.end(), init, binary_op);
+  bbox result = thrust::reduce(points.begin(), points.end(), init, binary_op);
   
   // print output
   std::cout << "intersection bounding box " << std::fixed;
