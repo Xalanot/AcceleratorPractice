@@ -79,11 +79,11 @@ int main(void)
   {
       float x = u01(rng);
       float y = u01(rng);
-      ll = point2d(x,y);
+      point2d ll(x,y);
 
       x = u01(rng);
       y = u01(rng);
-      ur = point2d(x,y);
+      point2d ur(x,y);
 
       bboxes[i] = bbox(ll, ur);
   }
