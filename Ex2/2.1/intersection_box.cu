@@ -90,7 +90,7 @@ int main(void)
   
   // binary reduction operation
   bbox_reduction binary_op;
-  
+  bbox init = bboxes[0];
   // compute the intersection bounding box for the point set
   bbox result = thrust::reduce(bboxes.begin(), bboxes.end(), bboxes[0], binary_op);
   
