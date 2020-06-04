@@ -5,4 +5,7 @@
 #
 #SBATCH -w mp-capture01
 
-srun ./pinned_memory
+for i in {20..32}
+do
+    srun ./pinned_memory 2**i
+done
