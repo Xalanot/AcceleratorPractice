@@ -115,17 +115,16 @@ void sort3(size_t N)
     alloc.deallocate(reinterpret_cast<char*>(raw_ptr), N * sizeof(int));
 }
 
-/*template <typename T>
-void sort4(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
+void sort4(size_t N)
 {
   size_t int_size = sizeof(int);
-  /*if (checkDevice(numberOfElements * int_size))
+  if (checkDevice(N * int_size))
   {
-    return sort3(numberOfElements, measurementSeries);
+    return sort1(N);
   }
 
-  thrust::host_vector<int> X_h(numberOfElements);
-  thrust::tabulate(X_h.begin(), X_h.end(), get_rand_number(1337, 10 * numberOfElements));
+  thrust::host_vector<int> X_h(N);
+  thrust::tabulate(X_h.begin(), X_h.end(), get_rand_number(1337, 10 * N));
 
   std::vector<cudaStream_t> streams(3);
   for (auto& stream : streams)
@@ -133,32 +132,36 @@ void sort4(size_t numberOfElements, MeasurementSeries<T>& measurementSeries)
     cudaStreamCreate(&stream);
   }
 
-  std::vector<size_t> sizes(3);
-  for (size_t i = 0; i < sizes.size(); ++i)
+  std::vector<thrust::device_vector<int>> device_vectors(3);
+  for (size_t i = 0; i < 3; ++i)
   {
-    if (i != sizes.size() - 1)
+    if (i != 2)
     {
-      sizes[i] = numberOfElements / sizes.size();
+      device_vectors[i] = thrust::device_vector<int>( N / 3);
     }
     else
     {
-      sizes[i] = (numberOfElements + sizes.size() - 1) / sizes.size();
+      // ceil
+      device_vectors[i] = thrust::device_vector<int>( (N + 2) / 3);
     }
-
-    std::cout << sizes[i] << std::endl;
   }
 
-  #pragma omp parallel for num_threads(3)
+  cached_allocator allocator;
+
+  cudaDeviceSynchronize();
+  auto start = Clock::now();
   for (int i = 0; i < 3; ++i)
   {
-    thrust::device_vector<int> X_d(sizes[i]);
-    checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(X_d.data()), thrust::raw_pointer_cast(X_h.data() + i * sizes[0]), sizes[i] * int_size, cudaMemcpyHostToDevice, streams[i]));
-    cached_allocator allocator;
-    thrust::sort(thrust::cuda::par(allocator).on(streams[i]), X_d.begin(), X_d.end());
-    assert(thrust::is_sorted(X_d.begin(), X_d.end()));
+    checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(device_vectors[i].data()), thrust::raw_pointer_cast(X_h.data() + i * device_vectors[0].size()), device_vectors[i].size() * int_size, cudaMemcpyHostToDevice, streams[i]));
+    thrust::sort(thrust::cuda::par(allocator).on(streams[i]), device_vectors[i].begin(), device_vectors[i].end());
   }
+  cudaDeviceSynchronize();
+  auto end = Clock::now();
   
-}*/
+  auto time = static_cast<Duration>(end - start);
+
+  std::cout << "sort4: " << time.count() << std::endl;  
+}
 
 int main(int argc, char ** argv){
 
