@@ -107,9 +107,8 @@ void sort3(size_t N)
         std::cout << "  caught std::bad_alloc from thrust::sort" << std::endl;
     }
     cudaDeviceSynchronize();
-    auto end = Clock::now();
 
-    auto time = static_cast<Duration>(end - start);
+    auto time = static_cast<Duration>(Clock::now() - start);
 
     std::cout << "sort3: " << time.count() << std::endl;
 
