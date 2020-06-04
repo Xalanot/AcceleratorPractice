@@ -118,7 +118,7 @@ void sort3(size_t N)
 void sort4(size_t N)
 {
   size_t int_size = sizeof(int);
-  if (checkDevice(N * int_size))
+  if (!checkDevice(N * int_size))
   {
     return sort1(N);
   }
@@ -168,7 +168,7 @@ int main(int argc, char ** argv){
     size_t const N = std::stoi(argv[1]);
 
     sort1(N);
-    sort2(N);
+    //sort2(N);
     sort3(N);
     sort4(N);
 
