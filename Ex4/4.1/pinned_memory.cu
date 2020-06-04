@@ -170,6 +170,7 @@ int main(int argc, char ** argv){
     sort1(N);
     sort2(N);
     sort3(N);
+    sort4(N);
 
     return 0;
 }
