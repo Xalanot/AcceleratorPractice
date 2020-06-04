@@ -7,5 +7,5 @@
 
 for i in {20..32}
 do
-    srun ./pinned_memory 2**i
+    srun ./pinned_memory $((2**i))
 done

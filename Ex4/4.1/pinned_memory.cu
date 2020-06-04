@@ -11,7 +11,7 @@
 #include "fallback_allocator.h"
 
 #define DEBUG 0
-#define ITERATIONS 10
+#define ITERATIONS 1
 
 using Clock = std::chrono::high_resolution_clock;
 using Duration = std::chrono::duration<double>;
