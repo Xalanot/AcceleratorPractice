@@ -26,9 +26,9 @@ void sort1(size_t N)
     }
 
     int* hostMemPointer = nullptr;
-    std::cout << "before" << std::cout;
+    std::cout << "before" << std::endl;
     checkCudaError(cudaHostAlloc((void**)&hostMemPointer, memSize, 0));
-    std::cout << "after" << std::cout;
+    std::cout << "after" << std::endl;
 
     thrust::tabulate(hostMemPointer, hostMemPointer + N, get_rand_number(1337, 10 * N));
     
