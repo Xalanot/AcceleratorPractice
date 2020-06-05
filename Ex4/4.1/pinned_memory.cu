@@ -25,7 +25,8 @@ void sort1(size_t N)
       return;
     }
 
-    size_t heapSize;
+    size_t heapSize = 1 << 26;
+    cudaDeviceSetLimit(cudaLimitMallocHeapSize, heapSize);
     cudaDeviceGetLimit(&heapSize, cudaLimitMallocHeapSize);
     std::cout << "heapSize: " << bytesToMBytes(heapSize) << std::endl;
 
