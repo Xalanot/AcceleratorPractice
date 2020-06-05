@@ -7,7 +7,7 @@
 #include <thrust/memory.h>
 #include <thrust/system/cuda/memory.h>
 
-#define DEBUG 0
+#define DEBUG 1
 
 // Error handeling of cuda functions
 #define checkCudaError(ans) { gpuAssert((ans), __FILE__, __LINE__); }
