@@ -7,5 +7,6 @@
 
 for i in {25..30}
 do
+    free -m
     srun ./pinned_memory $((2**i))
 done
