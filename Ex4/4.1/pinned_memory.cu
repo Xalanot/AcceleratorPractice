@@ -27,9 +27,13 @@ void sort1(size_t N)
     }
 
     int* hostMemPointer = nullptr;
+    auto startSetup = Clock::now();
     checkCudaError(cudaHostAlloc((void**)&hostMemPointer, memSize, 0));
 
     thrust::tabulate(hostMemPointer, hostMemPointer + N, get_rand_number(1337, 10 * N));
+    auto endSetup = Clock::now();
+    auto timeSetup = static_cast<Duration>(endSetup - startSetup);
+    std::cout << "start1 setup: " << timeSetup.count() << std::endl;
     
     // allocate copy vectors
     thrust::device_vector<int> device_vec(N);
@@ -47,7 +51,12 @@ void sort1(size_t N)
       thrust::host_vector<int> host_vec = device_vec;
     }
     auto end = Clock::now();
+
+    auto startAssert = Clock::now();
     assert(thrust::is_sorted(host_vec.begin(), host_vec.end()));
+    auto endAssert = Clock::now();
+    auto timeAssert = static_cast<Duration>(endAssert - startAssert);
+    std::cout << "sort1 assert: " << timeAssert << std::endl;
 
     auto time = static_cast<Duration>(end - start);
 
@@ -72,7 +81,9 @@ void sort2(size_t N)
     thrust::tabulate(hostMemPointer, hostMemPointer + N, get_rand_number(1337, 10 * N));
     
     // if we want to run multiple iterations we need to duplicate the data here
-    thrust::device_ptr<int> ptr = thrust::device_pointer_cast(hostMemPointer);
+    //thrust::device_ptr<int> ptr = thrust::device_pointer_cast(hostMemPointer);
+    int* ptr = nullptr;
+    checkCudaError(cudaHostGetDevicePointer(&ptr, hostMemPointer, 0));
     cudaDeviceSynchronize();
     auto start = Clock::now();
     thrust::sort(ptr, ptr + N);
@@ -169,8 +180,8 @@ int main(int argc, char ** argv){
 
     sort1(N);
     //sort2(N);
-    sort3(N);
-    sort4(N);
+    //sort3(N);
+    //sort4(N);
 
     return 0;
 }
