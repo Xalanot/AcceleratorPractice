@@ -75,7 +75,7 @@ bool checkDevice(size_t memSize)
             std::cout << "Checking for " << bytesToGBytes(memSize) << " GB" << std::endl;
         }
         // check if there is enough memory size on the deive, we want to leave 5% left over
-        if (properties.totalGlobalMem * 0.95 < memSize)
+        if (properties.totalGlobalMem * 0.95 < 2 * memSize)
         {
             if (DEBUG)
             {
