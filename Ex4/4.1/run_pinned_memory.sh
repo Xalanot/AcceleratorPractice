@@ -5,8 +5,8 @@
 #
 #SBATCH -w mp-capture01
 
-for i in {25..30}
-do
-    free -g
-    srun ./pinned_memory $((2**i))
-done
+#for i in {25..30}
+#do
+    #srun ./pinned_memory $((2**i))
+#done
+srun cuda-memcheck ./pinned_memory $((2**28))
