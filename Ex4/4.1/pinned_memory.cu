@@ -39,11 +39,11 @@ void sort1(size_t N)
     for (int i = 0; i < ITERATIONS; ++i)
     {
       // copy to device with hostpointer
-      std::cout << "before" << std::endl;
       thrust::copy(hostMemPointer, hostMemPointer + N, device_vec.begin());
-      std::cout << "after" << std::endl;
       // sort on device
+      std::cout << "before" << std::endl;
       thrust::sort(device_vec.begin(), device_vec.end());
+      std::cout << "after" << std::endl;
       // transfer back to host
       thrust::host_vector<int> host_vec = device_vec;
     }
