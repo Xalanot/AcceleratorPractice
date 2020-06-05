@@ -25,6 +25,10 @@ void sort1(size_t N)
       return;
     }
 
+    size_t heapSize;
+    cudaDeviceGetLimit(&heapSize, cudaLimitMallocHeapSize);
+    std::cout << "heapSize: " << heapSize << std::endl;
+
     int* hostMemPointer = nullptr;
     checkCudaError(cudaHostAlloc((void**)&hostMemPointer, memSize, 0));
 
