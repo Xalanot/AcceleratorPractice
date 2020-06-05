@@ -41,7 +41,7 @@ struct get_rand_number : public thrust::binary_function<void, void, size_t>
   }
 };
 
-size_t bytesToMBytes(size_t memSize)
+size_t bytesToMBytes(size_t bytes)
 {
     return bytes >> 20;
 }
