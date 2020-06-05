@@ -56,7 +56,7 @@ void sort1(size_t N)
     assert(thrust::is_sorted(host_vec.begin(), host_vec.end()));
     auto endAssert = Clock::now();
     auto timeAssert = static_cast<Duration>(endAssert - startAssert);
-    std::cout << "sort1 assert: " << timeAssert << std::endl;
+    std::cout << "sort1 assert: " << timeAssert.count() << std::endl;
 
     auto time = static_cast<Duration>(end - start);
 
