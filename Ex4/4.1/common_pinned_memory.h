@@ -81,7 +81,7 @@ bool checkDevice(size_t memSize)
             {
                 std::cout << "Device #" << device
                     << " [" << properties.name << "] does not have enough memory" << std::endl;
-                std::cout << "There is " << bytesToGBytes(2 * memSize - properties.totalGlobalMem * 0.95) << "GB too few bytes of memory" << std::endl;
+                std::cout << "There is " << bytesToMBytes(2 * memSize - properties.totalGlobalMem * 0.95) << "MB too few bytes of memory" << std::endl;
             }
             return false;
         }
