@@ -26,9 +26,7 @@ void sort1(size_t N)
     }
 
     int* hostMemPointer = nullptr;
-    std::cout << "before" << std::endl;
     checkCudaError(cudaHostAlloc((void**)&hostMemPointer, memSize, 0));
-    std::cout << "after" << std::endl;
 
     thrust::tabulate(hostMemPointer, hostMemPointer + N, get_rand_number(1337, 10 * N));
     
@@ -41,7 +39,9 @@ void sort1(size_t N)
     for (int i = 0; i < ITERATIONS; ++i)
     {
       // copy to device with hostpointer
+      std::cout << "before" << std::endl;
       thrust::copy(hostMemPointer, hostMemPointer + N, device_vec.begin());
+      std::cout << "after" << std::endl;
       // sort on device
       thrust::sort(device_vec.begin(), device_vec.end());
       // transfer back to host
