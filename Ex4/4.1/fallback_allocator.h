@@ -5,8 +5,6 @@
 
 #include "common_pinned_memory.h"
 
-#define DEBUG 0
-
 class fallback_allocator
 {
   public:

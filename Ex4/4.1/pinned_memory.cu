@@ -10,7 +10,6 @@
 #include "common_pinned_memory.h"
 #include "fallback_allocator.h"
 
-#define DEBUG 0
 #define ITERATIONS 1
 
 using Clock = std::chrono::high_resolution_clock;
