@@ -49,7 +49,6 @@ void sortAoS(size_t N)
     initialize_keys(structures_h);
 
     cudaDeviceSynchronize();
-    measurementSeries.start();
 
     thrust::device_vector<MyStruct> structures_d = structures_h;
 
@@ -58,7 +57,6 @@ void sortAoS(size_t N)
     structures_h = structures_d;
 
     cudaDeviceSynchronize();
-    measurementSeries.stop();
 
     assert(thrust::is_sorted(structures_h.begin(), structures_h.end()));
 }
@@ -71,7 +69,6 @@ void sortSoA(size_t N)
     initialize_keys(keys_h);
 
     cudaDeviceSynchronize();
-    measurementSeries.start();
 
     thrust::device_vector<int> keys_d = keys_h;
     thrust::device_vector<float> values_d = values_h;
@@ -82,7 +79,6 @@ void sortSoA(size_t N)
     values_h = values_d;
 
     cudaDeviceSynchronize();
-    measurementSeries.stop();
 
     assert(thrust::is_sorted(keys_h.begin(), keys_h.end()));
 }
@@ -97,7 +93,6 @@ void sort3(size_t N)
     initialize_keys(structures_h);
 
     cudaDeviceSynchronize();
-    measurementSeries.start();
 
     // Copy SoA to device
     //structures_d = structures_h;
@@ -124,7 +119,6 @@ void sort3(size_t N)
                       return str;});
     
     cudaDeviceSynchronize();
-    measurementSeries.stop();
     assert(thrust::is_sorted(structures_h.begin(), structures_h.end()));
 }
 
