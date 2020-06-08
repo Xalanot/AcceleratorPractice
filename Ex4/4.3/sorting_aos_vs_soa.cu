@@ -2,6 +2,7 @@
 #include <thrust/sort.h>
 #include <thrust/random.h>
 #include <assert.h>
+#include <chrono>
 
 // This examples compares sorting performance using Array of Structures (AoS)
 // and Structure of Arrays (SoA) data layout.  Legacy applications will often
@@ -11,6 +12,9 @@
 // the optimized SoA approach is approximately *five times faster* than the
 // traditional AoS method.  Therefore, it is almost always worthwhile to
 // convert AoS data structures to SoA.
+
+using Clock = std::chrono::high_resolution_clock;
+using Duration = std::chrono::duration<double>;
 
 struct MyStruct
 {
@@ -50,6 +54,8 @@ void sortAoS(size_t N)
 
     cudaDeviceSynchronize();
 
+    auto start = Clock::now();
+
     thrust::device_vector<MyStruct> structures_d = structures_h;
 
     thrust::sort(structures_d.begin(), structures_d.end());
@@ -57,6 +63,12 @@ void sortAoS(size_t N)
     structures_h = structures_d;
 
     cudaDeviceSynchronize();
+
+    auto end = Clock::now();
+
+    auto duration = static_cast<Duration>(end - start);
+
+    std::cout << "sortAoS: " << duration.count() << std::endl;
 
     assert(thrust::is_sorted(structures_h.begin(), structures_h.end()));
 }
@@ -70,6 +82,8 @@ void sortSoA(size_t N)
 
     cudaDeviceSynchronize();
 
+    auto start = Clock::now();
+
     thrust::device_vector<int> keys_d = keys_h;
     thrust::device_vector<float> values_d = values_h;
 
@@ -79,6 +93,12 @@ void sortSoA(size_t N)
     values_h = values_d;
 
     cudaDeviceSynchronize();
+
+    auto end = Clock::now();
+
+    auto duration = static_cast<Duration>(end - start);
+
+    std::cout << "sortSoA: " << duration.count() << std::endl;
 
     assert(thrust::is_sorted(keys_h.begin(), keys_h.end()));
 }
@@ -114,6 +134,8 @@ void sort3(size_t N)
 
     cudaDeviceSynchronize();
 
+    auto start = Clock::now();
+
     // Copy AoS to SoA on device
     auto transform_soa_begin = thrust::make_transform_iterator(structures_h.begin(), get_soa());
     auto transform_soa_end = thrust::make_transform_iterator(structures_h.end(), get_soa());
@@ -128,6 +150,11 @@ void sort3(size_t N)
     thrust::copy(transform_aos_begin, transform_aos_end, structures_h.begin());
     
     cudaDeviceSynchronize();
+
+    auto end = Clock::now();
+
+    auto duration = static_cast<Duration>(end - start);
+    std::cout << "sort3: " << duration.count() << std::endl;
     assert(thrust::is_sorted(structures_h.begin(), structures_h.end()));
 }
 
@@ -136,10 +163,10 @@ int main(void)
   size_t N = 2 * 1024 * 1024;
 
   // Sort Key-Value pairs using Array of Structures (AoS) storage 
-  //sortAoS(N, AoSSeries);
+  sortAoS(N);
 
   // Sort Key-Value pairs using Structure of Arrays (SoA) storage 
-  //sortSoA(N, SoASeries);
+  sortSoA(N);
 
   // Sort 3
   sort3(N);
