@@ -85,6 +85,18 @@ void sortSoA(size_t N)
 
 struct get_aos
 {
+  __host__ __device__
+  MyStruct operator() (int key, float value)
+  {
+    MyStruct str;
+    str.key = key;
+    str.value = value;
+    return str;
+  }
+}
+
+struct get_soa
+{
   __host__ __device__ 
   thrust::tuple<int, float> operator()(MyStruct const& str) 
   {
@@ -95,7 +107,6 @@ struct get_aos
 void sort3(size_t N)
 {
     thrust::host_vector<MyStruct> structures_h(N);
-    thrust::device_vector<MyStruct> structures_d(N);
     thrust::device_vector<int> keys(N);
     thrust::device_vector<int> values(N);
 
@@ -103,35 +114,21 @@ void sort3(size_t N)
 
     cudaDeviceSynchronize();
 
-    // Copy SoA to device
-    //structures_d = structures_h;
-    // Transfer data to AoS on device
-    auto transform_begin = thrust::make_transform_iterator(structures_h.begin(), get_aos());
-    auto transform_end = thrust::make_transform_iterator(structures_h.end(), get_aos());
-    thrust::copy(transform_begin, transform_end, thrust::make_zip_iterator(thrust::make_tuple(keys.begin(), values.begin())));
-    //thrust::transform(structures_h.begin(), structures_h.end(), keys.begin(), [] __host__ __device__ (MyStruct str) {return str.key;});
-    //thrust::transform(structures_h.begin(), structures_h.end(), values.begin(), [] __device__ __host__ (MyStruct str) {return str.value;});
+    // Copy AoS to SoA on device
+    auto transform_soa_begin = thrust::make_transform_iterator(structures_h.begin(), get_soa());
+    auto transform_soa_end = thrust::make_transform_iterator(structures_h.end(), get_soa());
+    thrust::copy(transform_soa_begin, transform_soa_end, thrust::make_zip_iterator(thrust::make_tuple(keys.begin(), values.begin())));
     
     // Sort on the device with SoA format
-    //thrust::sort_by_key(keys.begin(), keys.end(), values.begin());
-    //assert(thrust::is_sorted(keys.begin(), keys.end()));
+    thrust::sort_by_key(keys.begin(), keys.end(), values.begin());
     
+    auto transform_aos_begin = thrust::make_transform_iterator(thrust::make_zip_iterator(thrust::make_tuple(keys.begin(), values.begin())), get_aos());
+    auto transform_aos_end = thrust::make_transform_iterator(thrust::make_zip_iterator(thrust::make_tuple(keys.end(), values.end())), get_aos());
     // Transfer data back to host
-    /*thrust::transform(keys.begin(), keys.end(), structures_d.begin(), [] __device__ __host__ (int key) 
-                      {MyStruct str;
-                       str.key = key;
-                       return str;});
-    thrust::transform(thrust::make_zip_iterator(thrust::make_tuple(keys.begin(), values.begin())),
-                      thrust::make_zip_iterator(thrust::make_tuple(keys.end(), values.end())),
-                      structures_h.begin(),
-                      [] __device__ __host__ (thrust::tuple<int, float> t)
-                      {MyStruct str;
-                      str.key = thrust::get<0>(t);
-                      str.value = thrust::get<1>(t);
-                      return str;});
+    thrust::copy(transform_aos_begin, transform_aos_end, structures_h);
     
     cudaDeviceSynchronize();
-    assert(thrust::is_sorted(structures_h.begin(), structures_h.end()));*/
+    assert(thrust::is_sorted(structures_h.begin(), structures_h.end()));
 }
 
 int main(void)
