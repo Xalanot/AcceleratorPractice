@@ -97,8 +97,8 @@ void sort3(size_t N)
     // Copy SoA to device
     //structures_d = structures_h;
     // Transfer data to AoS on device
-    auto keys_h_begin = thrust::make_transform_iterator(structures_h.begin(), [] __host__ __device__ (MyStruct const& str) {return str.key;});
-    auto keys_h_end = thrust::make_transform_iterator(structures_h.end(), [] __host__ __device__ (MyStruct const& str) {return str.key;});
+    auto keys_h_begin = thrust::make_transform_iterator(structures_h.begin(), [] __host__ __device__ (MyStruct str) {return str.key;});
+    auto keys_h_end = thrust::make_transform_iterator(structures_h.end(), [] __host__ __device__ (MyStruct str) {return str.key;});
     thrust::copy(keys_h_begin, keys_h_end, keys.begin());
     //thrust::transform(structures_h.begin(), structures_h.end(), keys.begin(), [] __host__ __device__ (MyStruct str) {return str.key;});
     //thrust::transform(structures_h.begin(), structures_h.end(), values.begin(), [] __device__ __host__ (MyStruct str) {return str.value;});
