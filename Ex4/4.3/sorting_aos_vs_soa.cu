@@ -108,7 +108,7 @@ void sort3(size_t N)
     /*thrust::transform(keys.begin(), keys.end(), structures_d.begin(), [] __device__ __host__ (int key) 
                       {MyStruct str;
                        str.key = key;
-                       return str;});*/
+                       return str;});
     thrust::transform(thrust::make_zip_iterator(thrust::make_tuple(keys.begin(), values.begin())),
                       thrust::make_zip_iterator(thrust::make_tuple(keys.end(), values.end())),
                       structures_h.begin(),
@@ -119,7 +119,7 @@ void sort3(size_t N)
                       return str;});
     
     cudaDeviceSynchronize();
-    assert(thrust::is_sorted(structures_h.begin(), structures_h.end()));
+    assert(thrust::is_sorted(structures_h.begin(), structures_h.end()));*/
 }
 
 int main(void)
