@@ -86,11 +86,11 @@ void sortSoA(size_t N)
 struct get_aos
 {
   __host__ __device__
-  MyStruct operator() (int const& key, float const& value)
+  MyStruct operator() (thrust::tuple<int, float> const& tuple)
   {
     MyStruct str;
-    str.key = key;
-    str.value = value;
+    str.key = thrust::get<0>(tuple);
+    str.value = thrust::get<1>(tuple);
     return str;
   }
 };
