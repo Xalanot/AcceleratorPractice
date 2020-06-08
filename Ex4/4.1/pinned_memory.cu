@@ -129,8 +129,9 @@ void sort4(size_t N)
     return sort1(N);
   }
 
-  thrust::host_vector<int> X_h(N);
-  thrust::tabulate(X_h.begin(), X_h.end(), get_rand_number(1337, 10 * N));
+  int* X_h = nullptr;
+  checkCudaError(cudaHostAlloc((void**)&X_h, memSize, 0));
+  thrust::tabulate(X_h, X_h + N, get_rand_number(1337, 10 * N));
 
   std::vector<cudaStream_t> streams(3);
   for (auto& stream : streams)
@@ -158,8 +159,9 @@ void sort4(size_t N)
   auto start = Clock::now();
   for (int i = 0; i < 3; ++i)
   {
-    checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(device_vectors[i].data()), thrust::raw_pointer_cast(X_h.data() + i * device_vectors[0].size()), device_vectors[i].size() * int_size, cudaMemcpyHostToDevice, streams[i]));
+    checkCudaError(cudaMemcpyAsync(thrust::raw_pointer_cast(device_vectors[i].data()), thrust::raw_pointer_cast(X_h + i * device_vectors[0].size()), device_vectors[i].size() * int_size, cudaMemcpyHostToDevice, streams[i]));
     thrust::sort(thrust::cuda::par(allocator).on(streams[i]), device_vectors[i].begin(), device_vectors[i].end());
+    checkCudaError( cudaMemcpyAsync(thrust::raw_pointer_cast(X_h + i * device_vectors[0].size()), thrust::raw_pointer_cast(device_vectors[i].data()), device_vectors[i].size() * int_size, cudaMemcpyDeviceToHost, streams[i]));
   }
   cudaDeviceSynchronize();
   auto end = Clock::now();

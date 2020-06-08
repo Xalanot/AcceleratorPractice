@@ -3,9 +3,6 @@
 #include <thrust/random.h>
 #include <assert.h>
 
-#include "../pml/csvwriter.h"
-#include "../pml/measurement.h"
-
 // This examples compares sorting performance using Array of Structures (AoS)
 // and Structure of Arrays (SoA) data layout.  Legacy applications will often
 // store data in C/C++ structs, such as MyStruct defined below.  Although 
@@ -46,8 +43,7 @@ void initialize_keys(thrust::host_vector<MyStruct>& structures)
     structures[i].key = dist(rng);
 }
 
-template<typename T>
-void sortAoS(size_t N, MeasurementSeries<T>& measurementSeries)
+void sortAoS(size_t N)
 {
     thrust::host_vector<MyStruct> structures_h(N);
     initialize_keys(structures_h);
@@ -67,8 +63,7 @@ void sortAoS(size_t N, MeasurementSeries<T>& measurementSeries)
     assert(thrust::is_sorted(structures_h.begin(), structures_h.end()));
 }
 
-template<typename T>
-void sortSoA(size_t N, MeasurementSeries<T>& measurementSeries)
+void sortSoA(size_t N)
 {
     thrust::host_vector<int>   keys_h(N);
     thrust::host_vector<float> values_h(N);
@@ -92,8 +87,7 @@ void sortSoA(size_t N, MeasurementSeries<T>& measurementSeries)
     assert(thrust::is_sorted(keys_h.begin(), keys_h.end()));
 }
 
-template<typename T>
-void sort3(size_t N, MeasurementSeries<T>& measurementSeries)
+void sort3(size_t N)
 {
     thrust::host_vector<MyStruct> structures_h(N);
     thrust::device_vector<MyStruct> structures_d(N);
@@ -106,30 +100,28 @@ void sort3(size_t N, MeasurementSeries<T>& measurementSeries)
     measurementSeries.start();
 
     // Copy SoA to device
-    structures_d = structures_h;
+    //structures_d = structures_h;
     // Transfer data to AoS on device
-    thrust::transform(structures_d.begin(), structures_d.end(), keys.begin(), [] __device__ __host__ (MyStruct str) {return str.key;});
-    thrust::transform(structures_d.begin(), structures_d.end(), values.begin(), [] __device__ __host__ (MyStruct str) {return str.value;});
+    thrust::transform(structures_h.begin(), structures_h.end(), keys.begin(), [] __device__ __host__ (MyStruct str) {return str.key;});
+    thrust::transform(structures_h.begin(), structures_h.end(), values.begin(), [] __device__ __host__ (MyStruct str) {return str.value;});
     
     // Sort on the device with SoA format
     thrust::sort_by_key(keys.begin(), keys.end(), values.begin());
-    assert(thrust::is_sorted(keys.begin(), keys.end()));
+    //assert(thrust::is_sorted(keys.begin(), keys.end()));
     
     // Transfer data back to host
-    thrust::transform(keys.begin(), keys.end(), structures_d.begin(), [] __device__ __host__ (int key) 
+    /*thrust::transform(keys.begin(), keys.end(), structures_d.begin(), [] __device__ __host__ (int key) 
                       {MyStruct str;
                        str.key = key;
-                       return str;});
+                       return str;});*/
     thrust::transform(thrust::make_zip_iterator(thrust::make_tuple(keys.begin(), values.begin())),
                       thrust::make_zip_iterator(thrust::make_tuple(keys.end(), values.end())),
-                      structures_d.begin(),
+                      structures_h.begin(),
                       [] __device__ __host__ (thrust::tuple<int, float> t)
                       {MyStruct str;
                       str.key = thrust::get<0>(t);
                       str.value = thrust::get<1>(t);
                       return str;});
-
-    structures_h = structures_d;
     
     cudaDeviceSynchronize();
     measurementSeries.stop();
@@ -138,34 +130,16 @@ void sort3(size_t N, MeasurementSeries<T>& measurementSeries)
 
 int main(void)
 {
-  typedef std::chrono::milliseconds time;
   size_t N = 2 * 1024 * 1024;
-  int iterations = 10;
 
   // Sort Key-Value pairs using Array of Structures (AoS) storage 
-  MeasurementSeries<time> AoSSeries;
-  for (int i = 0; i < iterations; ++i)
-  {
-      sortAoS(N, AoSSeries);
-  }
+  //sortAoS(N, AoSSeries);
 
   // Sort Key-Value pairs using Structure of Arrays (SoA) storage 
-  MeasurementSeries<time> SoASeries;
-  for (int i = 0; i < iterations; ++i)
-  {
-      sortSoA(N, SoASeries);
-  }
+  //sortSoA(N, SoASeries);
 
   // Sort 3
-  MeasurementSeries<time> thirdSeries;
-  for (int i = 0; i < iterations; ++i)
-  {
-      sort3(N, thirdSeries);
-  }
-
-  std::cout << "aos: " << AoSSeries << std::endl;
-  std::cout << "soa: " << SoASeries << std::endl;
-  std::cout << "three: " << thirdSeries << std::endl;
+  sort3(N);
 
   return 0;
 }
