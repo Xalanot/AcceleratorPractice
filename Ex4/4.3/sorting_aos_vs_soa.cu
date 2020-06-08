@@ -93,7 +93,7 @@ struct get_aos
     str.value = value;
     return str;
   }
-}
+};
 
 struct get_soa
 {
