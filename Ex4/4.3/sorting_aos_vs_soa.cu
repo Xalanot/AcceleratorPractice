@@ -90,7 +90,7 @@ struct get_keys
   {
     return str.key;
   }
-}
+};
 
 void sort3(size_t N)
 {
