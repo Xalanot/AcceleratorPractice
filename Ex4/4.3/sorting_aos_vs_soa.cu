@@ -86,9 +86,9 @@ void sortSoA(size_t N)
 struct get_keys
 {
   __host__ __device__ 
-  int operator()(MyStruct const& str) 
+  thrust::tuple<int, float> operator()(MyStruct const& str) 
   {
-    return str.key;
+    return thrust::tuple<int, float> (str.key, str.value);
   }
 };
 
@@ -106,9 +106,9 @@ void sort3(size_t N)
     // Copy SoA to device
     //structures_d = structures_h;
     // Transfer data to AoS on device
-    auto keys_h_begin = thrust::make_transform_iterator(structures_h.begin(), get_keys());
-    auto keys_h_end = thrust::make_transform_iterator(structures_h.end(), get_keys());
-    thrust::copy(keys_h_begin, keys_h_end, keys.begin());
+    auto transform_begin = thrust::make_transform_iterator(structures_h.begin(), get_aos());
+    auto transform_end = thrust::make_transform_iterator(structures_h.end(), get_aos());
+    thrust::copy(keys_h_begin, keys_h_end, thrust::make_zip_iterator(thrust::make_tuple(keys.begin(), values.begin())));
     //thrust::transform(structures_h.begin(), structures_h.end(), keys.begin(), [] __host__ __device__ (MyStruct str) {return str.key;});
     //thrust::transform(structures_h.begin(), structures_h.end(), values.begin(), [] __device__ __host__ (MyStruct str) {return str.value;});
     
