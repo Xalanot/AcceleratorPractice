@@ -86,7 +86,7 @@ void sortSoA(size_t N)
 struct get_aos
 {
   __host__ __device__
-  MyStruct operator() (int key, float value)
+  MyStruct operator() (int const& key, float const& value)
   {
     MyStruct str;
     str.key = key;
