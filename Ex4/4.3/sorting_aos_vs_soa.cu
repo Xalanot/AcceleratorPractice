@@ -127,6 +127,7 @@ struct get_soa
 void sort3(size_t N)
 {
     thrust::host_vector<MyStruct> structures_h(N);
+    thrust::device_vector<MyStruct> structures_d(N);
     thrust::device_vector<int> keys(N);
     thrust::device_vector<float> values(N);
 
@@ -137,9 +138,12 @@ void sort3(size_t N)
     auto start = Clock::now();
 
     // Copy AoS to SoA on device
-    auto transform_soa_begin = thrust::make_transform_iterator(structures_h.begin(), get_soa());
+    /*auto transform_soa_begin = thrust::make_transform_iterator(structures_h.begin(), get_soa());
     auto transform_soa_end = thrust::make_transform_iterator(structures_h.end(), get_soa());
-    thrust::copy(transform_soa_begin, transform_soa_end, thrust::make_zip_iterator(thrust::make_tuple(keys.begin(), values.begin())));
+    thrust::copy(transform_soa_begin, transform_soa_end, thrust::make_zip_iterator(thrust::make_tuple(keys.begin(), values.begin())));*/
+    structures_d = structures_h;
+    thrust::transform(structures_d.begin(), structures_d.end(), keys.begin(), [] __device__ __host__ (MyStruct str) {return str.key;});
+    thrust::transform(structures_d.begin(), structures_d.end(), values.begin(), [] __device__ __host__ (MyStruct str) {return str.value;});
     
     // Sort on the device with SoA format
     thrust::sort_by_key(keys.begin(), keys.end(), values.begin());
