@@ -125,7 +125,7 @@ void sort3(size_t N)
     auto transform_aos_begin = thrust::make_transform_iterator(thrust::make_zip_iterator(thrust::make_tuple(keys.begin(), values.begin())), get_aos());
     auto transform_aos_end = thrust::make_transform_iterator(thrust::make_zip_iterator(thrust::make_tuple(keys.end(), values.end())), get_aos());
     // Transfer data back to host
-    thrust::copy(transform_aos_begin, transform_aos_end, structures_h);
+    thrust::copy(transform_aos_begin, transform_aos_end, structures_h.begin());
     
     cudaDeviceSynchronize();
     assert(thrust::is_sorted(structures_h.begin(), structures_h.end()));
