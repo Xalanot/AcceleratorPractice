@@ -108,7 +108,7 @@ void sort3(size_t N)
 {
     thrust::host_vector<MyStruct> structures_h(N);
     thrust::device_vector<int> keys(N);
-    thrust::device_vector<int> values(N);
+    thrust::device_vector<float> values(N);
 
     initialize_keys(structures_h);
 
