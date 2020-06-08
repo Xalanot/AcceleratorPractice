@@ -97,11 +97,11 @@ void sort3(size_t N)
     // Copy SoA to device
     //structures_d = structures_h;
     // Transfer data to AoS on device
-    thrust::transform(structures_h.begin(), structures_h.end(), keys.begin(), [] __device__ __host__ (MyStruct str) {return str.key;});
-    thrust::transform(structures_h.begin(), structures_h.end(), values.begin(), [] __device__ __host__ (MyStruct str) {return str.value;});
+    //thrust::transform(structures_h.begin(), structures_h.end(), keys.begin(), [] __device__ __host__ (MyStruct str) {return str.key;});
+    //thrust::transform(structures_h.begin(), structures_h.end(), values.begin(), [] __device__ __host__ (MyStruct str) {return str.value;});
     
     // Sort on the device with SoA format
-    thrust::sort_by_key(keys.begin(), keys.end(), values.begin());
+    //thrust::sort_by_key(keys.begin(), keys.end(), values.begin());
     //assert(thrust::is_sorted(keys.begin(), keys.end()));
     
     // Transfer data back to host
